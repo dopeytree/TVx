@@ -45,11 +45,21 @@ export const EPGView = ({ programs, channelName }: EPGViewProps) => {
 
       {currentProgram && (
         <Card className="p-4 bg-gradient-primary border-primary shadow-glow">
-          <div className="flex items-start gap-3">
-            <div className="bg-background/20 rounded px-3 py-1 text-sm font-medium">
-              NOW
-            </div>
+          <div className="flex items-start gap-4">
+            {(currentProgram.image || currentProgram.icon) && (
+              <img
+                src={currentProgram.image || currentProgram.icon}
+                alt={currentProgram.title}
+                className="w-24 h-24 rounded object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            )}
             <div className="flex-1">
+              <div className="bg-background/20 rounded px-3 py-1 text-sm font-medium inline-block mb-2">
+                NOW PLAYING
+              </div>
               <h3 className="font-bold text-lg mb-1">{currentProgram.title}</h3>
               <div className="flex items-center gap-2 text-sm text-foreground/80 mb-2">
                 <Clock className="w-4 h-4" />
@@ -74,10 +84,20 @@ export const EPGView = ({ programs, channelName }: EPGViewProps) => {
             {upcomingPrograms.map((program, index) => (
               <Card key={index} className="p-4 bg-card hover:bg-secondary/50 transition-colors border-border">
                 <div className="flex items-start gap-3">
-                  <div className="text-sm font-medium text-primary min-w-[80px]">
+                  {(program.image || program.icon) && (
+                    <img
+                      src={program.image || program.icon}
+                      alt={program.title}
+                      className="w-16 h-16 rounded object-cover flex-shrink-0"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  )}
+                  <div className="text-sm font-medium text-primary min-w-[80px] flex-shrink-0">
                     {formatTime(program.start)}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h4 className="font-semibold mb-1">{program.title}</h4>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                       <span>{formatDuration(program.start, program.end)}</span>

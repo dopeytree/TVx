@@ -29,6 +29,8 @@ export const parseXMLTV = (content: string): EPGData => {
       start: parseXMLTVDate(prog['@_start']),
       end: parseXMLTVDate(prog['@_stop']),
       category: prog.category?.['#text'] || prog.category || undefined,
+      icon: prog.icon?.['@_src'] || undefined,
+      image: prog.image?.['@_src'] || undefined,
     };
     
     if (!epgData[channelId]) {

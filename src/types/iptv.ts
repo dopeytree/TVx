@@ -13,6 +13,15 @@ export interface Program {
   start: Date;
   end: Date;
   category?: string;
+  icon?: string;
+  image?: string;
+}
+
+export interface AppSettings {
+  m3uUrl?: string;
+  xmltvUrl?: string;
+  autoLoad: boolean;
+  videoQuality: 'auto' | 'high' | 'medium' | 'low';
 }
 
 export interface EPGData {
