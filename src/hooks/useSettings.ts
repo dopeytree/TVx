@@ -4,9 +4,14 @@ import { AppSettings } from '@/types/iptv';
 const SETTINGS_KEY = 'iptv-settings';
 
 const defaultSettings: AppSettings = {
+  m3uUrl: 'http://192.168.22.2:8000/api/channels.m3u',
+  xmltvUrl: 'http://192.168.22.2:8000/api/xmltv.xml',
   autoLoad: true,
   videoQuality: 'auto',
-  vintageTV: false,
+  vintageTV: true,
+  vignetteStrength: 0.35,
+  rgbShiftStrength: 0.0012,
+  vignetteRadius: 0.75,
 };
 
 export const useSettings = () => {

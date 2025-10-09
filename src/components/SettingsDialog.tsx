@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
 import { Save, Keyboard } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -26,9 +27,10 @@ interface SettingsDialogProps {
   onOpenChange: (open: boolean) => void;
   settings: AppSettings;
   onSave: (settings: AppSettings) => void;
+  inline?: boolean;
 }
 
-export const SettingsDialog = ({ open, onOpenChange, settings, onSave }: SettingsDialogProps) => {
+export const SettingsDialog = ({ open, onOpenChange, settings, onSave, inline }: SettingsDialogProps) => {
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
 
   useEffect(() => {
@@ -39,6 +41,189 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave }: Setting
     onSave(localSettings);
     onOpenChange(false);
   };
+
+  const content = (
+    <div className="space-y-6 py-4">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Sources</h3>
+        <div className="space-y-3">
+          <div>
+            <Label htmlFor="m3u-url">M3U Playlist URL</Label>
+            <Input
+              id="m3u-url"
+              placeholder="https://example.com/playlist.m3u"
+              value={localSettings.m3uUrl || ''}
+              onChange={(e) => setLocalSettings({ ...localSettings, m3uUrl: e.target.value })}
+              className="mt-1 bg-background"
+            />
+          </div>
+          <div>
+            <Label htmlFor="xmltv-url">XMLTV EPG URL</Label>
+            <Input
+              id="xmltv-url"
+              placeholder="https://example.com/epg.xml"
+              value={localSettings.xmltvUrl || ''}
+              onChange={(e) => setLocalSettings({ ...localSettings, xmltvUrl: e.target.value })}
+              className="mt-1 bg-background"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Auto-load on startup</Label>
+              <p className="text-sm text-muted-foreground">
+                Automatically load sources when app starts
+              </p>
+            </div>
+            <Switch
+              checked={localSettings.autoLoad}
+              onCheckedChange={(checked) => 
+                setLocalSettings({ ...localSettings, autoLoad: checked })
+              }
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Playback</h3>
+        <div>
+          <Label htmlFor="quality">Video Quality</Label>
+          <Select
+            value={localSettings.videoQuality}
+            onValueChange={(value: any) => 
+              setLocalSettings({ ...localSettings, videoQuality: value })
+            }
+          >
+            <SelectTrigger id="quality" className="mt-1 bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-card border-border">
+              <SelectItem value="auto">Auto</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="low">Low</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label>Vintage TV Effect</Label>
+            <p className="text-sm text-muted-foreground">
+              Apply retro CRT-style distortion and effects
+            </p>
+          </div>
+          <Switch
+            checked={localSettings.vintageTV}
+            onCheckedChange={(checked) => 
+              setLocalSettings({ ...localSettings, vintageTV: checked })
+            }
+          />
+        </div>
+        {localSettings.vintageTV && (
+          <div className="space-y-2">
+            <Label>Vignette Strength</Label>
+            <Slider
+              value={[localSettings.vignetteStrength]}
+              onValueChange={(value) => setLocalSettings({ ...localSettings, vignetteStrength: value[0] })}
+              max={1.0}
+              min={0}
+              step={0.01}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>0</span>
+              <span>{localSettings.vignetteStrength.toFixed(2)}</span>
+              <span>1.0</span>
+            </div>
+          </div>
+        )}
+        {localSettings.vintageTV && (
+          <div className="space-y-2">
+            <Label>Vignette Radius</Label>
+            <Slider
+              value={[localSettings.vignetteRadius]}
+              onValueChange={(value) => setLocalSettings({ ...localSettings, vignetteRadius: value[0] })}
+              max={1.0}
+              min={0}
+              step={0.01}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>0</span>
+              <span>{localSettings.vignetteRadius.toFixed(2)}</span>
+              <span>1.0</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Radius where vignette starts (0 = center, 1.0 = edges)
+            </p>
+          </div>
+        )}
+        {localSettings.vintageTV && (
+          <div className="space-y-2">
+            <Label>Chromatic Aberration</Label>
+            <Slider
+              value={[localSettings.rgbShiftStrength]}
+              onValueChange={(value) => setLocalSettings({ ...localSettings, rgbShiftStrength: value[0] })}
+              max={0.01}
+              min={0.0001}
+              step={0.0001}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>0.0001</span>
+              <span>{localSettings.rgbShiftStrength.toFixed(4)}</span>
+              <span>0.01</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Adjust color separation effect (0.0001 = subtle, 0.01 = strong)
+            </p>
+          </div>
+        )}
+      </div>
+
+      <Separator />
+
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <Keyboard className="w-5 h-5" />
+          Keyboard Shortcuts
+        </h3>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Open Settings</span>
+            <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">
+              Ctrl/Cmd + ,
+            </kbd>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Toggle Fullscreen</span>
+            <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">F</kbd>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Play/Pause</span>
+            <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">Space</kbd>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (inline) {
+    return (
+      <div className="p-4 space-y-4 overflow-y-auto h-full">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">Settings</h2>
+          <Button onClick={handleSave} className="bg-gradient-primary">
+            <Save className="w-4 h-4 mr-2" />
+            Save
+          </Button>
+        </div>
+        {content}
+      </div>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,111 +237,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave }: Setting
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Sources</h3>
-            <div className="space-y-3">
-              <div>
-                <Label htmlFor="m3u-url">M3U Playlist URL</Label>
-                <Input
-                  id="m3u-url"
-                  placeholder="https://example.com/playlist.m3u"
-                  value={localSettings.m3uUrl || ''}
-                  onChange={(e) => setLocalSettings({ ...localSettings, m3uUrl: e.target.value })}
-                  className="mt-1 bg-background"
-                />
-              </div>
-              <div>
-                <Label htmlFor="xmltv-url">XMLTV EPG URL</Label>
-                <Input
-                  id="xmltv-url"
-                  placeholder="https://example.com/epg.xml"
-                  value={localSettings.xmltvUrl || ''}
-                  onChange={(e) => setLocalSettings({ ...localSettings, xmltvUrl: e.target.value })}
-                  className="mt-1 bg-background"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Auto-load on startup</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Automatically load sources when app starts
-                  </p>
-                </div>
-                <Switch
-                  checked={localSettings.autoLoad}
-                  onCheckedChange={(checked) => 
-                    setLocalSettings({ ...localSettings, autoLoad: checked })
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Playback</h3>
-            <div>
-              <Label htmlFor="quality">Video Quality</Label>
-              <Select
-                value={localSettings.videoQuality}
-                onValueChange={(value: any) => 
-                  setLocalSettings({ ...localSettings, videoQuality: value })
-                }
-              >
-                <SelectTrigger id="quality" className="mt-1 bg-background">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border">
-                  <SelectItem value="auto">Auto</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Vintage TV Effect</Label>
-                <p className="text-sm text-muted-foreground">
-                  Apply retro CRT-style distortion and effects
-                </p>
-              </div>
-              <Switch
-                checked={localSettings.vintageTV}
-                onCheckedChange={(checked) => 
-                  setLocalSettings({ ...localSettings, vintageTV: checked })
-                }
-              />
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Keyboard className="w-5 h-5" />
-              Keyboard Shortcuts
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Open Settings</span>
-                <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">
-                  Ctrl/Cmd + ,
-                </kbd>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Toggle Fullscreen</span>
-                <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">F</kbd>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Play/Pause</span>
-                <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">Space</kbd>
-              </div>
-            </div>
-          </div>
-        </div>
+        {content}
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => onOpenChange(false)}>

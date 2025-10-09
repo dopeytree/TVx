@@ -48,12 +48,12 @@ export const ChannelList = ({ channels, selectedChannel, onSelectChannel }: Chan
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{channel.name}</p>
+                        <p className="font-medium truncate">{channel.name.replace(/\b(movies?|shows?)\b/gi, '').trim()}</p>
                       </div>
                     </div>
                     <div>
-                      {(channel.name.toLowerCase().includes('shows') || channel.group?.toLowerCase().includes('shows')) && <Tv className="w-4 h-4 text-muted-foreground" />}
-                      {(channel.name.toLowerCase().includes('movies') || channel.group?.toLowerCase().includes('movies')) && <Clapperboard className="w-4 h-4 text-muted-foreground" />}
+                      {(channel.name.toLowerCase().includes('show') || channel.group?.toLowerCase().includes('show')) && <Tv className="w-4 h-4 text-muted-foreground" />}
+                      {(channel.name.toLowerCase().includes('movie') || channel.group?.toLowerCase().includes('movie')) && <Clapperboard className="w-4 h-4 text-muted-foreground" />}
                     </div>
                   </div>
                 </Card>

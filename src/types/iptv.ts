@@ -9,12 +9,31 @@ export interface Channel {
 export interface Program {
   channelId: string;
   title: string;
+  subTitle?: string;
   description?: string;
   start: Date;
   end: Date;
   category?: string;
   icon?: string;
   image?: string;
+  episodeNum?: string;
+  season?: number;
+  episode?: number;
+  year?: number;
+  credits?: {
+    director?: string[];
+    actor?: string[];
+    writer?: string[];
+    presenter?: string[];
+    producer?: string[];
+    composer?: string[];
+    editor?: string[];
+    guest?: string[];
+  };
+  starRating?: {
+    value: string;
+    system: string;
+  };
 }
 
 export interface AppSettings {
@@ -23,6 +42,9 @@ export interface AppSettings {
   autoLoad: boolean;
   videoQuality: 'auto' | 'high' | 'medium' | 'low';
   vintageTV: boolean;
+  vignetteStrength: number;
+  rgbShiftStrength: number;
+  vignetteRadius: number;
 }
 
 export interface EPGData {

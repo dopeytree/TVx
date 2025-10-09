@@ -2,53 +2,101 @@ import { XMLParser } from 'fast-xml-parser';
 import { Program, EPGData } from "@/types/iptv";
 
 export const parseXMLTV = (content: string): EPGData => {
+  // Clean the XML content to fix common issues
+  const cleanedContent = content
+    .replace(/&(?![a-zA-Z#0-9]+;)/g, '&amp;') // Escape bare & that aren't entities
+    .replace(/<([^>]+)>/g, (match, content) => { // Fix any malformed tags if needed
+      return match;
+    });
+
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
+    processEntities: true, // Now process entities since we escaped bare &
   });
   
-  const result = parser.parse(content);
-  const epgData: EPGData = {};
-  
-  if (!result.tv || !result.tv.programme) {
-    return epgData;
-  }
-  
-  const programmes = Array.isArray(result.tv.programme) 
-    ? result.tv.programme 
-    : [result.tv.programme];
-  
-  programmes.forEach((prog: any) => {
-    const channelId = prog['@_channel'];
-    if (!channelId) return;
+  try {
+    const result = parser.parse(cleanedContent);
+    const epgData: EPGData = {};
     
-    console.log('Processing programme for channel:', channelId, 'title:', prog.title?.['#text'] || prog.title);
-    
-    const program: Program = {
-      channelId,
-      title: prog.title?.['#text'] || prog.title || 'Unknown Program',
-      description: prog.desc?.['#text'] || prog.desc || '',
-      start: parseXMLTVDate(prog['@_start']),
-      end: parseXMLTVDate(prog['@_stop']),
-      category: prog.category?.['#text'] || prog.category || undefined,
-      icon: prog.icon?.['@_src'] || undefined,
-      image: prog.image?.['@_src'] || undefined,
-    };
-    
-    if (!epgData[channelId]) {
-      epgData[channelId] = [];
+    if (!result.tv || !result.tv.programme) {
+      return epgData;
     }
-    epgData[channelId].push(program);
-  });
-  
-  console.log('Parsed EPG data:', epgData);
-  
-  // Sort programs by start time
-  Object.keys(epgData).forEach(channelId => {
-    epgData[channelId].sort((a, b) => a.start.getTime() - b.start.getTime());
-  });
-  
-  return epgData;
+    
+    const programmes = Array.isArray(result.tv.programme) 
+      ? result.tv.programme 
+      : [result.tv.programme];
+    
+    programmes.forEach((prog: any) => {
+      const channelId = prog['@_channel'];
+      if (!channelId) return;
+      
+      console.log('Processing programme for channel:', channelId, 'title:', prog.title?.['#text'] || prog.title);
+      
+      const program: Program = {
+        channelId,
+        title: prog.title?.['#text'] || prog.title || 'Unknown Program',
+        subTitle: prog['sub-title']?.['#text'] || prog['sub-title'],
+        description: prog.desc?.['#text'] || prog.desc || '',
+        start: parseXMLTVDate(prog['@_start']),
+        end: parseXMLTVDate(prog['@_stop']),
+        category: prog.category?.['#text'] || prog.category || undefined,
+        icon: prog.icon?.['@_src'] || undefined,
+        image: prog.image?.['@_src'] || undefined,
+        episodeNum: prog['episode-num']?.['#text'] || prog['episode-num'] || undefined,
+        year: prog.date ? parseInt(prog.date['#text'] || prog.date) : undefined,
+      };
+
+      // Parse season and episode from episode-num
+      if (program.episodeNum) {
+        const system = prog['episode-num']?.['@_system'];
+        const { season, episode } = parseEpisodeNum(program.episodeNum, system);
+        program.season = season;
+        program.episode = episode;
+      }
+
+      // Parse credits
+      if (prog.credits) {
+        program.credits = {};
+        const credits = prog.credits;
+        if (credits.director) program.credits.director = Array.isArray(credits.director) ? credits.director : [credits.director];
+        if (credits.actor) program.credits.actor = Array.isArray(credits.actor) ? credits.actor : [credits.actor];
+        if (credits.writer) program.credits.writer = Array.isArray(credits.writer) ? credits.writer : [credits.writer];
+        if (credits.presenter) program.credits.presenter = Array.isArray(credits.presenter) ? credits.presenter : [credits.presenter];
+        if (credits.producer) program.credits.producer = Array.isArray(credits.producer) ? credits.producer : [credits.producer];
+        if (credits.composer) program.credits.composer = Array.isArray(credits.composer) ? credits.composer : [credits.composer];
+        if (credits.editor) program.credits.editor = Array.isArray(credits.editor) ? credits.editor : [credits.editor];
+        if (credits.guest) program.credits.guest = Array.isArray(credits.guest) ? credits.guest : [credits.guest];
+      }
+
+      // Parse star rating
+      if (prog['star-rating']) {
+        const rating = prog['star-rating'];
+        program.starRating = {
+          value: rating.value?.['#text'] || rating.value || '',
+          system: rating['@_system'] || 'unknown'
+        };
+      }
+
+      if (!epgData[channelId]) {
+        epgData[channelId] = [];
+      }
+      epgData[channelId].push(program);
+    });
+    
+    console.log('Parsed EPG data:', epgData);
+    
+    // Sort programs by start time
+    Object.keys(epgData).forEach(channelId => {
+      epgData[channelId].sort((a, b) => a.start.getTime() - b.start.getTime());
+    });
+    
+    return epgData;
+  } catch (error) {
+    console.error('Failed to parse XMLTV:', error);
+    console.log('Original content sample:', content.substring(0, 500));
+    return {};
+  }
 };
 
 const parseXMLTVDate = (dateStr: string): Date => {
@@ -77,4 +125,27 @@ const parseXMLTVDate = (dateStr: string): Date => {
   const utcMinute = minute - (offsetMinutes % 60);
   
   return new Date(Date.UTC(year, month, day, utcHour, utcMinute, second));
+};
+
+const parseEpisodeNum = (episodeNum: string, system?: string): { season?: number; episode?: number } => {
+  if (system === 'xmltv_ns' || episodeNum.includes('.')) {
+    // xmltv_ns format: season.episode.part/total (0-based)
+    const parts = episodeNum.split('.');
+    if (parts.length >= 2) {
+      return {
+        season: parseInt(parts[0]) + 1,
+        episode: parseInt(parts[1]) + 1
+      };
+    }
+  } else if (episodeNum.includes('S') && episodeNum.includes('E')) {
+    // SxEx format
+    const match = episodeNum.match(/S(\d+)E(\d+)/);
+    if (match) {
+      return {
+        season: parseInt(match[1]),
+        episode: parseInt(match[2])
+      };
+    }
+  }
+  return {};
 };
