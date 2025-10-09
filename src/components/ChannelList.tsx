@@ -1,6 +1,6 @@
 import { Channel } from "@/types/iptv";
 import { Card } from "@/components/ui/card";
-import { Tv } from "lucide-react";
+import { Tv, Clapperboard } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChannelListProps {
@@ -34,20 +34,26 @@ export const ChannelList = ({ channels, selectedChannel, onSelectChannel }: Chan
                   }`}
                   onClick={() => onSelectChannel(channel)}
                 >
-                  <div className="flex items-center gap-3">
-                    {channel.logo ? (
-                      <img
-                        src={channel.logo}
-                        alt={channel.name}
-                        className="w-10 h-10 rounded object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded bg-secondary flex items-center justify-center">
-                        <Tv className="w-5 h-5 text-muted-foreground" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {channel.logo ? (
+                        <img
+                          src={channel.logo}
+                          alt={channel.name}
+                          className="w-10 h-10 rounded object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded bg-secondary flex items-center justify-center">
+                          <Tv className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{channel.name}</p>
                       </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{channel.name}</p>
+                    </div>
+                    <div>
+                      {(channel.name.toLowerCase().includes('shows') || channel.group?.toLowerCase().includes('shows')) && <Tv className="w-4 h-4 text-muted-foreground" />}
+                      {(channel.name.toLowerCase().includes('movies') || channel.group?.toLowerCase().includes('movies')) && <Clapperboard className="w-4 h-4 text-muted-foreground" />}
                     </div>
                   </div>
                 </Card>

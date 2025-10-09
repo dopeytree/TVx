@@ -22,6 +22,7 @@ export interface AppSettings {
   xmltvUrl?: string;
   autoLoad: boolean;
   videoQuality: 'auto' | 'high' | 'medium' | 'low';
+  vintageTV: boolean;
 }
 
 export interface EPGData {

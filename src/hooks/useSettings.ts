@@ -4,8 +4,9 @@ import { AppSettings } from '@/types/iptv';
 const SETTINGS_KEY = 'iptv-settings';
 
 const defaultSettings: AppSettings = {
-  autoLoad: false,
+  autoLoad: true,
   videoQuality: 'auto',
+  vintageTV: false,
 };
 
 export const useSettings = () => {

@@ -116,6 +116,20 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave }: Setting
                 </SelectContent>
               </Select>
             </div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Vintage TV Effect</Label>
+                <p className="text-sm text-muted-foreground">
+                  Apply retro CRT-style distortion and effects
+                </p>
+              </div>
+              <Switch
+                checked={localSettings.vintageTV}
+                onCheckedChange={(checked) => 
+                  setLocalSettings({ ...localSettings, vintageTV: checked })
+                }
+              />
+            </div>
           </div>
 
           <Separator />
