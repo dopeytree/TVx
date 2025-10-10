@@ -136,11 +136,15 @@ const Index = () => {
     };
     window.addEventListener('mousemove', resetIdle);
     window.addEventListener('keydown', resetIdle);
+    window.addEventListener('touchstart', resetIdle);
+    window.addEventListener('click', resetIdle);
     resetIdle(); // initial
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('mousemove', resetIdle);
       window.removeEventListener('keydown', resetIdle);
+      window.removeEventListener('touchstart', resetIdle);
+      window.removeEventListener('click', resetIdle);
     };
   }, [fullGuideOpen, settingsOpen]);
 
