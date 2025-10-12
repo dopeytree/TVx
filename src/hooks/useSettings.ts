@@ -12,6 +12,7 @@ const defaultSettings: AppSettings = {
   vignetteStrength: 0.35,
   rgbShiftStrength: 0.0012,
   vignetteRadius: 0.75,
+  showLoadingVideo: true,
 };
 
 export const useSettings = () => {

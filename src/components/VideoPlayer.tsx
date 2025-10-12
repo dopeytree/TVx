@@ -64,7 +64,11 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   const hlsRef = useRef<Hls>();
+  const channelChangeTimeoutRef = useRef<NodeJS.Timeout>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [isChannelChanging, setIsChannelChanging] = useState(false);
+  const [currentChannelId, setCurrentChannelId] = useState<string | null>(null);
 
   useEffect(() => {
     const setupWebGL = () => {
@@ -124,11 +128,18 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       // render
       const render = () => {
-        const currentVideo = (videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) 
-          ? videoRef.current 
-          : (loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA)
-            ? loadingVideoRef.current
-            : null;
+        let currentVideo = videoRef.current;
+
+        // Show loading video ONLY during channel changes (not same-channel buffering)
+        if (settings.showLoadingVideo && isChannelChanging &&
+            loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA) {
+          currentVideo = loadingVideoRef.current;
+        } else if (videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
+          currentVideo = videoRef.current;
+        } else if (loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA) {
+          currentVideo = loadingVideoRef.current;
+        }
+
         if (currentVideo) {
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, currentVideo);
         }
@@ -151,7 +162,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
     if (loadingVideoRef.current) {
       loadingVideoRef.current.src = '/loading-VHS.mp4';
       loadingVideoRef.current.loop = true;
-      loadingVideoRef.current.muted = false;
+      loadingVideoRef.current.muted = true; // Start muted, unmute only during channel changes
       loadingVideoRef.current.play().catch(err => console.error('Loading video play error:', err));
     }
 
@@ -160,6 +171,35 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
     }
 
     if (channel) {
+      // Check if this is a channel change
+      const isChannelChange = currentChannelId !== channel.id;
+      setCurrentChannelId(channel.id);
+
+      if (isChannelChange) {
+        setIsChannelChanging(true);
+        setIsLoading(true);
+        setIsBuffering(true);
+
+        // Unmute loading video during channel changes
+        if (loadingVideoRef.current) {
+          loadingVideoRef.current.muted = false;
+        }
+
+        // Clear any existing timeout
+        if (channelChangeTimeoutRef.current) {
+          clearTimeout(channelChangeTimeoutRef.current);
+        }
+
+        // Set minimum 2-second delay for channel changes
+        channelChangeTimeoutRef.current = setTimeout(() => {
+          setIsChannelChanging(false);
+          setIsLoading(false);
+        }, 2000);
+      } else {
+        // Same channel, just buffering
+        setIsBuffering(true);
+      }
+
       // Load main video
       if (videoRef.current) {
         const video = videoRef.current;
@@ -168,31 +208,94 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
           hlsRef.current = hls;
           hls.loadSource(channel.url);
           hls.attachMedia(video);
+
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            loadingVideoRef.current?.pause();
-            video.play().catch(err => console.error(err));
-            video.addEventListener('pause', () => {
-              setTimeout(() => video.play().catch(err => console.error('Resume play error:', err)), 100);
-            });
+            // Start playing but mute loading video immediately when stream is ready
+            video.play().catch(err => console.error('Play error:', err));
+            if (loadingVideoRef.current) {
+              loadingVideoRef.current.muted = true;
+            }
+            // For channel changes, loading will be set to false by the timeout
+            // For same channel, set loading false immediately
+            if (!isChannelChange) {
+              setIsLoading(false);
+            }
           });
+
+          hls.on(Hls.Events.BUFFER_APPENDED, () => {
+            setIsBuffering(false);
+          });
+
+          hls.on(Hls.Events.BUFFER_EOS, () => {
+            setIsBuffering(false);
+          });
+
+          hls.on(Hls.Events.BUFFER_FLUSHING, () => {
+            // Only set buffering for same channel buffering, not channel changes
+            if (!isChannelChange) {
+              setIsBuffering(true);
+            }
+          });
+
+          hls.on(Hls.Events.ERROR, (event, data) => {
+            console.error('HLS Error:', data);
+            if (data.fatal) {
+              if (!isChannelChange) {
+                setIsBuffering(true);
+              }
+              // Try to recover
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  hls.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  hls.recoverMediaError();
+                  break;
+                default:
+                  hls.destroy();
+                  break;
+              }
+            }
+          });
+
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           video.src = channel.url;
           video.addEventListener('loadedmetadata', () => {
-            loadingVideoRef.current?.pause();
-            video.play().catch(err => console.error(err));
-            video.addEventListener('pause', () => {
-              setTimeout(() => video.play().catch(err => console.error('Resume play error:', err)), 100);
-            });
+            // Start playing but mute loading video immediately when stream is ready
+            video.play().catch(err => console.error('Play error:', err));
+            if (loadingVideoRef.current) {
+              loadingVideoRef.current.muted = true;
+            }
+            // For channel changes, loading will be set to false by the timeout
+            // For same channel, set loading false immediately
+            if (!isChannelChange) {
+              setIsLoading(false);
+            }
           });
+          // Only listen to waiting/canplay for same channel buffering
+          if (!isChannelChange) {
+            video.addEventListener('waiting', () => setIsBuffering(true));
+            video.addEventListener('canplay', () => setIsBuffering(false));
+          }
         } else {
           video.src = channel.url.replace('.m3u8', '.mp4');
           video.addEventListener('loadedmetadata', () => {
-            loadingVideoRef.current?.pause();
-            video.play().catch(err => console.error(err));
-            video.addEventListener('pause', () => {
-              setTimeout(() => video.play().catch(err => console.error('Resume play error:', err)), 100);
-            });
+            // Start playing but mute loading video immediately when stream is ready
+            video.play().catch(err => console.error('Play error:', err));
+            if (loadingVideoRef.current) {
+              loadingVideoRef.current.muted = true;
+            }
+            // For channel changes, loading will be set to false by the timeout
+            // For same channel, set loading false immediately
+            if (!isChannelChange) {
+              setIsLoading(false);
+            }
           });
+          // Only listen to waiting/canplay for same channel buffering
+          if (!isChannelChange) {
+            video.addEventListener('waiting', () => setIsBuffering(true));
+            video.addEventListener('canplay', () => setIsBuffering(false));
+          }
         }
       }
     }
@@ -204,8 +307,11 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       if (hlsRef.current) {
         hlsRef.current.destroy();
       }
+      if (channelChangeTimeoutRef.current) {
+        clearTimeout(channelChangeTimeoutRef.current);
+      }
     };
-  }, [channel, settings.vintageTV, settings.vignetteStrength, settings.rgbShiftStrength, settings.vignetteRadius]);
+  }, [channel, settings.vintageTV, settings.vignetteStrength, settings.rgbShiftStrength, settings.vignetteRadius, settings.showLoadingVideo]);
 
   if (!channel) {
     return (

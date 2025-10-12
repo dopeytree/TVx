@@ -11,7 +11,7 @@ import { SettingsDialog } from "@/components/SettingsDialog";
 import { useSettings } from "@/hooks/useSettings";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Button } from "@/components/ui/button";
-import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Sparkles, Star, X, Play, Clock, Clapperboard } from "lucide-react";
+import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Sparkles, Star, X, Play, Clock, Clapperboard, Film } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
@@ -584,6 +584,15 @@ const Index = () => {
                   title="Toggle Vintage Filter"
                 >
                   <Sparkles className={`w-5 h-5 ${settings.vintageTV ? 'text-primary' : ''}`} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => updateSettings({ ...settings, showLoadingVideo: !settings.showLoadingVideo })}
+                  className="hover:bg-secondary"
+                  title="Toggle Loading Video"
+                >
+                  <Film className={`w-5 h-5 ${settings.showLoadingVideo ? 'text-primary' : ''}`} />
                 </Button>
                 <Button
                   variant="ghost"

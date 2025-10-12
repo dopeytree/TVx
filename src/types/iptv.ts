@@ -45,6 +45,7 @@ export interface AppSettings {
   vignetteStrength: number;
   rgbShiftStrength: number;
   vignetteRadius: number;
+  showLoadingVideo: boolean;
 }
 
 export interface EPGData {

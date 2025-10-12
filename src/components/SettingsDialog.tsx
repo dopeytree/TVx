@@ -116,8 +116,22 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, inline }:
           </div>
           <Switch
             checked={localSettings.vintageTV}
-            onCheckedChange={(checked) => 
+            onCheckedChange={(checked) =>
               setLocalSettings({ ...localSettings, vintageTV: checked })
+            }
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label>Loading Video</Label>
+            <p className="text-sm text-muted-foreground">
+              Show VHS loading animation during buffering
+            </p>
+          </div>
+          <Switch
+            checked={localSettings.showLoadingVideo}
+            onCheckedChange={(checked) =>
+              setLocalSettings({ ...localSettings, showLoadingVideo: checked })
             }
           />
         </div>
