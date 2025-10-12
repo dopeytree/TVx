@@ -175,34 +175,37 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       const isChannelChange = currentChannelId !== channel.id;
       setCurrentChannelId(channel.id);
 
-      if (isChannelChange) {
-        setIsChannelChanging(true);
-        setIsLoading(true);
-        setIsBuffering(true);
+      // Always treat as channel change to ensure loading video shows
+      // This ensures the 2-second minimum delay even for previously streamed channels
+      setIsChannelChanging(true);
+      setIsLoading(true);
+      setIsBuffering(true);
 
-        // Unmute loading video during channel changes
-        if (loadingVideoRef.current) {
-          loadingVideoRef.current.muted = false;
-        }
-
-        // Clear any existing timeout
-        if (channelChangeTimeoutRef.current) {
-          clearTimeout(channelChangeTimeoutRef.current);
-        }
-
-        // Set minimum 2-second delay for channel changes
-        channelChangeTimeoutRef.current = setTimeout(() => {
-          setIsChannelChanging(false);
-          setIsLoading(false);
-        }, 2000);
-      } else {
-        // Same channel, just buffering
-        setIsBuffering(true);
+      // Unmute loading video during channel changes
+      if (loadingVideoRef.current) {
+        loadingVideoRef.current.muted = false;
+        loadingVideoRef.current.play().catch(err => console.error('Loading video restart error:', err));
       }
+
+      // Clear any existing timeout
+      if (channelChangeTimeoutRef.current) {
+        clearTimeout(channelChangeTimeoutRef.current);
+      }
+
+      // Set minimum 2-second delay for ALL channel loads
+      channelChangeTimeoutRef.current = setTimeout(() => {
+        setIsChannelChanging(false);
+        setIsLoading(false);
+      }, 2000);
 
       // Load main video
       if (videoRef.current) {
         const video = videoRef.current;
+
+        // Ensure video is reset for channel changes
+        video.pause();
+        video.currentTime = 0;
+
         if (Hls.isSupported()) {
           const hls = new Hls();
           hlsRef.current = hls;
@@ -210,16 +213,13 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
           hls.attachMedia(video);
 
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            // Start playing but mute loading video immediately when stream is ready
+            // Start playing and completely pause loading video when stream is ready
             video.play().catch(err => console.error('Play error:', err));
             if (loadingVideoRef.current) {
+              loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
-            // For channel changes, loading will be set to false by the timeout
-            // For same channel, set loading false immediately
-            if (!isChannelChange) {
-              setIsLoading(false);
-            }
+            // Loading will be set to false by the timeout (always 2 seconds minimum)
           });
 
           hls.on(Hls.Events.BUFFER_APPENDED, () => {
@@ -231,18 +231,14 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
           });
 
           hls.on(Hls.Events.BUFFER_FLUSHING, () => {
-            // Only set buffering for same channel buffering, not channel changes
-            if (!isChannelChange) {
-              setIsBuffering(true);
-            }
+            // For channel changes, we ignore buffering events during the loading phase
+            // Buffering state is managed by the timeout
           });
 
           hls.on(Hls.Events.ERROR, (event, data) => {
             console.error('HLS Error:', data);
             if (data.fatal) {
-              if (!isChannelChange) {
-                setIsBuffering(true);
-              }
+              setIsBuffering(true);
               // Try to recover
               switch (data.type) {
                 case Hls.ErrorTypes.NETWORK_ERROR:
@@ -261,41 +257,27 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           video.src = channel.url;
           video.addEventListener('loadedmetadata', () => {
-            // Start playing but mute loading video immediately when stream is ready
+            // Start playing and completely pause loading video when stream is ready
             video.play().catch(err => console.error('Play error:', err));
             if (loadingVideoRef.current) {
+              loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
-            // For channel changes, loading will be set to false by the timeout
-            // For same channel, set loading false immediately
-            if (!isChannelChange) {
-              setIsLoading(false);
-            }
+            // Loading will be set to false by the timeout (always 2 seconds minimum)
           });
-          // Only listen to waiting/canplay for same channel buffering
-          if (!isChannelChange) {
-            video.addEventListener('waiting', () => setIsBuffering(true));
-            video.addEventListener('canplay', () => setIsBuffering(false));
-          }
+          // For channel changes, buffering is managed by the timeout
         } else {
           video.src = channel.url.replace('.m3u8', '.mp4');
           video.addEventListener('loadedmetadata', () => {
-            // Start playing but mute loading video immediately when stream is ready
+            // Start playing and completely pause loading video when stream is ready
             video.play().catch(err => console.error('Play error:', err));
             if (loadingVideoRef.current) {
+              loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
-            // For channel changes, loading will be set to false by the timeout
-            // For same channel, set loading false immediately
-            if (!isChannelChange) {
-              setIsLoading(false);
-            }
+            // Loading will be set to false by the timeout (always 2 seconds minimum)
           });
-          // Only listen to waiting/canplay for same channel buffering
-          if (!isChannelChange) {
-            video.addEventListener('waiting', () => setIsBuffering(true));
-            video.addEventListener('canplay', () => setIsBuffering(false));
-          }
+          // For channel changes, buffering is managed by the timeout
         }
       }
     }

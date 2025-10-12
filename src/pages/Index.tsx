@@ -35,6 +35,11 @@ const Index = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const channelListRef = useRef<HTMLDivElement>(null);
+  const epgViewRef = useRef<HTMLDivElement>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
+  const fullGuideRef = useRef<HTMLDivElement>(null);
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [activeTab, setActiveTab] = useState('guide');
 
@@ -122,11 +127,13 @@ const Index = () => {
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
+    let scrollTimeout: NodeJS.Timeout;
+
     const resetIdle = () => {
       setIsIdle(false);
       setSidebarVisible(true);
       clearTimeout(timeout);
-      const idleTime = settingsOpen ? 20000 : 3000;
+      const idleTime = settingsOpen ? 20000 : (isScrolling ? 10000 : 3000);
       timeout = setTimeout(() => {
         if (!fullGuideOpen) {
           setIsIdle(true);
@@ -134,19 +141,71 @@ const Index = () => {
         }
       }, idleTime);
     };
+
+    const handleScrollStart = () => {
+      setIsScrolling(true);
+      clearTimeout(scrollTimeout);
+      resetIdle(); // Reset idle timer when scrolling starts
+    };
+
+    const handleScrollEnd = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150); // Consider scrolling stopped after 150ms of no scroll events
+    };
+
+    // Add scroll listeners to specific scrollable areas
+    const scrollableElements = [
+      channelListRef.current,
+      epgViewRef.current,
+      settingsRef.current,
+      fullGuideRef.current,
+      // Also listen to any ScrollArea viewports that might be dynamically created
+      ...Array.from(document.querySelectorAll('[data-radix-scroll-area-viewport]')),
+      // Also listen to any elements with overflow scroll
+      ...Array.from(document.querySelectorAll('.overflow-auto, .overflow-y-auto'))
+    ].filter(Boolean);
+
+    scrollableElements.forEach((element) => {
+      element?.addEventListener('scroll', handleScrollStart, { passive: true });
+      element?.addEventListener('scroll', handleScrollEnd, { passive: true });
+    });
+
+    // Also listen for wheel events (desktop scrolling)
+    const handleWheel = (e: WheelEvent) => {
+      // Check if the event target is within our scrollable areas
+      const target = e.target as Element;
+      const isInScrollableArea = scrollableElements.some(el => el.contains(target));
+      if (isInScrollableArea && Math.abs(e.deltaY) > 0) {
+        handleScrollStart();
+        handleScrollEnd();
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: true });
+
     window.addEventListener('mousemove', resetIdle);
     window.addEventListener('keydown', resetIdle);
     window.addEventListener('touchstart', resetIdle);
     window.addEventListener('click', resetIdle);
     resetIdle(); // initial
+
     return () => {
       clearTimeout(timeout);
+      clearTimeout(scrollTimeout);
       window.removeEventListener('mousemove', resetIdle);
       window.removeEventListener('keydown', resetIdle);
       window.removeEventListener('touchstart', resetIdle);
       window.removeEventListener('click', resetIdle);
+      window.removeEventListener('wheel', handleWheel);
+
+      scrollableElements.forEach((element) => {
+        element?.removeEventListener('scroll', handleScrollStart);
+        element?.removeEventListener('scroll', handleScrollEnd);
+      });
     };
-  }, [fullGuideOpen, settingsOpen]);
+  }, [fullGuideOpen, settingsOpen, isScrolling]);
 
   useEffect(() => {
     if (fullGuideOpen) {
@@ -229,11 +288,13 @@ const Index = () => {
         <VideoPlayer channel={selectedChannel} settings={settings} muted={muted} isFullGuide={fullGuideOpen} isFullGuideExpanded={fullGuideExpanded} />
         
         {selectedChannel && !fullGuideOpen && activeTab === 'guide' && (
-          <EPGView key={selectedChannel.id} programs={currentPrograms} channelName={selectedChannel.name} isIdle={isIdle} onPosterClick={setSelectedPoster} />
+          <div ref={epgViewRef}>
+            <EPGView key={selectedChannel.id} programs={currentPrograms} channelName={selectedChannel.name} isIdle={isIdle} onPosterClick={setSelectedPoster} />
+          </div>
         )}
         
         {selectedChannel && fullGuideOpen && !fullGuideExpanded && (
-          <div className="h-[50vh] overflow-auto bg-card border border-border rounded-lg">
+          <div ref={fullGuideRef} className="h-[50vh] overflow-auto bg-card border border-border rounded-lg">
             {focusedProgram ? (
               <div className="flex flex-1 h-full relative">
                 {/* Dimmed background */}
@@ -606,7 +667,7 @@ const Index = () => {
               </div>
             </div>
           </div>
-          <div className="bg-card border border-border rounded-lg overflow-hidden flex-1 max-h-[500px]">
+          <div className="bg-card border border-border rounded-lg relative max-h-[500px]">
             {selectedPoster ? (
               <div className="p-4 relative mb-4">
                 <img src={selectedPoster.image || selectedPoster.icon} alt="Poster" className="w-full object-contain rounded" />
@@ -636,13 +697,17 @@ const Index = () => {
               </div>
             ) : null}
             {settingsOpen ? (
-              <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={settings} onSave={updateSettings} inline />
+              <div ref={settingsRef}>
+                <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={settings} onSave={updateSettings} inline />
+              </div>
             ) : (
-              <ChannelList
-                channels={channels}
-                selectedChannel={selectedChannel}
-                onSelectChannel={setSelectedChannel}
-              />
+              <div ref={channelListRef}>
+                <ChannelList
+                  channels={channels}
+                  selectedChannel={selectedChannel}
+                  onSelectChannel={setSelectedChannel}
+                />
+              </div>
             )}
           </div>
           <Button

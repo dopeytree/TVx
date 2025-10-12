@@ -18,8 +18,8 @@ export const ChannelList = ({ channels, selectedChannel, onSelectChannel }: Chan
   }, {} as Record<string, Channel[]>);
 
   return (
-    <ScrollArea className="h-full">
-      <div className="space-y-6 p-4">
+    <ScrollArea className="h-[500px] p-4">
+      <div className="space-y-6">
         {Object.entries(groupedChannels).map(([group, groupChannels]) => (
           <div key={group}>
             <h3 className="text-sm font-semibold text-muted-foreground mb-3 px-2">{group}</h3>
