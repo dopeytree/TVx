@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Channel, EPGData, Program, AppSettings } from "@/types/iptv";
 import { parseM3U } from "@/utils/m3uParser";
 import { parseXMLTV } from "@/utils/xmltvParser";
@@ -8,6 +8,7 @@ import { ChannelList } from "@/components/ChannelList";
 import { EPGView } from "@/components/EPGView";
 import { FileUploader } from "@/components/FileUploader";
 import { SettingsDialog } from "@/components/SettingsDialog";
+import { Poster } from "@/components/Poster";
 import { useSettings } from "@/hooks/useSettings";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,24 @@ const Index = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings, updateSettings } = useSettings();
+  const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
+
+  useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
+
+  const handleSettingsToggle = () => {
+    if (settingsOpen) {
+      // Save settings and close
+      updateSettings(localSettings);
+      setSettingsOpen(false);
+    } else {
+      // Close poster if open, then open settings
+      setSelectedPoster(null);
+      setLocalSettings(settings);
+      setSettingsOpen(true);
+    }
+  };
   const [muted, setMuted] = useState(false);
   const [fullGuideOpen, setFullGuideOpen] = useState(false);
   const [focusedProgram, setFocusedProgram] = useState<{program: Program, channel: Channel} | null>(null);
@@ -46,6 +65,10 @@ const Index = () => {
   const [selectedPoster, setSelectedPoster] = useState<Program | null>(null);
   const [currentProgram, setCurrentProgram] = useState<Program | null>(null);
 
+  const handleClosePoster = useCallback(() => {
+    setSelectedPoster(null);
+  }, []);
+
   const getCurrentProgram = (channel: Channel | null): Program | null => {
     if (!channel || !epgData[channel.id]) return null;
     const now = new Date();
@@ -57,6 +80,11 @@ const Index = () => {
   useEffect(() => {
     const program = getCurrentProgram(selectedChannel);
     setCurrentProgram(program);
+    
+    // If poster is open, update it to show the current program of the new channel
+    if (selectedPoster && program && (program.image || program.icon)) {
+      setSelectedPoster(program);
+    }
   }, [selectedChannel, epgData]);
 
   useEffect(() => {
@@ -138,6 +166,7 @@ const Index = () => {
         if (!fullGuideOpen) {
           setIsIdle(true);
           setSidebarVisible(false);
+          setSelectedPoster(null); // Close poster when idle
         }
       }, idleTime);
     };
@@ -152,7 +181,7 @@ const Index = () => {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
-      }, 150); // Consider scrolling stopped after 150ms of no scroll events
+      }, 1000); // Consider scrolling stopped after 1s of no scroll events
     };
 
     // Add scroll listeners to specific scrollable areas
@@ -179,7 +208,11 @@ const Index = () => {
       const isInScrollableArea = scrollableElements.some(el => el.contains(target));
       if (isInScrollableArea && Math.abs(e.deltaY) > 0) {
         handleScrollStart();
-        handleScrollEnd();
+        // For wheel events, reset the scroll timeout to extend the scrolling state
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          setIsScrolling(false);
+        }, 1000);
       }
     };
 
@@ -205,20 +238,21 @@ const Index = () => {
         element?.removeEventListener('scroll', handleScrollEnd);
       });
     };
-  }, [fullGuideOpen, settingsOpen, isScrolling]);
+  }, [fullGuideOpen, settingsOpen, selectedPoster, isScrolling]);
 
   useEffect(() => {
     if (fullGuideOpen) {
+      const expansionTime = isScrolling ? 10000 : 3000;
       const timer = setTimeout(() => {
         setFullGuideExpanded(true);
         setSidebarVisible(false);
-      }, 3000);
+      }, expansionTime);
       return () => clearTimeout(timer);
     } else {
       setFullGuideExpanded(false);
       setSidebarVisible(true);
     }
-  }, [fullGuideOpen]);
+  }, [fullGuideOpen, isScrolling]);
 
   useEffect(() => {
     if (fullGuideExpanded) {
@@ -226,8 +260,35 @@ const Index = () => {
         setFullGuideExpanded(false);
         setSidebarVisible(true);
       };
+
+      const handleScroll = () => {
+        setFullGuideExpanded(false);
+        setSidebarVisible(true);
+      };
+
       window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
+
+      // Also listen for scroll events on the full guide
+      const fullGuideElement = fullGuideRef.current;
+      if (fullGuideElement) {
+        fullGuideElement.addEventListener('scroll', handleScroll, { passive: true });
+        // Also listen on child scrollable elements
+        const scrollableChildren = fullGuideElement.querySelectorAll('[data-radix-scroll-area-viewport], .overflow-auto, .overflow-x-auto, .overflow-y-auto');
+        scrollableChildren.forEach((element) => {
+          element.addEventListener('scroll', handleScroll, { passive: true });
+        });
+      }
+
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        if (fullGuideElement) {
+          fullGuideElement.removeEventListener('scroll', handleScroll);
+          const scrollableChildren = fullGuideElement.querySelectorAll('[data-radix-scroll-area-viewport], .overflow-auto, .overflow-x-auto, .overflow-y-auto');
+          scrollableChildren.forEach((element) => {
+            element.removeEventListener('scroll', handleScroll);
+          });
+        }
+      };
     }
   }, [fullGuideExpanded]);
 
@@ -294,7 +355,15 @@ const Index = () => {
         )}
         
         {selectedChannel && fullGuideOpen && !fullGuideExpanded && (
-          <div ref={fullGuideRef} className="h-[50vh] overflow-auto bg-card border border-border rounded-lg">
+          <div className="h-[50vh] bg-card border border-border rounded-lg relative">
+            <button
+              className="absolute top-2 right-2 z-30 w-8 h-8 flex items-center justify-center bg-background/80 hover:bg-background border border-border rounded-md shadow-sm transition-colors"
+              onClick={() => setFullGuideOpen(false)}
+              title="Close Full TV Guide"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div ref={fullGuideRef} className="h-full overflow-auto pt-12">
             {focusedProgram ? (
               <div className="flex flex-1 h-full relative">
                 {/* Dimmed background */}
@@ -545,6 +614,7 @@ const Index = () => {
                 </div>
               </div>
             )}
+            </div>
           </div>
         )}
         
@@ -616,7 +686,7 @@ const Index = () => {
           <div className={`bg-card border border-border rounded-lg transition-opacity duration-1000 ${isIdle ? 'opacity-5' : 'opacity-100'}`}>
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
-                {!selectedPoster && <h1 className="text-xl font-bold">TVx</h1>}
+                <h1 className="text-xl font-bold">TVx</h1>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -658,9 +728,9 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setSettingsOpen(true)}
+                  onClick={handleSettingsToggle}
                   className="hover:bg-secondary"
-                  title="Settings (Ctrl/Cmd + ,)"
+                  title={settingsOpen ? "Save Settings (Ctrl/Cmd + ,)" : "Settings (Ctrl/Cmd + ,)"}
                 >
                   <Settings className="w-5 h-5" />
                 </Button>
@@ -669,36 +739,10 @@ const Index = () => {
           </div>
           <div className="bg-card border border-border rounded-lg relative max-h-[500px]">
             {selectedPoster ? (
-              <div className="p-4 relative mb-4">
-                <img src={selectedPoster.image || selectedPoster.icon} alt="Poster" className="w-full object-contain rounded" />
-                <X
-                  className="absolute top-2 right-2 w-6 h-6 cursor-pointer text-white bg-black/50 rounded-full p-1"
-                  onClick={() => setSelectedPoster(null)}
-                />
-                <div className="mt-2 text-sm text-foreground">
-                  {selectedPoster.credits?.director && selectedPoster.credits.director.length > 0 && (
-                    <div>Director: {selectedPoster.credits.director.join(', ')}</div>
-                  )}
-                  {selectedPoster.credits?.actor && selectedPoster.credits.actor.length > 0 && (
-                    <div>Actors: {selectedPoster.credits.actor.slice(0, 2).join(', ')}</div>
-                  )}
-                  {selectedPoster.year && <div>Year: {selectedPoster.year}</div>}
-                  <div className="mt-2">
-                    <a
-                      href={`https://www.imdb.com/find?q=${encodeURIComponent(selectedPoster.title)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      View on IMDB
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-            {settingsOpen ? (
+              <Poster program={selectedPoster} onClose={handleClosePoster} isIdle={isIdle} />
+            ) : settingsOpen ? (
               <div ref={settingsRef}>
-                <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={settings} onSave={updateSettings} inline />
+                <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={localSettings} onSave={setLocalSettings} onGlobalSave={updateSettings} inline />
               </div>
             ) : (
               <div ref={channelListRef}>

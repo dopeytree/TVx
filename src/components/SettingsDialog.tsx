@@ -19,18 +19,20 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
-import { Save, Keyboard } from "lucide-react";
+import { Save, Keyboard, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   settings: AppSettings;
   onSave: (settings: AppSettings) => void;
+  onGlobalSave?: (settings: AppSettings) => void;
   inline?: boolean;
 }
 
-export const SettingsDialog = ({ open, onOpenChange, settings, onSave, inline }: SettingsDialogProps) => {
+export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalSave, inline }: SettingsDialogProps) => {
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
 
   useEffect(() => {
@@ -39,6 +41,9 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, inline }:
 
   const handleSave = () => {
     onSave(localSettings);
+    if (onGlobalSave) {
+      onGlobalSave(localSettings);
+    }
     onOpenChange(false);
   };
 
@@ -226,15 +231,29 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, inline }:
 
   if (inline) {
     return (
-      <div className="p-4 space-y-4 overflow-y-auto h-full">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">Settings</h2>
-          <Button onClick={handleSave} className="bg-gradient-primary">
-            <Save className="w-4 h-4 mr-2" />
-            Save
-          </Button>
+      <div className="h-[500px] flex flex-col">
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-4">
+            <h2 className="text-xl font-bold">Settings</h2>
+            {content}
+          </div>
+        </ScrollArea>
+        <div className="p-4 border-t border-border bg-card/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-3">
+            <Button
+              onClick={() => onOpenChange(false)}
+              variant="outline"
+              className="flex-1"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="bg-gradient-primary flex-1">
+              <Save className="w-4 h-4 mr-2" />
+              Save
+            </Button>
+          </div>
         </div>
-        {content}
       </div>
     );
   }

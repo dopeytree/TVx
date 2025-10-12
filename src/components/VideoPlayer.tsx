@@ -68,6 +68,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
   const [isLoading, setIsLoading] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);
   const [isChannelChanging, setIsChannelChanging] = useState(false);
+  const [mainVideoReady, setMainVideoReady] = useState(false);
   const [currentChannelId, setCurrentChannelId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -130,8 +131,10 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       const render = () => {
         let currentVideo = videoRef.current;
 
-        // Show loading video ONLY during channel changes (not same-channel buffering)
-        if (settings.showLoadingVideo && isChannelChanging &&
+        // Priority: main video when ready > loading video during channel change > fallback to loading video
+        if (mainVideoReady && videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
+          currentVideo = videoRef.current;
+        } else if (settings.showLoadingVideo && isChannelChanging &&
             loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA) {
           currentVideo = loadingVideoRef.current;
         } else if (videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
@@ -178,6 +181,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       // Always treat as channel change to ensure loading video shows
       // This ensures the 2-second minimum delay even for previously streamed channels
       setIsChannelChanging(true);
+      setMainVideoReady(false); // Reset main video ready state
       setIsLoading(true);
       setIsBuffering(true);
 
@@ -219,6 +223,14 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
               loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
+            // Set main video as ready when it starts playing
+            video.addEventListener('playing', () => {
+              setMainVideoReady(true);
+            }, { once: true });
+            // Reset ready state when video pauses
+            video.addEventListener('pause', () => {
+              setMainVideoReady(false);
+            });
             // Loading will be set to false by the timeout (always 2 seconds minimum)
           });
 
@@ -239,6 +251,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
             console.error('HLS Error:', data);
             if (data.fatal) {
               setIsBuffering(true);
+              setMainVideoReady(false); // Reset ready state on error
               // Try to recover
               switch (data.type) {
                 case Hls.ErrorTypes.NETWORK_ERROR:
@@ -263,6 +276,14 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
               loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
+            // Set main video as ready when it starts playing
+            video.addEventListener('playing', () => {
+              setMainVideoReady(true);
+            }, { once: true });
+            // Reset ready state when video pauses
+            video.addEventListener('pause', () => {
+              setMainVideoReady(false);
+            });
             // Loading will be set to false by the timeout (always 2 seconds minimum)
           });
           // For channel changes, buffering is managed by the timeout
@@ -275,6 +296,14 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
               loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
+            // Set main video as ready when it starts playing
+            video.addEventListener('playing', () => {
+              setMainVideoReady(true);
+            }, { once: true });
+            // Reset ready state when video pauses
+            video.addEventListener('pause', () => {
+              setMainVideoReady(false);
+            });
             // Loading will be set to false by the timeout (always 2 seconds minimum)
           });
           // For channel changes, buffering is managed by the timeout
