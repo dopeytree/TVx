@@ -425,13 +425,6 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             value={localSettings.clockStyle}
             onValueChange={(value: any) => {
               const styleNames: Record<string, string> = {
-                'neon': 'Neon',
-                'minimal': 'Minimal',
-                'retro': 'Retro 7-Segment'
-              };
-              const newSettings = { ...localSettings, clockStyle: value };
-              updateSetting(newSettings, `Clock style: ${styleNames[value]}`);
-              const styleNames: Record<string, string> = {
                 neon: 'Neon Blue',
                 flip: 'Flip Clock',
                 matrix: 'Matrix',
@@ -439,6 +432,8 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
                 minimal: 'Minimal',
                 retro: 'Retro Red'
               };
+              const newSettings = { ...localSettings, clockStyle: value };
+              updateSetting(newSettings, `Clock style: ${styleNames[value]}`);
               toast.info(`Clock style: ${styleNames[value] || value}`);
             }}
           >
