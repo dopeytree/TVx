@@ -34,16 +34,61 @@ After pushing these changes to your repository, follow these steps in the GitHub
 3. Click **Enable**
 4. This allows security researchers to report issues privately
 
-## 5. Set Up Branch Protection (Optional but Recommended)
+## 5. Set Up Branch Protection (Recommended)
+
+Branch protection prevents accidental force pushes, deletions, and ensures code quality through automated checks.
+
+### Quick Setup (Minimal Protection):
+
+For personal projects, enable basic protection without blocking yourself:
+
+1. Go to **Settings** → **Branches** (or visit: `https://github.com/dopeytree/TVx/settings/branches`)
+2. Click **Add branch protection rule**
+3. Branch name pattern: `main`
+4. Enable these settings:
+   - ✅ **Require status checks to pass before merging** (optional, see Advanced Setup)
+   - ⚠️ **Do not allow force pushes** - LEAVE UNCHECKED (prevents rewriting history)
+   - ⚠️ **Allow deletions** - LEAVE UNCHECKED (prevents accidental branch deletion)
+5. Click **Create**
+
+This removes the GitHub warning and protects your main branch from force pushes and accidental deletion.
+
+### Advanced Setup (Recommended for Teams):
+
+For stricter protection with automated workflow checks:
 
 1. Go to **Settings** → **Branches**
-2. Click **Add rule** for branch `main`
-3. Configure:
+2. Click **Add branch protection rule** (or edit existing rule)
+3. Branch name pattern: `main`
+4. Configure:
+   - ✅ **Require a pull request before merging**
+     - Require approvals: 1 (if working with others)
+     - Dismiss stale pull request approvals when new commits are pushed
    - ✅ **Require status checks to pass before merging**
-   - Select: `CodeQL`, `Security Audit`, `npm audit`
-   - ✅ **Require branches to be up to date before merging**
-   - ✅ **Include administrators** (applies rules to you too)
-4. Click **Create**
+     - ✅ Require branches to be up to date before merging
+     - Select these status checks:
+       * `CodeQL` (security scanning)
+       * `Security Audit` (npm vulnerabilities)
+       * `build-and-push / build-and-push` (Docker build)
+   - ✅ **Require conversation resolution before merging**
+   - ✅ **Require signed commits** (optional, requires GPG setup)
+   - ✅ **Do not allow bypassing the above settings**
+   - ✅ **Restrict who can push to matching branches** (optional)
+   - ⚠️ **Do not allow force pushes** - LEAVE UNCHECKED
+   - ⚠️ **Allow deletions** - LEAVE UNCHECKED
+5. Click **Create** or **Save changes**
+
+**Note**: If you enable "Require a pull request before merging", you'll need to create PRs even for your own changes. This is great for discipline but can slow down solo work.
+
+### Testing Branch Protection:
+
+After setup, try to force push to test:
+```bash
+# This should now be blocked
+git push --force origin main
+```
+
+You should see an error like: `remote: error: GH006: Protected branch update failed`
 
 ## 6. Configure Notifications
 
