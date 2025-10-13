@@ -13,7 +13,7 @@
   <Category>MediaApp:Video Status:Stable</Category>
   <WebUI>http://[IP]:[PORT:8777]</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/dopeytree/TVx/main/tvx-unraid-template.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/dopeytree/TVx/main/public/tvx-icon.svg</Icon>
+  <Icon>https://raw.githubusercontent.com/dopeytree/TVx/main/public/logo.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
