@@ -9,7 +9,35 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/dopeytree/TVx/issues</Support>
   <Project>https://github.com/dopeytree/TVx</Project>
-  <Overview>A warm, nostalgic IPTV player bringing back the analog TV experience. Load M3U playlists and XMLTV guides, browse channels with CRT effects, scanlines, vignette, and chromatic aberration. Features keyboard shortcuts, theater mode, and full EPG guide. The warmth returns.</Overview>
+  <Overview>📺 TVx — the warmth of modern nostalgia&#xD;
+&#xD;
+This is the way - television you remember feeling: present, unhurried, analog.&#xD;
+&#xD;
+TVx brings back the ritual of watching—not scrolling, not seeking, just being with what's on.&#xD;
+&#xD;
+Like the grain of 35mm film 🎞️ or the crackle before a record drops 💿, it trades sterile perfection for something alive.&#xD;
+&#xD;
+Curved glass 📟. Gentle flicker ✨. Scanlines that breathe.&#xD;
+&#xD;
+The soft bokeh of vintage anamorphic lenses 🎥—edges that blur like looking through aged glass, chromatic fringing that feels organic, not digital.&#xD;
+&#xD;
+The glow of a neon clock 🕰️ counting Saturday mornings long past&#xD;
+&#xD;
+✨ FEATURES:&#xD;
+⚡ Instant channel surfing with arrow keys&#xD;
+📟 CRT warmth effects (curvature, scanlines, vignette)&#xD;
+📅 Full TV guide with poster artwork&#xD;
+🎬 Multiple theater modes&#xD;
+🏷️ Smart channel naming with icons&#xD;
+⌨️ Full keyboard shortcuts&#xD;
+&#xD;
+🚀 QUICK START:&#xD;
+1. Access the web interface at http://[IP]:[PORT:8777]&#xD;
+2. Click Settings and add your M3U playlist URL&#xD;
+3. (Optional) Add XMLTV guide URL for EPG data&#xD;
+4. Start channel surfing!&#xD;
+&#xD;
+📺 The warmth returns.</Overview>
   <Category>MediaApp:Video Status:Stable</Category>
   <WebUI>http://[IP]:[PORT:8777]</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/dopeytree/TVx/main/tvx-unraid-template.xml</TemplateURL>
@@ -21,6 +49,26 @@
   <DonateText>Support the project</DonateText>
   <DonateLink>https://github.com/sponsors/dopeytree</DonateLink>
   <Requires/>
-  <Config Name="WebUI Port" Target="80" Default="8777" Mode="tcp" Description="Port for accessing TVx web interface" Type="Port" Display="always" Required="true" Mask="false">8777</Config>
-  <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Timezone for the container (e.g., America/New_York, Europe/London, etc.)" Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+  <Description>*** Requires Tunarr or Dizquetv + Plex or Jellyfin media server. *** A warm, nostalgic IPTV player bringing back the analog TV experience. Load M3U playlists and XMLTV guides, browse channels with CRT effects, scanlines, vignette, and chromatic aberration.</Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish>
+      <Port>
+        <HostPort>8777</HostPort>
+        <ContainerPort>80</ContainerPort>
+        <Protocol>tcp</Protocol>
+      </Port>
+    </Publish>
+  </Networking>
+  <ReadMe>https://github.com/dopeytree/TVx/blob/main/README.md</ReadMe>
+  <Changes>
+### v1.0.0 (2025-10-13)
+- Initial Unraid Community Applications release
+- Full IPTV player with EPG support
+- CRT effects and vintage filters
+- Keyboard shortcuts for channel surfing
+- Theater modes and full guide view
+  </Changes>
+  <Config Name="WebUI Port" Target="80" Default="8777" Mode="tcp" Description="Port for accessing the TVx web interface. After installation, access TVx at http://[IP]:[PORT]. Default: 8777" Type="Port" Display="always" Required="true" Mask="false">8777</Config>
+  <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone for proper EPG time display. Examples: America/New_York, Europe/London, Asia/Tokyo, etc. See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for full list." Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
 </Container>
