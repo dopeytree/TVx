@@ -112,7 +112,7 @@ docker run -d -p 8777:80 --name tvx tvx
 | **Name** | `tvx` |
 | **Repository** | `ghcr.io/dopeytree/tvx:latest` |
 | **Registry URL** | `https://github.com/dopeytree/TVx/pkgs/container/tvx` |
-| **Icon URL** | `https://raw.githubusercontent.com/dopeytree/TVx/main/public/tvx-icon.svg` |
+| **Icon URL** | `https://raw.githubusercontent.com/dopeytree/TVx/main/public/logo.png` |
 | **WebUI** | `http://[IP]:[PORT:8777]` |
 | **Port** | Container: `80`, Host: `8777` (or your preferred port) |
 | **Network Type** | `Bridge` |
