@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>TVx</Name>
+  <Repository>ghcr.io/dopeytree/tvx:latest</Repository>
+  <Registry>https://github.com/dopeytree/TVx/pkgs/container/tvx</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/dopeytree/TVx/issues</Support>
+  <Project>https://github.com/dopeytree/TVx</Project>
+  <Overview>A warm, nostalgic IPTV player bringing back the analog TV experience. Load M3U playlists and XMLTV guides, browse channels with CRT effects, scanlines, vignette, and chromatic aberration. Features keyboard shortcuts, theater mode, and full EPG guide. The warmth returns.</Overview>
+  <Category>MediaApp:Video Status:Stable</Category>
+  <WebUI>http://[IP]:[PORT:8777]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/dopeytree/TVx/main/tvx-unraid-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/dopeytree/TVx/main/public/tvx-icon.svg</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled></DateInstalled>
+  <DonateText>Support the project</DonateText>
+  <DonateLink>https://github.com/sponsors/dopeytree</DonateLink>
+  <Requires/>
+  <Config Name="WebUI Port" Target="80" Default="8777" Mode="tcp" Description="Port for accessing TVx web interface" Type="Port" Display="always" Required="true" Mask="false">8777</Config>
+  <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Timezone for the container (e.g., America/New_York, Europe/London, etc.)" Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+</Container>

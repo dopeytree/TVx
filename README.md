@@ -40,7 +40,12 @@ An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. 
 
 Point TVx at your M3U and XMLTV URLs in Settings. That's it.
 
-## Docker
+## Install
+
+<details>
+<summary><strong>🐳 Docker</strong></summary>
+
+<br>
 
 ### Run with Docker
 
@@ -49,13 +54,25 @@ docker run -d \
   --name tvx \
   -p 8777:80 \
   --restart unless-stopped \
-  dopeytree/tvx:latest
+  ghcr.io/dopeytree/tvx:latest
 ```
 
 Then open <http://localhost:8777>
 
 ### Run with Docker Compose
 
+```yaml
+services:
+  tvx:
+    image: ghcr.io/dopeytree/tvx:latest
+    ports:
+      - "8777:80"
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+```
+
+Save as `docker-compose.yml` and run:
 ```bash
 docker-compose up -d
 ```
@@ -71,6 +88,49 @@ docker run -d -p 8777:80 --name tvx tvx
 ```
 
 **Tiny Alpine-based image** — Production-ready with nginx, gzip compression, and health checks built in.
+
+</details>
+
+<details>
+<summary><strong>🖥️ Unraid</strong></summary>
+
+<br>
+
+1. Open **Docker** tab in Unraid
+2. Click **Add Container**
+3. Fill in the following:
+
+| Field | Value |
+|-------|-------|
+| **Name** | `tvx` |
+| **Repository** | `ghcr.io/dopeytree/tvx:latest` |
+| **Registry URL** | `https://github.com/dopeytree/TVx/pkgs/container/tvx` |
+| **Icon URL** | `https://raw.githubusercontent.com/dopeytree/TVx/main/public/tvx-icon.svg` |
+| **WebUI** | `http://[IP]:[PORT:8777]` |
+| **Port** | Container: `80`, Host: `8777` (or your preferred port) |
+| **Network Type** | `Bridge` |
+
+4. Click **Apply**
+5. Access at: `http://YOUR-UNRAID-IP:8777`
+
+**No AppData path or PIDs needed** — TVx stores all settings in your browser's localStorage (client-side only).
+
+**Note**: An official Unraid Community Apps template is coming soon for one-click installation!
+
+</details>
+
+## Tech Stack
+
+- **React 18** + **TypeScript** — Modern, type-safe UI
+- **Vite** — Lightning-fast build tool
+- **WebGL Fragment Shaders** — Custom CRT effects and visual processing
+- **HLS.js** — Adaptive HTTP Live Streaming
+- **Radix UI** + **Tailwind CSS** — Accessible components, utility-first styling
+- **Lucide Icons** — Beautiful, consistent iconography
+
+## License
+
+MIT License — Free to use, modify, and distribute. See [LICENSE](LICENSE) for details.
 
 ---
 

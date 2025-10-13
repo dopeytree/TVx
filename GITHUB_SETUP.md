@@ -61,19 +61,30 @@ After pushing these changes to your repository, follow these steps in the GitHub
    - **Code scanning alerts**: CodeQL findings
    - **Secret scanning alerts**: Any detected secrets
 
-## 8. Docker Hub Setup (for Automated Builds)
+## 8. GitHub Container Registry Setup (for Automated Builds)
 
-1. Create account at https://hub.docker.com
-2. Create new repository: `dopeytree/tvx`
-3. Generate access token:
-   - Account Settings → Security → New Access Token
-   - Name it: `github-actions`
-   - Copy the token
-4. Add to GitHub Secrets:
-   - Repository Settings → Secrets and variables → Actions
-   - Click **New repository secret**
-   - Name: `DOCKER_USERNAME`, Value: your Docker Hub username
-   - Name: `DOCKER_PASSWORD`, Value: your access token
+The Docker build workflow is already configured to use GitHub Container Registry (ghcr.io).
+
+**No additional setup required!** The workflow uses `GITHUB_TOKEN` which is automatically available.
+
+### What happens automatically:
+
+1. On every push to `main`, Docker images are built and pushed to `ghcr.io/dopeytree/tvx`
+2. Images are tagged with:
+   - `latest` for main branch
+   - Version tags (e.g., `v1.0.0`, `v1.0`, `v1`) for releases
+   - Branch names for feature branches
+3. Multi-arch support: `linux/amd64` and `linux/arm64`
+
+### Making the package public:
+
+1. After first build, go to: https://github.com/dopeytree?tab=packages
+2. Find `tvx` package
+3. Click **Package settings**
+4. Scroll to **Danger Zone**
+5. Click **Change visibility** → **Public**
+
+This allows anyone to pull your image without authentication.
 
 ## What Happens Next
 
@@ -82,7 +93,7 @@ After pushing these changes to your repository, follow these steps in the GitHub
 - **Every Monday**: Dependabot checks for updates
 - **Every Day**: npm security audit runs
 - **Every Monday**: CodeQL security scan runs
-- **Every Push**: All security workflows run
+- **Every Push**: All security workflows run + Docker images built
 - **Every PR**: Security checks must pass
 
 ### You'll Receive:
@@ -90,7 +101,7 @@ After pushing these changes to your repository, follow these steps in the GitHub
 - Pull requests from Dependabot for dependency updates
 - Email alerts for any security vulnerabilities
 - CodeQL findings in the Security tab
-- Automated Docker builds pushed to Docker Hub
+- Automated Docker builds pushed to GitHub Container Registry
 
 ## Testing the Setup
 

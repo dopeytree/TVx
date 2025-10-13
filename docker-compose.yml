@@ -2,9 +2,11 @@ version: '3.8'
 
 services:
   tvx:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/dopeytree/tvx:latest
+    # Or build locally:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: tvx
     ports:
       - "8777:80"
