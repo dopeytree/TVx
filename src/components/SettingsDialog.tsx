@@ -36,16 +36,45 @@ interface SettingsDialogProps {
 export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalSave, inline }: SettingsDialogProps) => {
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setLocalSettings(settings);
   }, [settings]);
 
-  // Auto-save for immediate changes (toggles, selects, sliders)
-  const updateSetting = (newSettings: AppSettings) => {
+  // Start 20 second timeout when settings open
+  useEffect(() => {
+    if (open) {
+      const id = setTimeout(() => {
+        handleClose();
+        // Switch to theater mode after closing
+        setTimeout(() => {
+          if (onGlobalSave) {
+            onGlobalSave({ ...localSettings, vintageTV: true });
+          }
+          toast.info('Entering theater mode');
+        }, 100);
+      }, 20000); // 20 seconds
+      setTimeoutId(id);
+    } else {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        setTimeoutId(null);
+      }
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [open]);
+
+  // Auto-save for immediate changes (toggles, selects, sliders) with notifications
+  const updateSetting = (newSettings: AppSettings, notification?: string) => {
     setLocalSettings(newSettings);
     if (onGlobalSave) {
       onGlobalSave(newSettings);
+    }
+    if (notification && newSettings.showNotifications) {
+      toast.info(notification);
     }
   };
 
@@ -145,7 +174,10 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           <Select
             value={localSettings.videoQuality}
             onValueChange={(value: any) => 
-              updateSetting({ ...localSettings, videoQuality: value })
+              updateSetting(
+                { ...localSettings, videoQuality: value },
+                `Video quality: ${value.charAt(0).toUpperCase() + value.slice(1)}`
+              )
             }
           >
             <SelectTrigger id="quality" className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}>
@@ -361,7 +393,12 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               <Switch
                 id="sharpen-first"
                 checked={localSettings.sharpenFirst}
-                onCheckedChange={(checked) => updateSetting({ ...localSettings, sharpenFirst: checked })}
+                onCheckedChange={(checked) => 
+                  updateSetting(
+                    { ...localSettings, sharpenFirst: checked },
+                    checked ? 'Sharpening applied before effects' : 'Sharpening applied after effects'
+                  )
+                }
               />
             </div>
             <p className="text-xs text-muted-foreground">
@@ -387,8 +424,6 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           <Select
             value={localSettings.clockStyle}
             onValueChange={(value: any) => {
-              const newSettings = { ...localSettings, clockStyle: value };
-              updateSetting(newSettings);
               const styleNames: Record<string, string> = {
                 neon: 'Neon Blue',
                 flip: 'Flip Clock',
@@ -397,6 +432,8 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
                 minimal: 'Minimal',
                 retro: 'Retro Red'
               };
+              const newSettings = { ...localSettings, clockStyle: value };
+              updateSetting(newSettings, `Clock style: ${styleNames[value]}`);
               toast.info(`Clock style: ${styleNames[value] || value}`);
             }}
           >

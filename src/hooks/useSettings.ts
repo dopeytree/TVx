@@ -8,7 +8,7 @@ const defaultSettings: AppSettings = {
   xmltvUrl: 'http://192.168.22.2:8000/api/xmltv.xml',
   autoLoad: true,
   showNotifications: true,
-  videoQuality: 'auto',
+  videoQuality: 'high',
   vintageTV: true,
   vignetteStrength: 0.35,
   rgbShiftStrength: 0.0012,
@@ -19,7 +19,7 @@ const defaultSettings: AppSettings = {
   sharpenFirst: true,
   showLoadingVideo: true,
   clockStyle: 'neon',
-  panelStyle: 'bordered',
+  panelStyle: 'shadow',
 };
 
 export const useSettings = () => {
