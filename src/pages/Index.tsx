@@ -13,7 +13,7 @@ import { ClockDisplay } from "@/components/ClockDisplay";
 import { useSettings } from "@/hooks/useSettings";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Button } from "@/components/ui/button";
-import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Star, X, Play, Clock, Clapperboard, Film, RotateCw, Book, BookOpen, History } from "lucide-react";
+import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Star, X, Play, Clock, Clapperboard, Film, RotateCw, Book, BookOpen, History, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
@@ -129,7 +129,7 @@ const Index = () => {
       localStorage.setItem('last-watched-channel', selectedChannel.id);
       // Only show notification if channels are loaded (not on initial load)
       if (channels.length > 0) {
-        const cleanName = selectedChannel.name.replace(/\b(movies?|shows?|history|doc|documentary)\b/gi, '').trim();
+        const cleanName = selectedChannel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim();
         const nameLower = selectedChannel.name.toLowerCase();
         const groupLower = selectedChannel.group?.toLowerCase() || '';
         
@@ -139,6 +139,8 @@ const Index = () => {
           icon = <Clapperboard className="w-4 h-4 inline-block" />;
         } else if (nameLower.includes('show') || groupLower.includes('show')) {
           icon = <Tv className="w-4 h-4 inline-block" />;
+        } else if (nameLower.includes('sport') || groupLower.includes('sport')) {
+          icon = <Trophy className="w-4 h-4 inline-block" />;
         } else if (nameLower.includes('history') || groupLower.includes('history')) {
           icon = <History className="w-4 h-4 inline-block" />;
         } else if (nameLower.includes('doc')) {
@@ -709,11 +711,15 @@ const Index = () => {
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         {focusedProgram.channel.name.toLowerCase().includes('movie') ? (
                           <Clapperboard className="w-3 h-3" />
+                        ) : focusedProgram.channel.name.toLowerCase().includes('sport') ? (
+                          <Trophy className="w-3 h-3" />
+                        ) : focusedProgram.channel.name.toLowerCase().includes('history') || focusedProgram.channel.name.toLowerCase().includes('doc') ? (
+                          <History className="w-3 h-3" />
                         ) : (
                           <Tv className="w-3 h-3" />
                         )}
                         <span className="text-center">
-                          {focusedProgram.channel.name.replace(/\b(movies?|shows?)\b/gi, '').trim()}
+                          {focusedProgram.channel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim()}
                         </span>
                       </div>
                     </div>
@@ -799,9 +805,10 @@ const Index = () => {
                   <div className={`w-48 flex-shrink-0 overflow-y-auto ${settings.panelStyle === 'shadow' ? '' : 'border-r border-border'}`}>
                     <div className={`h-16 bg-muted flex items-center px-4 font-semibold ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>Channel</div>
                     {channels.map((channel, index) => {
-                      const cleanName = channel.name.replace(/\b(movies?|shows?|history|doc|documentary)\b/gi, '').trim();
+                      const cleanName = channel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim();
                       const isMovie = channel.name.toLowerCase().includes('movie') || channel.group?.toLowerCase().includes('movie');
                       const isShow = channel.name.toLowerCase().includes('show') || channel.group?.toLowerCase().includes('show');
+                      const isSport = channel.name.toLowerCase().includes('sport') || channel.group?.toLowerCase().includes('sport');
                       const isHistory = channel.name.toLowerCase().includes('history') || channel.group?.toLowerCase().includes('history');
                       const isDoc = channel.name.toLowerCase().includes('doc') || channel.group?.toLowerCase().includes('doc');
                       return (
@@ -836,6 +843,7 @@ const Index = () => {
                             <div>
                               {isMovie && <Clapperboard className="w-3 h-3 text-muted-foreground" />}
                               {isShow && <Tv className="w-3 h-3 text-muted-foreground" />}
+                              {isSport && <Trophy className="w-3 h-3 text-muted-foreground" />}
                               {isHistory && <History className="w-3 h-3 text-muted-foreground" />}
                               {isDoc && <History className="w-3 h-3 text-muted-foreground" />}
                             </div>
@@ -952,9 +960,10 @@ const Index = () => {
                 <div className={`w-48 flex-shrink-0 ${settings.panelStyle === 'shadow' ? '' : 'border-r border-border'}`}>
                   <div className={`h-12 bg-muted flex items-center px-4 font-semibold ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>Channel</div>
                   {channels.map((channel, index) => {
-                    const cleanName = channel.name.replace(/\b(movies?|shows?|history|doc|documentary)\b/gi, '').trim();
+                    const cleanName = channel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim();
                     const isMovie = channel.name.toLowerCase().includes('movie') || channel.group?.toLowerCase().includes('movie');
                     const isShow = channel.name.toLowerCase().includes('show') || channel.group?.toLowerCase().includes('show');
+                    const isSport = channel.name.toLowerCase().includes('sport') || channel.group?.toLowerCase().includes('sport');
                     const isHistory = channel.name.toLowerCase().includes('history') || channel.group?.toLowerCase().includes('history');
                     const isDoc = channel.name.toLowerCase().includes('doc') || channel.group?.toLowerCase().includes('doc');
                     return (
@@ -989,6 +998,7 @@ const Index = () => {
                           <div>
                             {isMovie && <Clapperboard className="w-3 h-3 text-muted-foreground" />}
                             {isShow && <Tv className="w-3 h-3 text-muted-foreground" />}
+                            {isSport && <Trophy className="w-3 h-3 text-muted-foreground" />}
                             {isHistory && <History className="w-3 h-3 text-muted-foreground" />}
                             {isDoc && <History className="w-3 h-3 text-muted-foreground" />}
                           </div>

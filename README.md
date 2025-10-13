@@ -1,4 +1,47 @@
-# TVx - Modern IPTV Viewer with EPG
+# TVx — the warmth returns
+
+*Reduce the elements until only the essence remains.*
+
+TVx brings back the ritual of watching—not scrolling, not seeking, just *being* with what's on. Like the grain of 35mm film or the crackle before a record drops, it trades sterile perfection for something alive. Curved glass. Gentle flicker. Scanlines that breathe. The glow of a neon clock counting Saturday mornings long past.
+
+This is television the way you remember feeling: present, unhurried, *analog*.
+
+## What it does
+
+An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. Built for channel surfing, not catalog anxiety. Anti‑algorithm. Pro‑moment.
+
+## Why it feels different
+
+- **Instant channel surfing** — hold ↑/↓ to skim; land when something catches your eye
+- **CRT warmth** — curvature, chromatic aberration, scanlines, vignette (the feeling of curved glass, not flat pixels)
+- **Full TV guide** — press G for a 12‑hour timeline across all channels
+- **Theater modes** — click the player to cycle views (guide → normal → immersive)
+- **Smart channel names** — strips filler words, adds icons:
+  - *Pulp Fiction Movies* → Pulp Fiction [🎬]
+  - *The Hitchhiker's Guide to the Galaxy Shows* → The Hitchhiker's Guide to the Galaxy [📺]
+  - *Extreme Ironing Sports* → Extreme Ironing [🏆]
+  - *The Tesla Files History* → The Tesla Files [📜]
+  - *Cosmos Documentaries* → Cosmos [📜]
+
+## Keyboard shortcuts
+
+| Key | Action |
+|-----|--------|
+| `↑` `↓` | Channel surf (hold to skim) |
+| `G` | Toggle full TV guide |
+| `F` | Fullscreen |
+| `M` | Mute/Unmute |
+| `Esc` | Close modals/Exit theater |
+
+## Quick start
+
+Point TVx at your M3U and XMLTV URLs in Settings. That's it.
+
+---
+
+## Original README
+
+### TVx - Modern IPTV Viewer with EPG
 
 ## Philosophy
 
@@ -14,6 +57,7 @@ https://private-user-images.githubusercontent.com/103341262/500375769-f891c040-a
 
 
 ## Designed
+
 For [Tunarr](https://github.com/chrisbenincasa/tunarr) - Works seamlessly with Tunarr to view IPTV channels from your Plex or Jellyfin library. TVx is a viewer only - it does not provide any content or streaming material.
 
 ## Usage
@@ -47,6 +91,12 @@ For [Tunarr](https://github.com/chrisbenincasa/tunarr) - Works seamlessly with T
 - **Live Streaming** - HLS/HTTP stream playback with instant channel switching
 - **Auto-Load** - Automatically loads configured sources on startup
 - **Quick Channel Surfing** - Use ↑/↓ arrow keys to rapidly flip through channels
+- **Smart Channel Naming** - Automatically detects channel types `movies` `shows` `history` `docs` `sports`:
+  - Pulp Fiction Movies → Pulp Fiction 🎬
+  - The Hitchhiker's Guide to the Galaxy Shows → The Hitchhiker's Guide to the Galaxy 📺
+  - Paint Drying Championships Sports → Paint Drying Championships 🏆
+  - The Tesla Files History → The Tesla Files 📜
+  - Cosmos Documentaries → Cosmos 📜
 
 ### 🎨 Vintage CRT Experience
 
