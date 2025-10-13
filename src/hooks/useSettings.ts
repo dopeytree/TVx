@@ -13,6 +13,8 @@ const defaultSettings: AppSettings = {
   rgbShiftStrength: 0.0012,
   vignetteRadius: 0.75,
   showLoadingVideo: true,
+  clockStyle: 'neon',
+  panelStyle: 'bordered',
 };
 
 export const useSettings = () => {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
-import { Save, Keyboard, X } from "lucide-react";
+import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -50,40 +51,53 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
   const content = (
     <div className="space-y-6 py-4">
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Sources</h3>
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <Link className="w-5 h-5" />
+          Sources
+        </h3>
         <div className="space-y-3">
           <div>
-            <Label htmlFor="m3u-url">M3U Playlist URL</Label>
+            <Label htmlFor="m3u-url" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              M3U Playlist URL
+            </Label>
             <Input
               id="m3u-url"
               placeholder="https://example.com/playlist.m3u"
               value={localSettings.m3uUrl || ''}
               onChange={(e) => setLocalSettings({ ...localSettings, m3uUrl: e.target.value })}
-              className="mt-1 bg-background"
+              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
             />
           </div>
           <div>
-            <Label htmlFor="xmltv-url">XMLTV EPG URL</Label>
+            <Label htmlFor="xmltv-url" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              XMLTV EPG URL
+            </Label>
             <Input
               id="xmltv-url"
               placeholder="https://example.com/epg.xml"
               value={localSettings.xmltvUrl || ''}
               onChange={(e) => setLocalSettings({ ...localSettings, xmltvUrl: e.target.value })}
-              className="mt-1 bg-background"
+              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
             />
           </div>
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Auto-load on startup</Label>
+            <div className="space-y-0.5 flex-1">
+              <Label className="flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                Auto-load on startup
+              </Label>
               <p className="text-sm text-muted-foreground">
                 Automatically load sources when app starts
               </p>
             </div>
             <Switch
               checked={localSettings.autoLoad}
-              onCheckedChange={(checked) => 
-                setLocalSettings({ ...localSettings, autoLoad: checked })
-              }
+              onCheckedChange={(checked) => {
+                setLocalSettings({ ...localSettings, autoLoad: checked });
+                toast.info(checked ? 'Auto-load enabled' : 'Auto-load disabled');
+              }}
             />
           </div>
         </div>
@@ -92,19 +106,25 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
       <Separator />
 
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Playback</h3>
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <Play className="w-5 h-5" />
+          Playback
+        </h3>
         <div>
-          <Label htmlFor="quality">Video Quality</Label>
+          <Label htmlFor="quality" className="flex items-center gap-2">
+            <Focus className="w-4 h-4" />
+            Video Quality
+          </Label>
           <Select
             value={localSettings.videoQuality}
             onValueChange={(value: any) => 
               setLocalSettings({ ...localSettings, videoQuality: value })
             }
           >
-            <SelectTrigger id="quality" className="mt-1 bg-background">
+            <SelectTrigger id="quality" className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-card border-border">
+            <SelectContent className={`bg-card ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border'}`}>
               <SelectItem value="auto">Auto</SelectItem>
               <SelectItem value="high">High</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
@@ -113,36 +133,47 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           </Select>
         </div>
         <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label>Vintage TV Effect</Label>
+          <div className="space-y-0.5 flex-1">
+            <Label className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              Vintage TV Effect
+            </Label>
             <p className="text-sm text-muted-foreground">
               Apply retro CRT-style distortion and effects
             </p>
           </div>
           <Switch
             checked={localSettings.vintageTV}
-            onCheckedChange={(checked) =>
-              setLocalSettings({ ...localSettings, vintageTV: checked })
-            }
+            onCheckedChange={(checked) => {
+              setLocalSettings({ ...localSettings, vintageTV: checked });
+              toast.info(checked ? 'Vintage TV filter enabled' : 'Vintage TV filter disabled');
+            }}
           />
         </div>
         <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label>Loading Video</Label>
+          <div className="space-y-0.5 flex-1">
+            <Label className="flex items-center gap-2">
+              <Film className="w-4 h-4" />
+              Loading Video
+            </Label>
             <p className="text-sm text-muted-foreground">
               Show VHS loading animation during buffering
             </p>
           </div>
           <Switch
             checked={localSettings.showLoadingVideo}
-            onCheckedChange={(checked) =>
-              setLocalSettings({ ...localSettings, showLoadingVideo: checked })
-            }
+            onCheckedChange={(checked) => {
+              setLocalSettings({ ...localSettings, showLoadingVideo: checked });
+              toast.info(checked ? 'Loading animation enabled' : 'Loading animation disabled');
+            }}
           />
         </div>
         {localSettings.vintageTV && (
           <div className="space-y-2">
-            <Label>Vignette Strength</Label>
+            <Label className="flex items-center gap-2">
+              <Contrast className="w-4 h-4" />
+              Vignette Strength
+            </Label>
             <Slider
               value={[localSettings.vignetteStrength]}
               onValueChange={(value) => setLocalSettings({ ...localSettings, vignetteStrength: value[0] })}
@@ -160,7 +191,10 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         )}
         {localSettings.vintageTV && (
           <div className="space-y-2">
-            <Label>Vignette Radius</Label>
+            <Label className="flex items-center gap-2">
+              <Focus className="w-4 h-4" />
+              Vignette Radius
+            </Label>
             <Slider
               value={[localSettings.vignetteRadius]}
               onValueChange={(value) => setLocalSettings({ ...localSettings, vignetteRadius: value[0] })}
@@ -181,7 +215,10 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         )}
         {localSettings.vintageTV && (
           <div className="space-y-2">
-            <Label>Chromatic Aberration</Label>
+            <Label className="flex items-center gap-2">
+              <Droplets className="w-4 h-4" />
+              Chromatic Aberration
+            </Label>
             <Slider
               value={[localSettings.rgbShiftStrength]}
               onValueChange={(value) => setLocalSettings({ ...localSettings, rgbShiftStrength: value[0] })}
@@ -200,6 +237,70 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             </p>
           </div>
         )}
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <Clock className="w-5 h-5" />
+          Appearance
+        </h3>
+        <div>
+          <Label htmlFor="clock-style" className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Clock Style
+          </Label>
+          <Select
+            value={localSettings.clockStyle}
+            onValueChange={(value: any) => {
+              setLocalSettings({ ...localSettings, clockStyle: value });
+              const styleNames: Record<string, string> = {
+                neon: 'Neon Blue',
+                flip: 'Flip Clock',
+                matrix: 'Matrix',
+                digital: 'Digital LCD',
+                minimal: 'Minimal',
+                retro: 'Retro Red'
+              };
+              toast.info(`Clock style: ${styleNames[value] || value}`);
+            }}
+          >
+            <SelectTrigger id="clock-style" className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className={`bg-card ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border'}`}>
+              <SelectItem value="neon">Neon Blue</SelectItem>
+              <SelectItem value="flip">Flip Clock</SelectItem>
+              <SelectItem value="matrix">Matrix (VHS Green)</SelectItem>
+              <SelectItem value="digital">Digital LCD</SelectItem>
+              <SelectItem value="minimal">Minimal Text</SelectItem>
+              <SelectItem value="retro">Retro Red 7-Segment</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label htmlFor="panel-style" className="flex items-center gap-2">
+            <Layers className="w-4 h-4" />
+            Panel Style
+          </Label>
+          <Select
+            value={localSettings.panelStyle}
+            onValueChange={(value: any) => {
+              setLocalSettings({ ...localSettings, panelStyle: value });
+              toast.info(value === 'shadow' ? 'Shadow style enabled' : 'Bordered style enabled');
+            }}
+          >
+            <SelectTrigger id="panel-style" className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className={`bg-card ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border'}`}>
+              <SelectItem value="bordered">Bordered (Highlight Edges)</SelectItem>
+              <SelectItem value="shadow">Shadow (No Borders)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Separator />
@@ -243,7 +344,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             <Button
               onClick={() => onOpenChange(false)}
               variant="outline"
-              className="flex-1"
+              className={`flex-1 ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
             >
               <X className="w-4 h-4 mr-2" />
               Cancel
@@ -260,7 +361,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-card border-border">
+      <DialogContent className={`max-w-2xl bg-card ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-2xl' : 'border-border'}`}>
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
             Settings
@@ -273,7 +374,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         {content}
 
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} className={`${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}>
             Cancel
           </Button>
           <Button onClick={handleSave} className="bg-gradient-primary">

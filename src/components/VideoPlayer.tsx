@@ -326,14 +326,14 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
 
   if (!channel) {
     return (
-      <Card className="aspect-video w-full flex items-center justify-center bg-gradient-card border-border">
+      <Card className={`aspect-video w-full flex items-center justify-center bg-gradient-card ${settings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border'}`}>
         <p className="text-muted-foreground text-lg">Select a channel to start watching</p>
       </Card>
     );
   }
 
   return (
-    <Card className={`${isFullGuide ? 'h-[50vh]' : 'aspect-video'} w-full overflow-hidden bg-black border-border shadow-glow rounded-3xl`} style={isFullGuide ? (isFullGuideExpanded ? { height: '100vh', width: 'calc(100vh * 16 / 9)', margin: '0 auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(263 70% 60% / 0.3)' } : { height: '50vh', width: 'calc(50vh * 16 / 9)', margin: '0 auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(263 70% 60% / 0.3)' }) : { boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(263 70% 60% / 0.3)', maxHeight: 'calc(100vh - 50px)' }}>
+    <Card className={`${isFullGuide ? 'h-[35vh]' : 'aspect-video'} w-full overflow-hidden bg-black rounded-3xl ${settings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border shadow-glow'}`} style={isFullGuide ? (isFullGuideExpanded ? { height: '100vh', width: 'calc(100vh * 16 / 9)', margin: '0 auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)' } : { height: '35vh', width: 'calc(35vh * 16 / 9)', margin: '0 auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)' }) : { boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)', maxHeight: 'calc(100vh - 50px)' }}>
       {settings.vintageTV ? (
         <>
           <video

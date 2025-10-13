@@ -9,9 +9,11 @@ interface EPGViewProps {
   channelName: string;
   isIdle: boolean;
   onPosterClick: (program: Program) => void;
+  selectedPoster?: Program | null;
+  panelStyle?: 'bordered' | 'shadow';
 }
 
-export const EPGView = ({ programs, channelName, isIdle, onPosterClick }: EPGViewProps) => {
+export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selectedPoster, panelStyle = 'bordered' }: EPGViewProps) => {
   const now = new Date();
   
   const currentProgram = programs.find(
@@ -61,7 +63,7 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick }: EPGVie
 
   if (programs.length === 0) {
     return (
-      <Card className="p-6 bg-card border-border">
+      <Card className={`p-6 ${panelStyle === 'shadow' ? 'bg-card/95 shadow-md border-none' : 'bg-card border-border'}`}>
         <p className="text-muted-foreground">No EPG data available for this channel</p>
       </Card>
     );
@@ -73,14 +75,22 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick }: EPGVie
     <ScrollArea className="h-[200px]">
       <div className={`space-y-4 transition-opacity duration-3000 ${isIdle ? 'opacity-5' : 'opacity-100'}`}>
         {currentProgram && (
-          <Card className="p-4 bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600 shadow-glow relative w-full">
+          <Card className={`p-4 bg-gradient-to-br from-slate-700 to-slate-800 relative w-full ${panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-slate-600 shadow-glow'}`}>
             <div className="flex items-start gap-3">
               {(currentProgram.image || currentProgram.icon) && (
                 <img
                   src={currentProgram.image || currentProgram.icon}
                   alt={currentProgram.title}
                   className="w-20 h-20 rounded object-cover flex-shrink-0 cursor-pointer"
-                  onClick={() => onPosterClick(currentProgram)}
+                  onClick={() => {
+                    // Toggle poster: if this program is already selected, close it (pass null)
+                    if (selectedPoster && selectedPoster.title === currentProgram.title && 
+                        selectedPoster.start.getTime() === currentProgram.start.getTime()) {
+                      onPosterClick(null as any);
+                    } else {
+                      onPosterClick(currentProgram);
+                    }
+                  }}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
@@ -113,7 +123,7 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick }: EPGVie
 
         <div className="space-y-2">
           {programs.filter(p => p.start > now).map((program, index) => (
-            <Card key={index} className="p-4 bg-card hover:bg-secondary/50 transition-colors border-border relative">
+            <Card key={index} className={`p-4 hover:bg-secondary/50 transition-colors relative ${panelStyle === 'shadow' ? 'bg-card/95 shadow-md border-none' : 'bg-card border-border'}`}>
               <div className="absolute top-2 right-2 rounded px-3 py-1 text-xs font-medium flex items-center gap-1 text-white">
                 <Play className="w-3 h-3" />
                 {formatTime(program.start)}
@@ -124,7 +134,15 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick }: EPGVie
                     src={program.image || program.icon}
                     alt={program.title}
                     className="w-16 h-16 rounded object-cover flex-shrink-0 cursor-pointer"
-                    onClick={() => onPosterClick(program)}
+                    onClick={() => {
+                      // Toggle poster: if this program is already selected, close it (pass null)
+                      if (selectedPoster && selectedPoster.title === program.title && 
+                          selectedPoster.start.getTime() === program.start.getTime()) {
+                        onPosterClick(null as any);
+                      } else {
+                        onPosterClick(program);
+                      }
+                    }}
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
