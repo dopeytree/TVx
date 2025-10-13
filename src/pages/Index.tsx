@@ -54,7 +54,7 @@ const Index = () => {
     if (settingsOpen) {
       // Save settings and close
       updateSettings(localSettings);
-      toast.success('Settings saved successfully');
+      toast.success('Saved: Settings');
       setSettingsOpen(false);
     } else {
       // Close poster if open, then open settings
@@ -90,7 +90,9 @@ const Index = () => {
   const settingsOpenRef = useRef(settingsOpen);
   
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [theaterMode, setTheaterMode] = useState(false); // Track if user clicked video to hide everything
   const [activeTab, setActiveTab] = useState('guide');
+  const [statsOpen, setStatsOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [guideResetKey, setGuideResetKey] = useState(0);
 
@@ -127,7 +129,27 @@ const Index = () => {
       localStorage.setItem('last-watched-channel', selectedChannel.id);
       // Only show notification if channels are loaded (not on initial load)
       if (channels.length > 0) {
-        toast.info(`Now playing: ${selectedChannel.name}`);
+        const cleanName = selectedChannel.name.replace(/\b(movies?|shows?|history|doc|documentary)\b/gi, '').trim();
+        const nameLower = selectedChannel.name.toLowerCase();
+        const groupLower = selectedChannel.group?.toLowerCase() || '';
+        
+        // Determine icon based on channel name/group
+        let icon = null;
+        if (nameLower.includes('movie') || groupLower.includes('movie')) {
+          icon = <Clapperboard className="w-4 h-4 inline-block" />;
+        } else if (nameLower.includes('show') || groupLower.includes('show')) {
+          icon = <Tv className="w-4 h-4 inline-block" />;
+        } else if (nameLower.includes('history') || groupLower.includes('history')) {
+          icon = <History className="w-4 h-4 inline-block" />;
+        } else if (nameLower.includes('doc')) {
+          icon = <History className="w-4 h-4 inline-block" />;
+        }
+        
+        toast.info(
+          <span className="flex items-center gap-2">
+            Now Playing: {cleanName} {icon}
+          </span>
+        );
       }
     }
   }, [selectedChannel, epgData]);
@@ -139,6 +161,14 @@ const Index = () => {
       setSidebarVisible(true);
     }
   }, [currentProgram]);
+
+  useEffect(() => {
+    // Reset idle timer when popup/poster is opened
+    if (focusedProgram || selectedPoster) {
+      setIsIdle(false);
+      setSidebarVisible(true);
+    }
+  }, [focusedProgram, selectedPoster]);
 
   const handleM3ULoad = (content: string) => {
     try {
@@ -162,9 +192,9 @@ const Index = () => {
         setSelectedChannel(channelToSelect);
       }
       
-      toast.success(`Loaded ${parsedChannels.length} channels`);
+      toast.success(`Loaded: ${parsedChannels.length} Channels`);
     } catch (error) {
-      toast.error('Failed to parse M3U file');
+      toast.error('Error: Failed to Parse M3U File');
       console.error(error);
     }
   };
@@ -174,16 +204,16 @@ const Index = () => {
       const parsedEPG = parseXMLTV(content);
       setEpgData(parsedEPG);
       const programCount = Object.values(parsedEPG).reduce((sum, progs) => sum + progs.length, 0);
-      toast.success(`Loaded EPG data for ${Object.keys(parsedEPG).length} channels (${programCount} programs)`);
+      toast.success(`Loaded: EPG Data for ${Object.keys(parsedEPG).length} Channels (${programCount} Programs)`);
     } catch (error) {
-      toast.error('Failed to parse XMLTV file');
+      toast.error('Error: Failed to Parse XMLTV File');
       console.error(error);
     }
   };
 
   const loadFromUrls = async () => {
     if (!settings.m3uUrl && !settings.xmltvUrl) {
-      toast.error('Please configure URLs in settings first');
+      toast.error('Error: Please Configure URLs in Settings First');
       return;
     }
 
@@ -200,7 +230,7 @@ const Index = () => {
         handleXMLTVLoad(xmltvContent);
       }
     } catch (error) {
-      toast.error('Failed to load from URLs');
+      toast.error('Error: Failed to Load from URLs');
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -210,6 +240,16 @@ const Index = () => {
   useEffect(() => {
     if (settings.autoLoad && (settings.m3uUrl || settings.xmltvUrl)) {
       loadFromUrls();
+    } else if (!settings.m3uUrl && !settings.xmltvUrl) {
+      // First startup - no sources configured
+      const hasSeenWelcome = localStorage.getItem('tvx-welcome-shown');
+      if (!hasSeenWelcome && settings.showNotifications) {
+        setTimeout(() => {
+          toast.info('Welcome: Please Configure M3U and XMLTV Sources to Get Started');
+          setSettingsOpen(true);
+          localStorage.setItem('tvx-welcome-shown', 'true');
+        }, 1000);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings.autoLoad, settings.m3uUrl, settings.xmltvUrl]);
@@ -234,18 +274,23 @@ const Index = () => {
 
     const resetIdle = () => {
       setIsIdle(false);
-      setSidebarVisible(true);
+      if (!theaterMode) {
+        setSidebarVisible(true);
+      }
       clearTimeout(timeout);
       clearTimeout(posterTimeout);
       
       // Different idle times based on context:
       // - Settings open: 20s (user is configuring)
+      // - Full guide with popup open: 25s (user is reading program details)
       // - Scrolling: 10s (user is actively navigating)  
       // - Default: 3s (normal viewing)
       // - Full guide or focused program: Don't use 3s timeout, use 10s instead
       let idleTime: number;
       if (settingsOpen) {
         idleTime = 20000;
+      } else if (focusedProgram && fullGuideOpen) {
+        idleTime = 25000; // 25s when popup is open in full guide
       } else if (fullGuideOpen || focusedProgram) {
         idleTime = 10000;
       } else if (isScrolling) {
@@ -261,18 +306,12 @@ const Index = () => {
         }, 9000);
       }
       
-      // Only set the idle timeout if we're not in full guide or focused program mode
-      // In those modes, we still need a timeout but it shouldn't trigger idle state
+      // Set the idle timeout - will trigger based on context
       timeout = setTimeout(() => {
-        // Check current state using refs (not closure variables)
-        const shouldUseIdleTimeout = !fullGuideOpenRef.current && !focusedProgramRef.current;
-        
-        if (shouldUseIdleTimeout) {
-          setIsIdle(true);
-          setSidebarVisible(false);
-          setSelectedPoster(null); // Close poster when idle
-        }
-        // If in full guide/focused program, timeout does nothing (no idle state change)
+        setIsIdle(true);
+        setSidebarVisible(false);
+        setSelectedPoster(null); // Close poster when idle
+        // Note: focusedProgram popup stays open even when idle
       }, idleTime);
     };
 
@@ -344,24 +383,50 @@ const Index = () => {
         element?.removeEventListener('scroll', handleScrollEnd);
       });
     };
-  }, [fullGuideOpen, settingsOpen, selectedPoster, isScrolling, focusedProgram]);
+  }, [fullGuideOpen, settingsOpen, selectedPoster, isScrolling, focusedProgram, theaterMode]);
 
   useEffect(() => {
     if (fullGuideOpen) {
-      const expansionTime = 10000; // Always use 10 seconds for full guide expansion
-      const timer = setTimeout(() => {
-        // Close full guide after idle timeout so video player can resize properly
-        setFullGuideOpen(false);
-        setFullGuideExpanded(false);
-        // Keep sidebar visible when guide closes
-        setSidebarVisible(true);
-      }, expansionTime);
-      return () => clearTimeout(timer);
+      let expansionTimer: NodeJS.Timeout;
+      
+      const resetExpansionTimer = () => {
+        clearTimeout(expansionTimer);
+        const expansionTime = focusedProgram ? 25000 : 10000; // 25s with popup, 10s without
+        expansionTimer = setTimeout(() => {
+          // Close full guide after idle timeout so video player can resize properly
+          setFullGuideOpen(false);
+          setFullGuideExpanded(false);
+          // Keep sidebar visible when guide closes
+          setSidebarVisible(true);
+        }, expansionTime);
+      };
+
+      // Listen for user activity to reset the expansion timer
+      const handleActivity = () => {
+        resetExpansionTimer();
+      };
+
+      window.addEventListener('mousemove', handleActivity);
+      window.addEventListener('keydown', handleActivity);
+      window.addEventListener('touchstart', handleActivity);
+      window.addEventListener('click', handleActivity);
+      window.addEventListener('wheel', handleActivity);
+      
+      resetExpansionTimer(); // Start initial timer
+
+      return () => {
+        clearTimeout(expansionTimer);
+        window.removeEventListener('mousemove', handleActivity);
+        window.removeEventListener('keydown', handleActivity);
+        window.removeEventListener('touchstart', handleActivity);
+        window.removeEventListener('click', handleActivity);
+        window.removeEventListener('wheel', handleActivity);
+      };
     } else {
       setFullGuideExpanded(false);
       setSidebarVisible(true);
     }
-  }, [fullGuideOpen, isScrolling, selectedPoster]);
+  }, [fullGuideOpen, focusedProgram]);
 
   // Show sidebar when poster is selected in full guide
   useEffect(() => {
@@ -435,13 +500,30 @@ const Index = () => {
   }, [isIdle]);
 
   useKeyboardShortcuts({
-    onSettings: () => setSettingsOpen(true),
+    onSettings: () => {
+      setTheaterMode(false);
+      setSettingsOpen(true);
+    },
     onFullscreen: () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
       } else {
         document.exitFullscreen();
       }
+    },
+    onToggleGuide: () => {
+      setTheaterMode(false);
+      setFullGuideOpen(!fullGuideOpen);
+      toast.info(fullGuideOpen ? 'Closed: Full TV Guide' : 'Opened: Full TV Guide');
+    },
+    onToggleStats: () => {
+      setTheaterMode(false);
+      setStatsOpen(!statsOpen);
+      toast.info(statsOpen ? 'Closed: Stats' : 'Opened: Stats');
+    },
+    onToggleMute: () => {
+      setMuted(!muted);
+      toast.info(!muted ? 'Muted: Audio' : 'Unmuted: Audio');
     },
   });
 
@@ -491,10 +573,42 @@ const Index = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [channels, selectedChannel]);
 
+  const handleVideoPlayerClick = () => {
+    // 3-state cycle: Full TV Guide → Normal View → Theater Mode → Full TV Guide
+    
+    if (fullGuideOpen) {
+      // State 1: Full TV Guide is open → Go to Normal View
+      setFullGuideOpen(false);
+      setFullGuideExpanded(false);
+      setFocusedProgram(null);
+      setSelectedPoster(null);
+      setTheaterMode(false);
+      setIsIdle(false);
+      setSidebarVisible(true);
+      setActiveTab('guide'); // Show EPG panels
+      
+    } else if (!theaterMode && sidebarVisible) {
+      // State 2: Normal View (sidebar + EPG visible) → Go to Theater Mode
+      setTheaterMode(true);
+      setIsIdle(true);
+      setSidebarVisible(false);
+      setSettingsOpen(false);
+      
+    } else {
+      // State 3: Theater Mode → Go to Full TV Guide
+      setTheaterMode(false);
+      setFullGuideOpen(true);
+      setIsIdle(false);
+      setSidebarVisible(true);
+    }
+  };
+
   return (
     <div className={`h-screen grid overflow-hidden ${sidebarVisible ? 'lg:grid-cols-[75%_25%]' : 'grid-cols-[1fr]'} ${settings.panelStyle === 'shadow' ? 'bg-slate-950' : 'bg-background'}`}>
       <main className={`space-y-6 h-full ${sidebarVisible ? 'pt-4 pl-4' : 'p-[30px]'}`}>
-        <VideoPlayer channel={selectedChannel} settings={settings} muted={muted} isFullGuide={fullGuideOpen} isFullGuideExpanded={fullGuideExpanded} />
+        <div onClick={handleVideoPlayerClick} className="cursor-pointer">
+          <VideoPlayer channel={selectedChannel} settings={settings} muted={muted} isFullGuide={fullGuideOpen} isFullGuideExpanded={fullGuideExpanded} />
+        </div>
         
         {selectedChannel && !fullGuideOpen && activeTab === 'guide' && (
           <div ref={epgViewRef}>
@@ -503,7 +617,18 @@ const Index = () => {
         )}
         
         {selectedChannel && fullGuideOpen && !fullGuideExpanded && (
-          <div key={guideResetKey} className={`h-[65vh] ${getPanelClasses('rounded-lg relative')}`}>
+          <div key={guideResetKey} className={`h-[50vh] ${getPanelClasses('rounded-lg relative')}`}>
+            <div className="absolute top-2 left-2 z-30 flex gap-2">
+              <div className={`text-sm font-bold px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md`}>
+                Full TV Guide
+              </div>
+              <div className={`text-sm font-normal px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md`}>
+                {currentTime.toLocaleDateString('en-GB', { weekday: 'long' })}
+              </div>
+              <div className={`text-sm font-normal px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md`}>
+                {currentTime.getDate()}{['th', 'st', 'nd', 'rd'][(currentTime.getDate() % 10 > 3 || Math.floor(currentTime.getDate() % 100 / 10) === 1) ? 0 : currentTime.getDate() % 10]} {currentTime.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+              </div>
+            </div>
             <div className="absolute top-2 right-2 z-30 flex gap-2">
               <button
                 className={`w-8 h-8 flex items-center justify-center bg-background/80 hover:bg-background ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md transition-colors`}
@@ -672,7 +797,7 @@ const Index = () => {
                 <div className="flex flex-1 h-full">
                   {/* Channel column */}
                   <div className={`w-48 flex-shrink-0 overflow-y-auto ${settings.panelStyle === 'shadow' ? '' : 'border-r border-border'}`}>
-                    <div className={`h-12 bg-muted flex items-center px-4 font-semibold ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>Channel</div>
+                    <div className={`h-16 bg-muted flex items-center px-4 font-semibold ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>Channel</div>
                     {channels.map((channel, index) => {
                       const cleanName = channel.name.replace(/\b(movies?|shows?|history|doc|documentary)\b/gi, '').trim();
                       const isMovie = channel.name.toLowerCase().includes('movie') || channel.group?.toLowerCase().includes('movie');
@@ -683,7 +808,7 @@ const Index = () => {
                         <div 
                           key={channel.id} 
                           ref={channel.id === selectedChannel?.id ? selectedChannelRowRef : null}
-                          className={`h-12 flex items-center px-3 cursor-pointer hover:bg-secondary/50 ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'} ${channel.id === selectedChannel?.id ? 'bg-gradient-primary text-primary-foreground' : index % 2 === 0 ? 'bg-background' : 'bg-muted/50'}`} 
+                          className={`h-16 flex items-center px-3 cursor-pointer hover:bg-secondary/50 ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'} ${channel.id === selectedChannel?.id ? 'bg-gradient-primary text-primary-foreground' : index % 2 === 0 ? 'bg-background' : 'bg-muted/50'}`} 
                           onClick={() => {
                             setSelectedChannel(channel);
                             // Show poster for current program of clicked channel
@@ -706,7 +831,7 @@ const Index = () => {
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-[10px] font-light truncate">{cleanName}</p>
+                              <p className="text-xs font-medium truncate">{cleanName}</p>
                             </div>
                             <div>
                               {isMovie && <Clapperboard className="w-3 h-3 text-muted-foreground" />}
@@ -724,19 +849,19 @@ const Index = () => {
                   {/* Programs grid */}
                   <div className="flex-1">
                     {/* 12-hour timeline starting at current hour */}
-                    <div className="relative" style={{ width: '2880px', height: channels.length * 48 + 48 + 'px' }}>
+                    <div className="relative" style={{ width: '2880px', height: channels.length * 64 + 64 + 'px' }}>
                       {/* Time headers */}
-                      <div className={`absolute top-0 left-0 right-0 h-12 bg-muted flex ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>
+                      <div className={`absolute top-0 left-0 right-0 h-16 bg-muted flex ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>
                         {Array.from({ length: 12 }, (_, i) => {
                           const time = new Date();
                           time.setMinutes(0, 0, 0);
                           time.setHours(time.getHours() + i);
                           const hour = time.getHours();
                           const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                          const ampm = hour >= 12 ? 'pm' : 'am';
+                          const ampm = hour >= 12 ? 'PM' : 'AM';
                           return (
                             <div key={i} style={{ width: '240px' }} className={`flex items-center justify-start pl-2 text-sm font-medium ${settings.panelStyle === 'shadow' ? '' : 'border-r border-border'}`}>
-                              | {displayHour}{ampm}
+                              {displayHour} {ampm}
                             </div>
                           );
                         })}
@@ -778,7 +903,7 @@ const Index = () => {
                           const left = Math.max(0, startMinutes * 4); // 4px per minute
                           const width = Math.max(40, durationMinutes * 4);
                           const showText = width >= 80; // Only show text if width is at least 80px
-                          const top = channelIndex * 48 + 48;
+                          const top = channelIndex * 64 + 64;
                           const isFavorite = favorites.has(`${program.title}-${program.start.getTime()}`);
                           // Check if this program is currently playing AND on the selected channel
                           const isNowPlaying = program.start <= now && program.end > now && channel.id === selectedChannel?.id;
@@ -793,7 +918,7 @@ const Index = () => {
                             <div
                               key={`${channel.id}-${program.start.getTime()}-${programIndex}`}
                               className={`absolute p-2 ${isNowPlaying ? 'ring-2 ring-cyan-400 bg-cyan-900/30' : selectedColor} text-white rounded cursor-pointer hover:opacity-80`}
-                              style={{ left: left + 'px', top: top + 'px', width: width + 'px', height: '40px' }}
+                              style={{ left: left + 'px', top: top + 'px', width: width + 'px', height: '56px' }}
                               onClick={() => {
                                 const channel = channels.find(c => c.id === program.channelId);
                                 if (channel) setFocusedProgram({ program, channel });
@@ -859,7 +984,7 @@ const Index = () => {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-light truncate">{cleanName}</p>
+                            <p className="text-xs font-medium truncate">{cleanName}</p>
                           </div>
                           <div>
                             {isMovie && <Clapperboard className="w-3 h-3 text-muted-foreground" />}
@@ -887,10 +1012,10 @@ const Index = () => {
                         time.setHours(time.getHours() - 1 + i);
                         const hour = time.getHours();
                         const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                        const ampm = hour >= 12 ? 'pm' : 'am';
+                        const ampm = hour >= 12 ? 'PM' : 'AM';
                         return (
                           <div key={i} style={{ width: '240px' }} className={`flex items-center justify-start pl-2 text-sm font-medium ${settings.panelStyle === 'shadow' ? '' : 'border-r border-border'}`}>
-                            | {displayHour}{ampm}
+                            {displayHour} {ampm}
                           </div>
                         );
                       })}
@@ -998,77 +1123,16 @@ const Index = () => {
             </div>
           </div>
         )}
-        
-        {selectedChannel && activeTab === 'info' && (
-          <div className={`${getPanelClasses('rounded-lg p-4 relative')} transition-opacity duration-3000 ${isIdle ? 'opacity-5' : 'opacity-100'}`}>
-            <div className="flex items-start gap-4">
-              {selectedChannel.logo && (
-                <img
-                  src={selectedChannel.logo}
-                  alt={`${selectedChannel.name} logo`}
-                  className="w-24 h-24 rounded object-cover flex-shrink-0"
-                />
-              )}
-              <div className="flex-1 pr-[100px] pb-6 pt-6">
-                <h3 className="text-xl font-bold mb-4">{selectedChannel.name}</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground">Channel ID:</span>
-                    <span className="font-mono">{selectedChannel.id}</span>
-                  </div>
-                  {selectedChannel.group && (
-                    <div className="flex gap-2">
-                      <span className="text-muted-foreground">Group:</span>
-                      <span>{selectedChannel.group}</span>
-                    </div>
-                  )}
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground">Stream URL:</span>
-                    <span className="font-mono text-xs truncate">{selectedChannel.url}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground">Vintage Effect:</span>
-                    <span>{selectedChannel?.group?.toLowerCase().includes('movie') || selectedChannel?.group?.toLowerCase().includes('film') ? 'Low (0.001)' : 'High (0.002)'}</span>
-                  </div>
-                </div>
-                <div className="mt-2 text-sm text-foreground">
-                  {(() => {
-                    const movieKeywords = ['movie', 'film'];
-                    const showKeywords = ['show', 'tv', 'program'];
-                    const isMovie = movieKeywords.some(k => selectedChannel?.group?.toLowerCase().includes(k));
-                    const effectLevel = isMovie ? 'Low (0.001)' : 'High (0.002)';
-                    return <div>Vintage Effect: {effectLevel}</div>;
-                  })()}
-                  {selectedPoster.credits?.director && selectedPoster.credits.director.length > 0 && (
-                    <div>Director: {selectedPoster.credits.director.join(', ')}</div>
-                  )}
-                  {selectedPoster.credits?.actor && selectedPoster.credits.actor.length > 0 && (
-                    <div>Actors: {selectedPoster.credits.actor.slice(0, 2).join(', ')}</div>
-                  )}
-                  {selectedPoster.year && <div>Year: {selectedPoster.year}</div>}
-                  <div className="mt-2">
-                    <a
-                      href={`https://www.imdb.com/find?q=${encodeURIComponent(selectedPoster.title)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      View on IMDB
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
       {sidebarVisible && (
         <aside className={`flex flex-col h-full gap-4 p-4 transition-opacity duration-3000 ${isIdle ? 'opacity-5' : 'opacity-100'}`}>
           <div className={`${getSidebarPanelClasses('rounded-lg')} transition-opacity duration-1000 ${isIdle ? 'opacity-5' : 'opacity-100'}`}>
             <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4">
                 <h1 className="text-xl font-bold">TVx</h1>
-                <div className="scale-125 translate-y-0.5">
+              </div>
+              <div className="flex-1 flex justify-center">
+                <div className="scale-125">
                   <ClockDisplay time={currentTime} style={settings.clockStyle} />
                 </div>
               </div>
@@ -1078,7 +1142,7 @@ const Index = () => {
                   size="icon"
                   onClick={() => {
                     document.documentElement.requestFullscreen();
-                    toast.info('Entering fullscreen mode');
+                    toast.info('Entered: Fullscreen Mode');
                   }}
                   className="hover:bg-secondary"
                   title="Fullscreen"
@@ -1091,7 +1155,7 @@ const Index = () => {
                   onClick={() => {
                     const newMutedState = !muted;
                     setMuted(newMutedState);
-                    toast.info(newMutedState ? 'Audio muted' : 'Audio unmuted');
+                    toast.info(newMutedState ? 'Muted: Audio' : 'Unmuted: Audio');
                   }}
                   className="hover:bg-secondary"
                   title={muted ? "Unmute" : "Mute"}
@@ -1110,6 +1174,28 @@ const Index = () => {
               </div>
             </div>
           </div>
+          {!fullGuideOpen && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setTheaterMode(false);
+                setFullGuideOpen(true);
+                toast.info('Opened: Full TV Guide');
+              }}
+              className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
+            >
+              Channel Guide
+            </Button>
+          )}
+          {fullGuideOpen && (
+            <Button
+              variant="outline"
+              onClick={() => { setActiveTab('guide'); setFullGuideOpen(false); }}
+              className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
+            >
+              Full TV Guide
+            </Button>
+          )}
           <div className={`${getSidebarPanelClasses('rounded-lg relative max-h-[500px]')}`}>
             {selectedPoster ? (
               <Poster program={selectedPoster} onClose={handleClosePoster} isIdle={isIdle} />
@@ -1118,7 +1204,7 @@ const Index = () => {
                 <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={localSettings} onSave={setLocalSettings} onGlobalSave={updateSettings} inline />
               </div>
             ) : (
-              <div ref={channelListRef}>
+              <div ref={channelListRef} className="h-full overflow-y-auto">
                 <ChannelList
                   channels={channels}
                   selectedChannel={selectedChannel}
@@ -1137,34 +1223,39 @@ const Index = () => {
               </div>
             )}
           </div>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setFullGuideOpen(true);
-              toast.info('Full TV Guide opened');
-            }}
-            className={`w-full mb-4 ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
-          >
-            Full TV Guide
-          </Button>
-          <div className="flex items-center gap-2">
-            <div className={`${getSidebarPanelClasses('rounded-lg')} transition-opacity duration-1000 ${isIdle ? 'opacity-5' : 'opacity-100'}`}>
-              <div className="flex">
-                <button 
-                  className={`flex-1 p-3 hover:bg-secondary/50 ${activeTab === 'guide' ? 'bg-gradient-primary text-primary-foreground' : ''}`} 
-                  onClick={() => { setActiveTab('guide'); setFullGuideOpen(false); }}
+          {selectedChannel && !statsOpen && (
+            <Button
+              variant="outline"
+              onClick={() => setStatsOpen(true)}
+              className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
+            >
+              Stats
+            </Button>
+          )}
+          {selectedChannel && statsOpen && (
+            <div className={`${getSidebarPanelClasses('rounded-lg relative')}`}>
+              <div className="p-3 pr-8">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setStatsOpen(false)}
+                  className="absolute top-1 right-1 h-5 w-5 hover:bg-secondary"
                 >
-                  TV Guide
-                </button>
-                <button 
-                  className={`flex-1 p-3 hover:bg-secondary/50 ${activeTab === 'info' ? 'bg-gradient-primary text-primary-foreground' : ''}`} 
-                  onClick={() => { setActiveTab('info'); setFullGuideOpen(false); }}
+                  <X className="w-3 h-3" />
+                </Button>
+                <div 
+                  className="font-mono text-[10px] cursor-pointer hover:text-primary break-all" 
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedChannel.url);
+                    toast.success('Copied: Stream URL');
+                  }}
+                  title="Click to copy URL"
                 >
-                  Channel Info
-                </button>
+                  {selectedChannel.url}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </aside>
       )}
     </div>

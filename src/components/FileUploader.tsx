@@ -22,10 +22,10 @@ export const FileUploader = ({ label, accept, onFileLoad, icon }: FileUploaderPr
     reader.onload = (e) => {
       const content = e.target?.result as string;
       onFileLoad(content);
-      toast.success(`${label} loaded successfully`);
+      toast.success(`Loaded: ${label}`);
     };
     reader.onerror = () => {
-      toast.error(`Error loading ${label}`);
+      toast.error(`Error: Failed to Load ${label}`);
     };
     reader.readAsText(file);
   };

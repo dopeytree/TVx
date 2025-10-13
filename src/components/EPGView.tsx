@@ -53,11 +53,30 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selected
     return favorites.has(key);
   };
 
-  const truncateWords = (text: string, maxWords: number) => {
+  const truncateWords = (text: string, maxWords: number, maxChars?: number) => {
+    if (!text) return text;
+    
+    // Simple character limit from the beginning of the entire title
+    if (maxChars && text.length > maxChars) {
+      const charTruncated = text.slice(0, maxChars).trim();
+      console.log('CHAR TRUNCATED TO:', charTruncated + '...');
+      return charTruncated + '...';
+    }
+    
+    // Then check word limit on entire text
     const words = text.split(' ');
     if (words.length > maxWords) {
-      return words.slice(0, maxWords).join(' ') + '...';
+      const wordTruncated = words.slice(0, maxWords).join(' ');
+      // After word truncation, check if it still exceeds char limit
+      if (maxChars && wordTruncated.length > maxChars) {
+        const charTruncated = wordTruncated.slice(0, maxChars).trim();
+        return charTruncated + '...';
+      }
+      console.log('WORD TRUNCATED TO:', wordTruncated + '...');
+      return wordTruncated + '...';
     }
+    
+    console.log('NO TRUNCATION NEEDED');
     return text;
   };
 
@@ -101,8 +120,11 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selected
                   Now Playing <Play className="w-3 h-3 inline" /> {formatTime(currentProgram.start)}
                 </div>
                 <h3 className="font-bold text-lg mb-1">
-                  {currentProgram.title}
-                  {currentProgram.subTitle && ` - ${currentProgram.subTitle}`}
+                  {truncateWords(
+                    currentProgram.title + (currentProgram.subTitle ? ` - ${currentProgram.subTitle}` : ''),
+                    13,
+                    69
+                  )}
                   {currentProgram.season && currentProgram.episode && <span className="italic"> (Episode {currentProgram.episode})</span>}
                 </h3>
                 <div className="flex items-center gap-2 text-sm text-foreground/80 mb-2">
@@ -154,8 +176,11 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selected
                     onClick={() => toggleFavorite(program)} 
                   />
                   <h4 className="font-semibold mb-1">
-                    {program.title}
-                    {program.subTitle && ` - ${program.subTitle}`}
+                    {truncateWords(
+                      program.title + (program.subTitle ? ` - ${program.subTitle}` : ''),
+                      13,
+                      69
+                    )}
                     {program.season && program.episode && <span className="italic"> (Episode {program.episode})</span>}
                   </h4>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">

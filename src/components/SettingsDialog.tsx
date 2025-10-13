@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
-import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers } from "lucide-react";
+import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -40,48 +40,67 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
     setLocalSettings(settings);
   }, [settings]);
 
-  const handleSave = () => {
-    onSave(localSettings);
+  // Auto-save for immediate changes (toggles, selects, sliders)
+  const updateSetting = (newSettings: AppSettings) => {
+    setLocalSettings(newSettings);
+    if (onGlobalSave) {
+      onGlobalSave(newSettings);
+    }
+  };
+
+  // For text inputs, just update local state (will save on blur or close)
+  const updateLocalSetting = (newSettings: AppSettings) => {
+    setLocalSettings(newSettings);
+  };
+
+  const handleClose = () => {
+    // Save any pending text input changes
     if (onGlobalSave) {
       onGlobalSave(localSettings);
     }
+    onSave(localSettings);
     onOpenChange(false);
   };
 
   const content = (
     <div className="space-y-6 py-4">
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Link className="w-5 h-5" />
+        <h3 className="text-lg font-semibold">
+          General
+        </h3>
+        <div className="space-y-3">
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5 flex-1">
+              <Label className="flex items-center gap-2">
+                <Bell className="w-4 h-4" />
+                Show Notifications
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Display toast notifications for actions
+              </p>
+            </div>
+            <Switch
+              checked={localSettings.showNotifications}
+              onCheckedChange={(checked) => {
+                const newSettings = { ...localSettings, showNotifications: checked };
+                updateSetting(newSettings);
+                if (checked) {
+                  toast.info('Enabled: Notifications');
+                }
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">
           Sources
         </h3>
         <div className="space-y-3">
-          <div>
-            <Label htmlFor="m3u-url" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              M3U Playlist URL
-            </Label>
-            <Input
-              id="m3u-url"
-              placeholder="https://example.com/playlist.m3u"
-              value={localSettings.m3uUrl || ''}
-              onChange={(e) => setLocalSettings({ ...localSettings, m3uUrl: e.target.value })}
-              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
-            />
-          </div>
-          <div>
-            <Label htmlFor="xmltv-url" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              XMLTV EPG URL
-            </Label>
-            <Input
-              id="xmltv-url"
-              placeholder="https://example.com/epg.xml"
-              value={localSettings.xmltvUrl || ''}
-              onChange={(e) => setLocalSettings({ ...localSettings, xmltvUrl: e.target.value })}
-              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
-            />
-          </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5 flex-1">
               <Label className="flex items-center gap-2">
@@ -95,9 +114,36 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             <Switch
               checked={localSettings.autoLoad}
               onCheckedChange={(checked) => {
-                setLocalSettings({ ...localSettings, autoLoad: checked });
+                const newSettings = { ...localSettings, autoLoad: checked };
+                updateSetting(newSettings);
                 toast.info(checked ? 'Auto-load enabled' : 'Auto-load disabled');
               }}
+            />
+          </div>
+          <div>
+            <Label htmlFor="m3u-url" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              M3U Playlist URL
+            </Label>
+            <Input
+              id="m3u-url"
+              placeholder="https://example.com/playlist.m3u"
+              value={localSettings.m3uUrl || ''}
+              onChange={(e) => updateLocalSetting({ ...localSettings, m3uUrl: e.target.value })}
+              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
+            />
+          </div>
+          <div>
+            <Label htmlFor="xmltv-url" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              XMLTV EPG URL
+            </Label>
+            <Input
+              id="xmltv-url"
+              placeholder="https://example.com/epg.xml"
+              value={localSettings.xmltvUrl || ''}
+              onChange={(e) => updateLocalSetting({ ...localSettings, xmltvUrl: e.target.value })}
+              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
             />
           </div>
         </div>
@@ -106,8 +152,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
       <Separator />
 
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Play className="w-5 h-5" />
+        <h3 className="text-lg font-semibold">
           Playback
         </h3>
         <div>
@@ -118,7 +163,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           <Select
             value={localSettings.videoQuality}
             onValueChange={(value: any) => 
-              setLocalSettings({ ...localSettings, videoQuality: value })
+              updateSetting({ ...localSettings, videoQuality: value })
             }
           >
             <SelectTrigger id="quality" className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}>
@@ -135,115 +180,162 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         <div className="flex items-center justify-between">
           <div className="space-y-0.5 flex-1">
             <Label className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              Vintage TV Effect
+              <Film className="w-4 h-4" />
+              VHS Buffering Screen
             </Label>
             <p className="text-sm text-muted-foreground">
-              Apply retro CRT-style distortion and effects
+              VHS loading animation during buffering
             </p>
           </div>
           <Switch
-            checked={localSettings.vintageTV}
+            checked={localSettings.showLoadingVideo}
             onCheckedChange={(checked) => {
-              setLocalSettings({ ...localSettings, vintageTV: checked });
-              toast.info(checked ? 'Vintage TV filter enabled' : 'Vintage TV filter disabled');
+              const newSettings = { ...localSettings, showLoadingVideo: checked };
+              updateSetting(newSettings);
+              toast.info(checked ? 'Loading animation enabled' : 'Loading animation disabled');
             }}
           />
         </div>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5 flex-1">
             <Label className="flex items-center gap-2">
-              <Film className="w-4 h-4" />
-              Loading Video
+              <Sparkles className="w-4 h-4" />
+              Vintage TV Effect
             </Label>
             <p className="text-sm text-muted-foreground">
-              Show VHS loading animation during buffering
+              Retro CRT-style distortion & effects
             </p>
           </div>
           <Switch
-            checked={localSettings.showLoadingVideo}
+            checked={localSettings.vintageTV}
             onCheckedChange={(checked) => {
-              setLocalSettings({ ...localSettings, showLoadingVideo: checked });
-              toast.info(checked ? 'Loading animation enabled' : 'Loading animation disabled');
+              const newSettings = { ...localSettings, vintageTV: checked };
+              updateSetting(newSettings);
+              toast.info(checked ? 'Vintage TV filter enabled' : 'Vintage TV filter disabled');
             }}
           />
         </div>
         {localSettings.vintageTV && (
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Contrast className="w-4 h-4" />
-              Vignette Strength
-            </Label>
-            <Slider
-              value={[localSettings.vignetteStrength]}
-              onValueChange={(value) => setLocalSettings({ ...localSettings, vignetteStrength: value[0] })}
-              max={1.0}
-              min={0}
-              step={0.01}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>0</span>
-              <span>{localSettings.vignetteStrength.toFixed(2)}</span>
-              <span>1.0</span>
+          <>
+            <Separator />
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Contrast className="w-4 h-4" />
+                Vignette Strength
+              </Label>
+              <Slider
+                value={[localSettings.vignetteStrength]}
+                onValueChange={(value) => updateSetting({ ...localSettings, vignetteStrength: value[0] })}
+                max={1.0}
+                min={0}
+                step={0.01}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0</span>
+                <span>{localSettings.vignetteStrength.toFixed(2)}</span>
+                <span>1.0</span>
+              </div>
             </div>
-          </div>
-        )}
-        {localSettings.vintageTV && (
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Focus className="w-4 h-4" />
-              Vignette Radius
-            </Label>
-            <Slider
-              value={[localSettings.vignetteRadius]}
-              onValueChange={(value) => setLocalSettings({ ...localSettings, vignetteRadius: value[0] })}
-              max={1.0}
-              min={0}
-              step={0.01}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>0</span>
-              <span>{localSettings.vignetteRadius.toFixed(2)}</span>
-              <span>1.0</span>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Focus className="w-4 h-4" />
+                Vignette Radius
+              </Label>
+              <Slider
+                value={[localSettings.vignetteRadius]}
+                onValueChange={(value) => updateSetting({ ...localSettings, vignetteRadius: value[0] })}
+                max={1.0}
+                min={0}
+                step={0.01}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0</span>
+                <span>{localSettings.vignetteRadius.toFixed(2)}</span>
+                <span>1.0</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Radius where vignette starts (0 = center, 1.0 = edges)
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Radius where vignette starts (0 = center, 1.0 = edges)
-            </p>
-          </div>
-        )}
-        {localSettings.vintageTV && (
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Droplets className="w-4 h-4" />
-              Chromatic Aberration
-            </Label>
-            <Slider
-              value={[localSettings.rgbShiftStrength]}
-              onValueChange={(value) => setLocalSettings({ ...localSettings, rgbShiftStrength: value[0] })}
-              max={0.01}
-              min={0.0001}
-              step={0.0001}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>0.0001</span>
-              <span>{localSettings.rgbShiftStrength.toFixed(4)}</span>
-              <span>0.01</span>
+            <Separator />
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Droplets className="w-4 h-4" />
+                Chromatic Aberration
+              </Label>
+              <Slider
+                value={[localSettings.rgbShiftStrength]}
+                onValueChange={(value) => updateSetting({ ...localSettings, rgbShiftStrength: value[0] })}
+                max={0.01}
+                min={0.0001}
+                step={0.0001}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0.0001</span>
+                <span>{localSettings.rgbShiftStrength.toFixed(4)}</span>
+                <span>0.01</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Adjust color separation effect (0.0001 = subtle, 0.01 = strong)
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Adjust color separation effect (0.0001 = subtle, 0.01 = strong)
-            </p>
-          </div>
+            <Separator />
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Edge Glass Mirage
+              </Label>
+              <Slider
+                value={[localSettings.edgeAberration]}
+                onValueChange={(value) => updateSetting({ ...localSettings, edgeAberration: value[0] })}
+                max={10}
+                min={0}
+                step={0.1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0</span>
+                <span>{localSettings.edgeAberration.toFixed(1)}</span>
+                <span>10</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Subtle vaseline-like blur on outer 40px edge (0 = off)
+              </p>
+            </div>
+            <Separator />
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Frame Edge Blur
+              </Label>
+              <Slider
+                value={[localSettings.frameEdgeBlur]}
+                onValueChange={(value) => updateSetting({ ...localSettings, frameEdgeBlur: value[0] })}
+                max={50}
+                min={0}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0</span>
+                <span>{localSettings.frameEdgeBlur.toFixed(0)}px</span>
+                <span>50</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Anti-aliased edge blur (2-5 = clean AA, 10-20 = soft blur, 30+ = heavy fade)
+              </p>
+            </div>
+          </>
         )}
       </div>
 
       <Separator />
 
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Clock className="w-5 h-5" />
+        <h3 className="text-lg font-semibold">
           Appearance
         </h3>
         <div>
@@ -254,7 +346,8 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           <Select
             value={localSettings.clockStyle}
             onValueChange={(value: any) => {
-              setLocalSettings({ ...localSettings, clockStyle: value });
+              const newSettings = { ...localSettings, clockStyle: value };
+              updateSetting(newSettings);
               const styleNames: Record<string, string> = {
                 neon: 'Neon Blue',
                 flip: 'Flip Clock',
@@ -280,26 +373,24 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           </Select>
         </div>
 
-        <div>
-          <Label htmlFor="panel-style" className="flex items-center gap-2">
-            <Layers className="w-4 h-4" />
-            Panel Style
-          </Label>
-          <Select
-            value={localSettings.panelStyle}
-            onValueChange={(value: any) => {
-              setLocalSettings({ ...localSettings, panelStyle: value });
-              toast.info(value === 'shadow' ? 'Shadow style enabled' : 'Bordered style enabled');
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5 flex-1">
+            <Label className="flex items-center gap-2">
+              <Layers className="w-4 h-4" />
+              Panel Style
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Shadow style removes borders
+            </p>
+          </div>
+          <Switch
+            checked={localSettings.panelStyle === 'shadow'}
+            onCheckedChange={(checked) => {
+              const newSettings = { ...localSettings, panelStyle: (checked ? 'shadow' : 'bordered') as 'shadow' | 'bordered' };
+              updateSetting(newSettings);
+              toast.info(checked ? 'Shadow style enabled' : 'Bordered style enabled');
             }}
-          >
-            <SelectTrigger id="panel-style" className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className={`bg-card ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border'}`}>
-              <SelectItem value="bordered">Bordered (Highlight Edges)</SelectItem>
-              <SelectItem value="shadow">Shadow (No Borders)</SelectItem>
-            </SelectContent>
-          </Select>
+          />
         </div>
       </div>
 
@@ -312,17 +403,56 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         </h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Open Settings</span>
+            <span className="text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" />
+              Up/Down Arrow
+            </span>
             <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">
-              Ctrl/Cmd + ,
+              ↑ / ↓
             </kbd>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Toggle Fullscreen</span>
+            <span className="text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" />
+              Toggle Full TV Guide
+            </span>
+            <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">G</kbd>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" />
+              Toggle Stats
+            </span>
+            <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">S</kbd>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" />
+              Toggle Mute
+            </span>
+            <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">M</kbd>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" />
+              Settings
+            </span>
+            <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">
+              ,
+            </kbd>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" />
+              Toggle Fullscreen
+            </span>
             <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">F</kbd>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Play/Pause</span>
+            <span className="text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" />
+              Play/Pause
+            </span>
             <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">Space</kbd>
           </div>
         </div>
@@ -332,29 +462,20 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
 
   if (inline) {
     return (
-      <div className="h-[500px] flex flex-col">
+      <div className="h-[500px] flex flex-col relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleClose}
+          className="absolute top-2 right-2 z-10 h-8 w-8 hover:bg-secondary"
+        >
+          <X className="w-4 h-4" />
+        </Button>
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-4">
-            <h2 className="text-xl font-bold">Settings</h2>
+          <div className="p-4 pr-12">
             {content}
           </div>
         </ScrollArea>
-        <div className="p-4 border-t border-border bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-3">
-            <Button
-              onClick={() => onOpenChange(false)}
-              variant="outline"
-              className={`flex-1 ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
-            >
-              <X className="w-4 h-4 mr-2" />
-              Cancel
-            </Button>
-            <Button onClick={handleSave} className="bg-gradient-primary flex-1">
-              <Save className="w-4 h-4 mr-2" />
-              Save
-            </Button>
-          </div>
-        </div>
       </div>
     );
   }
@@ -373,13 +494,10 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
 
         {content}
 
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className={`${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} className="bg-gradient-primary">
-            <Save className="w-4 h-4 mr-2" />
-            Save Settings
+        <div className="flex justify-end">
+          <Button variant="outline" onClick={handleClose} className={`${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}>
+            <X className="w-4 h-4 mr-2" />
+            Close
           </Button>
         </div>
       </DialogContent>

@@ -208,14 +208,30 @@ const NeonClock = ({ time }: { time: Date }) => {
 
   return (
     <div 
-      className="font-mono text-base font-bold tracking-wider"
+      className="font-mono text-base font-bold tracking-wider relative"
       style={{
-        color: '#00d9ff',
-        textShadow: '0 0 5px #00d9ff, 0 0 10px #00d9ff, 0 0 15px #00d9ff, 0 0 20px #00d9ff',
+        color: '#0ff',
+        textShadow: '0 0 1px #0ff, 0 0 3px #0088aa',
       }}
     >
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 255, 255, 0.1) 1px, rgba(0, 255, 255, 0.1) 2px)',
+          mixBlendMode: 'overlay',
+        }}
+      />
       {hours}
-      <span className={`transition-opacity duration-100 ${colonVisible ? 'opacity-100' : 'opacity-0'}`}>:</span>
+      <span 
+        className="transition-all duration-300"
+        style={{
+          opacity: colonVisible ? 1 : 0.15,
+          color: colonVisible ? '#0088aa' : '#000',
+          textShadow: colonVisible ? '0 0 1px #0088aa, 0 0 2px #006688' : 'none',
+        }}
+      >
+        :
+      </span>
       {minutes}
     </div>
   );

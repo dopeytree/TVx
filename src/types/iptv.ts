@@ -40,11 +40,14 @@ export interface AppSettings {
   m3uUrl?: string;
   xmltvUrl?: string;
   autoLoad: boolean;
+  showNotifications: boolean;
   videoQuality: 'auto' | 'high' | 'medium' | 'low';
   vintageTV: boolean;
   vignetteStrength: number;
   rgbShiftStrength: number;
   vignetteRadius: number;
+  edgeAberration: number;
+  frameEdgeBlur: number;
   showLoadingVideo: boolean;
   clockStyle: 'flip' | 'matrix' | 'digital' | 'minimal' | 'retro' | 'neon';
   panelStyle: 'bordered' | 'shadow';

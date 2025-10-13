@@ -31,6 +31,9 @@ uniform float u_stripe;
 uniform float u_rgbshift;
 uniform float u_vignette;
 uniform float u_vignette_radius;
+uniform float u_edge_aberration;
+uniform float u_frame_edge_blur;
+uniform vec2 u_resolution;
 
 void main()
 {
@@ -43,20 +46,62 @@ void main()
     float stripTile = texCoord.t * mix(10.0, 100.0, u_stripe);
     float stripFac = 1.0 + 0.25 * u_stripe * (step(0.5, stripTile-float(int(stripTile))) - 0.5);
     
-    float vignette_factor = max(0.0, (length(ndc_pos) - u_vignette_radius) / (1.0 - u_vignette_radius));
+    // Vignette with smooth feathering to avoid hard circle edge
+    float dist = length(ndc_pos);
+    float vignette_factor = smoothstep(u_vignette_radius - 0.1, u_vignette_radius + 0.3, dist);
     float vignette = 1.0 - vignette_factor * u_vignette;
     vignette = clamp(vignette, 0.0, 1.0);
     
-    float radialShift = 1.0 + length(ndc_pos) * 0.5; // stronger at edges
+    // Standard chromatic aberration (center to edge)
+    float radialShift = 1.0 + length(ndc_pos) * 0.5;
     float shift = u_rgbshift * radialShift;
     
-    float texR = texture2D( u_texture, texCoord.st-vec2(shift) ).r;
-    float texG = texture2D( u_texture, texCoord.st ).g;
-    float texB = texture2D( u_texture, texCoord.st+vec2(shift) ).b;
+    // Edge-only aberration - calculate distance from edge in pixels
+    vec2 pixelCoord = texCoord * u_resolution;
+    vec2 edgeDist = min(pixelCoord, u_resolution - pixelCoord);
+    float minEdgeDist = min(edgeDist.x, edgeDist.y);
     
-    float clip = step(0.0, texCoord.s) * step(texCoord.s, 1.0) * step(0.0, texCoord.t) * step(texCoord.t, 1.0); 
+    // Create edge mask: 1.0 at edge (0px), 0.0 at 40px+ from edge (thin vaseline-like effect)
+    float edgeMask = 1.0 - smoothstep(0.0, 40.0, minEdgeDist);
+    
+    // Vaseline-like blur on edges only (no chromatic aberration for this effect)
+    float blurAmount = u_edge_aberration * edgeMask * 0.002;
+    
+    // Sample with standard chromatic aberration and edge blur
+    float texR, texG, texB;
+    
+    if (u_edge_aberration > 0.01 && edgeMask > 0.01) {
+        // Multi-sample blur for vaseline effect on edges
+        vec3 blurredColor = vec3(0.0);
+        blurredColor += texture2D(u_texture, texCoord.st).rgb * 0.4;
+        blurredColor += texture2D(u_texture, texCoord.st + vec2(blurAmount, 0.0)).rgb * 0.15;
+        blurredColor += texture2D(u_texture, texCoord.st - vec2(blurAmount, 0.0)).rgb * 0.15;
+        blurredColor += texture2D(u_texture, texCoord.st + vec2(0.0, blurAmount)).rgb * 0.15;
+        blurredColor += texture2D(u_texture, texCoord.st - vec2(0.0, blurAmount)).rgb * 0.15;
+        
+        // Apply standard chromatic aberration to the blurred edge
+        texR = texture2D(u_texture, texCoord.st - vec2(shift)).r;
+        texG = blurredColor.g;
+        texB = texture2D(u_texture, texCoord.st + vec2(shift)).b;
+    } else {
+        // Standard chromatic aberration only (no edge blur)
+        texR = texture2D(u_texture, texCoord.st - vec2(shift)).r;
+        texG = texture2D(u_texture, texCoord.st).g;
+        texB = texture2D(u_texture, texCoord.st + vec2(shift)).b;
+    }
+    
+    // Anti-aliased/blurred frame edge (smooth clipping)
+    // u_frame_edge_blur: 2 = subtle AA, 10 = soft blur, 50 = heavy blur
+    float edgeWidth = u_frame_edge_blur / min(u_resolution.x, u_resolution.y);
+    float clipX = smoothstep(0.0, edgeWidth, texCoord.s) * smoothstep(1.0, 1.0 - edgeWidth, texCoord.s);
+    float clipY = smoothstep(0.0, edgeWidth, texCoord.t) * smoothstep(1.0, 1.0 - edgeWidth, texCoord.t);
+    float clip = clipX * clipY;
+    
     gl_FragColor  = vec4( vec3(texR, texG, texB) * stripFac * vignette * clip, 1.0 );
 }`;
+
+
+
 
 export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuideExpanded }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -113,6 +158,9 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       const u_rgbshift = gl.getUniformLocation(program, 'u_rgbshift');
       const u_vignette = gl.getUniformLocation(program, 'u_vignette');
       const u_vignette_radius = gl.getUniformLocation(program, 'u_vignette_radius');
+      const u_edge_aberration = gl.getUniformLocation(program, 'u_edge_aberration');
+      const u_frame_edge_blur = gl.getUniformLocation(program, 'u_frame_edge_blur');
+      const u_resolution = gl.getUniformLocation(program, 'u_resolution');
       // buffer
       const bufRect = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, bufRect);
@@ -155,6 +203,9 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
         gl.uniform1f(u_rgbshift, settings.rgbShiftStrength);
         gl.uniform1f(u_vignette, settings.vignetteStrength);
         gl.uniform1f(u_vignette_radius, settings.vignetteRadius);
+        gl.uniform1f(u_edge_aberration, settings.edgeAberration || 0);
+        gl.uniform1f(u_frame_edge_blur, settings.frameEdgeBlur || 2);
+        gl.uniform2f(u_resolution, canvas.width, canvas.height);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
         animationRef.current = requestAnimationFrame(render);
       };
