@@ -15,6 +15,8 @@ const defaultSettings: AppSettings = {
   vignetteRadius: 0.75,
   edgeAberration: 10,
   frameEdgeBlur: 10,
+  centerSharpness: 0.75,
+  sharpenFirst: true,
   showLoadingVideo: true,
   clockStyle: 'neon',
   panelStyle: 'bordered',

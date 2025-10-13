@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
-import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell } from "lucide-react";
+import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell, ChevronDown, ChevronUp, Github } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -35,6 +35,7 @@ interface SettingsDialogProps {
 
 export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalSave, inline }: SettingsDialogProps) => {
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -101,25 +102,6 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           Sources
         </h3>
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5 flex-1">
-              <Label className="flex items-center gap-2">
-                <Zap className="w-4 h-4" />
-                Auto-load on startup
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Automatically load sources when app starts
-              </p>
-            </div>
-            <Switch
-              checked={localSettings.autoLoad}
-              onCheckedChange={(checked) => {
-                const newSettings = { ...localSettings, autoLoad: checked };
-                updateSetting(newSettings);
-                toast.info(checked ? 'Auto-load enabled' : 'Auto-load disabled');
-              }}
-            />
-          </div>
           <div>
             <Label htmlFor="m3u-url" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -218,10 +200,30 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         {localSettings.vintageTV && (
           <>
             <Separator />
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Contrast className="w-4 h-4" />
-                Vignette Strength
+            
+            {/* Advanced TV Effects Toggle */}
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="w-full flex items-center justify-between py-2 px-3 rounded-md hover:bg-secondary/50 transition-colors text-sm"
+            >
+              <span className="font-medium flex items-center gap-2">
+                <Layers className="w-4 h-4" />
+                Advanced TV Effects
+              </span>
+              {showAdvanced ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+            </button>
+
+            {showAdvanced && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Contrast className="w-4 h-4" />
+                    Vignette Strength
               </Label>
               <Slider
                 value={[localSettings.vignetteStrength]}
@@ -328,6 +330,45 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
                 Anti-aliased edge blur (2-5 = clean AA, 10-20 = soft blur, 30+ = heavy fade)
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Center Sharpness
+              </Label>
+              <Slider
+                value={[localSettings.centerSharpness]}
+                onValueChange={(value) => updateSetting({ ...localSettings, centerSharpness: value[0] })}
+                max={1.0}
+                min={0}
+                step={0.05}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0</span>
+                <span>{localSettings.centerSharpness.toFixed(2)}</span>
+                <span>1.0</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Sharpens the center of the image with a feathered circle (0.2-0.4 = subtle, 0.6+ = strong)
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="sharpen-first" className="flex-1 text-sm cursor-pointer">
+                Apply Sharpening First
+              </Label>
+              <Switch
+                id="sharpen-first"
+                checked={localSettings.sharpenFirst}
+                onCheckedChange={(checked) => updateSetting({ ...localSettings, sharpenFirst: checked })}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Toggle whether sharpening is applied before (ON) or after (OFF) other CRT effects
+            </p>
+              </>
+            )}
           </>
         )}
       </div>
@@ -438,7 +479,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               Settings
             </span>
             <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">
-              ,
+              .
             </kbd>
           </div>
           <div className="flex justify-between items-center">
@@ -456,6 +497,20 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">Space</kbd>
           </div>
         </div>
+      </div>
+
+      <Separator />
+      
+      <div className="flex items-center justify-center">
+        <a
+          href="https://github.com/dopeytree/TVx"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Github className="w-4 h-4" />
+          View on GitHub
+        </a>
       </div>
     </div>
   );

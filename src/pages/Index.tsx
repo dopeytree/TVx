@@ -13,7 +13,7 @@ import { ClockDisplay } from "@/components/ClockDisplay";
 import { useSettings } from "@/hooks/useSettings";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Button } from "@/components/ui/button";
-import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Star, X, Play, Clock, Clapperboard, Film, RotateCw, Book, BookOpen, History, Trophy } from "lucide-react";
+import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Star, X, Play, Clock, Clapperboard, Film, RotateCw, Book, BookOpen, History, Trophy, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
@@ -25,6 +25,7 @@ const Index = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings, updateSettings } = useSettings();
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
+  const pausedChannelRef = useRef<Channel | null>(null);
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -89,6 +90,10 @@ const Index = () => {
   const focusedProgramRef = useRef(focusedProgram);
   const settingsOpenRef = useRef(settingsOpen);
   
+  // Track if this is the initial load to prevent notification spam
+  const isInitialLoadRef = useRef(true);
+  const hasShownInitialChannelRef = useRef(false);
+  
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [theaterMode, setTheaterMode] = useState(false); // Track if user clicked video to hide everything
   const [activeTab, setActiveTab] = useState('guide');
@@ -127,8 +132,14 @@ const Index = () => {
     // Save selected channel to localStorage and show notification
     if (selectedChannel) {
       localStorage.setItem('last-watched-channel', selectedChannel.id);
-      // Only show notification if channels are loaded (not on initial load)
-      if (channels.length > 0) {
+      
+      // Only show notification if:
+      // 1. Channels are loaded
+      // 2. Not the initial load (first channel selection on page load)
+      // 3. Or if user manually switched channels (hasShownInitialChannelRef is true)
+      const shouldShowNotification = channels.length > 0 && !isInitialLoadRef.current;
+      
+      if (shouldShowNotification && settings.showNotifications) {
         const cleanName = selectedChannel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim();
         const nameLower = selectedChannel.name.toLowerCase();
         const groupLower = selectedChannel.group?.toLowerCase() || '';
@@ -153,8 +164,14 @@ const Index = () => {
           </span>
         );
       }
+      
+      // Mark that initial channel has been set
+      if (isInitialLoadRef.current) {
+        isInitialLoadRef.current = false;
+        hasShownInitialChannelRef.current = true;
+      }
     }
-  }, [selectedChannel, epgData]);
+  }, [selectedChannel, epgData, channels.length, settings.showNotifications]);
 
   useEffect(() => {
     if (currentProgram) {
@@ -172,7 +189,7 @@ const Index = () => {
     }
   }, [focusedProgram, selectedPoster]);
 
-  const handleM3ULoad = (content: string) => {
+  const handleM3ULoad = (content: string, silent = false) => {
     try {
       const parsedChannels = parseM3U(content);
       setChannels(parsedChannels);
@@ -194,26 +211,33 @@ const Index = () => {
         setSelectedChannel(channelToSelect);
       }
       
-      toast.success(`Loaded: ${parsedChannels.length} Channels`);
+      // Only show notification if not silent mode and notifications are enabled
+      if (!silent && settings.showNotifications) {
+        toast.success(`Loaded: ${parsedChannels.length} Channels`);
+      }
     } catch (error) {
       toast.error('Error: Failed to Parse M3U File');
       console.error(error);
     }
   };
 
-  const handleXMLTVLoad = (content: string) => {
+  const handleXMLTVLoad = (content: string, silent = false) => {
     try {
       const parsedEPG = parseXMLTV(content);
       setEpgData(parsedEPG);
       const programCount = Object.values(parsedEPG).reduce((sum, progs) => sum + progs.length, 0);
-      toast.success(`Loaded: EPG Data for ${Object.keys(parsedEPG).length} Channels (${programCount} Programs)`);
+      
+      // Only show notification if not silent mode and notifications are enabled
+      if (!silent && settings.showNotifications) {
+        toast.success(`Loaded: EPG Data for ${Object.keys(parsedEPG).length} Channels (${programCount} Programs)`);
+      }
     } catch (error) {
       toast.error('Error: Failed to Parse XMLTV File');
       console.error(error);
     }
   };
 
-  const loadFromUrls = async () => {
+  const loadFromUrls = async (silent = false) => {
     if (!settings.m3uUrl && !settings.xmltvUrl) {
       toast.error('Error: Please Configure URLs in Settings First');
       return;
@@ -224,12 +248,12 @@ const Index = () => {
     try {
       if (settings.m3uUrl) {
         const m3uContent = await loadFromUrl(settings.m3uUrl);
-        handleM3ULoad(m3uContent);
+        handleM3ULoad(m3uContent, silent);
       }
 
       if (settings.xmltvUrl) {
         const xmltvContent = await loadFromUrl(settings.xmltvUrl);
-        handleXMLTVLoad(xmltvContent);
+        handleXMLTVLoad(xmltvContent, silent);
       }
     } catch (error) {
       toast.error('Error: Failed to Load from URLs');
@@ -240,8 +264,9 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (settings.autoLoad && (settings.m3uUrl || settings.xmltvUrl)) {
-      loadFromUrls();
+    if (settings.m3uUrl || settings.xmltvUrl) {
+      // Auto-load silently on page refresh to avoid notification spam
+      loadFromUrls(true);
     } else if (!settings.m3uUrl && !settings.xmltvUrl) {
       // First startup - no sources configured
       const hasSeenWelcome = localStorage.getItem('tvx-welcome-shown');
@@ -254,7 +279,7 @@ const Index = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings.autoLoad, settings.m3uUrl, settings.xmltvUrl]);
+  }, [settings.m3uUrl, settings.xmltvUrl]);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -503,8 +528,14 @@ const Index = () => {
 
   useKeyboardShortcuts({
     onSettings: () => {
-      setTheaterMode(false);
-      setSettingsOpen(true);
+      if (settingsOpen) {
+        setSettingsOpen(false);
+      } else {
+        // Exit theater mode and full guide if open, then show settings
+        setTheaterMode(false);
+        setFullGuideOpen(false);
+        setSettingsOpen(true);
+      }
     },
     onFullscreen: () => {
       if (!document.fullscreenElement) {
@@ -526,6 +557,18 @@ const Index = () => {
     onToggleMute: () => {
       setMuted(!muted);
       toast.info(!muted ? 'Muted: Audio' : 'Unmuted: Audio');
+    },
+    onPlayPause: () => {
+      if (selectedChannel) {
+        // Stop/Pause - store current channel and set to null
+        pausedChannelRef.current = selectedChannel;
+        setSelectedChannel(null);
+        toast.info('Paused: Video stopped');
+      } else if (pausedChannelRef.current) {
+        // Play/Resume - restore the paused channel
+        setSelectedChannel(pausedChannelRef.current);
+        toast.info('Playing: Video resumed');
+      }
     },
   });
 
@@ -624,10 +667,16 @@ const Index = () => {
               <div className={`text-sm font-bold px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md`}>
                 Full TV Guide
               </div>
-              <div className={`text-sm font-normal px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md`}>
+              <div className={`text-sm font-normal px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md flex items-center gap-1`}>
+                <Clock className="w-3 h-3" />
+                {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+              </div>
+              <div className={`text-sm font-normal px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md flex items-center gap-1`}>
+                <Calendar className="w-3 h-3" />
                 {currentTime.toLocaleDateString('en-GB', { weekday: 'long' })}
               </div>
-              <div className={`text-sm font-normal px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md`}>
+              <div className={`text-sm font-normal px-3 py-1 bg-background/80 ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md flex items-center gap-1`}>
+                <Calendar className="w-3 h-3" />
                 {currentTime.getDate()}{['th', 'st', 'nd', 'rd'][(currentTime.getDate() % 10 > 3 || Math.floor(currentTime.getDate() % 100 / 10) === 1) ? 0 : currentTime.getDate() % 10]} {currentTime.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
               </div>
             </div>
@@ -751,6 +800,14 @@ const Index = () => {
                         <Clock className="w-3 h-3 inline mr-1" />
                         {Math.round((focusedProgram.program.end.getTime() - focusedProgram.program.start.getTime()) / 1000 / 60)}min
                       </div>
+                      {focusedProgram.program.year && (
+                        <div className="text-sm text-muted-foreground mb-1">
+                          <Calendar className="w-3 h-3 inline mr-1" />
+                          {typeof focusedProgram.program.year === 'number' && focusedProgram.program.year > 9999
+                            ? String(focusedProgram.program.year).substring(0, 4)
+                            : focusedProgram.program.year}
+                        </div>
+                      )}
                       {focusedProgram.program.season && focusedProgram.program.episode && (
                         <div className="text-sm text-white mb-1 italic font-medium">
                           Season {focusedProgram.program.season} Episode {focusedProgram.program.episode}
@@ -761,22 +818,20 @@ const Index = () => {
                           {focusedProgram.program.description}
                         </p>
                       )}
-                      {/* Year and More Info link */}
+                      {/* More Info link */}
                       <div className="text-sm flex items-center gap-3 mb-2">
-                        {focusedProgram.program.year && (
-                          <span>
-                            <span className="font-medium">Year:</span> {typeof focusedProgram.program.year === 'number' && focusedProgram.program.year > 9999
-                              ? String(focusedProgram.program.year).substring(0, 4)
-                              : focusedProgram.program.year}
-                          </span>
-                        )}
                         <a
                           href={`https://www.google.com/search?q=${encodeURIComponent(
-                            focusedProgram.program.year 
-                              ? `${focusedProgram.program.title} (${typeof focusedProgram.program.year === 'number' && focusedProgram.program.year > 9999
-                                  ? String(focusedProgram.program.year).substring(0, 4)
-                                  : focusedProgram.program.year})`
-                              : focusedProgram.program.title
+                            (() => {
+                              const searchYear = focusedProgram.program.year 
+                                ? (typeof focusedProgram.program.year === 'number' && focusedProgram.program.year > 9999
+                                    ? String(focusedProgram.program.year).substring(0, 4)
+                                    : focusedProgram.program.year)
+                                : '';
+                              return searchYear 
+                                ? `${focusedProgram.program.title} (${searchYear})`
+                                : focusedProgram.program.title;
+                            })()
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -1194,7 +1249,7 @@ const Index = () => {
               }}
               className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
             >
-              Channel Guide
+              Full TV Guide
             </Button>
           )}
           {fullGuideOpen && (
@@ -1203,7 +1258,7 @@ const Index = () => {
               onClick={() => { setActiveTab('guide'); setFullGuideOpen(false); }}
               className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
             >
-              Full TV Guide
+              Channel Guide
             </Button>
           )}
           <div className={`${getSidebarPanelClasses('rounded-lg relative max-h-[500px]')}`}>

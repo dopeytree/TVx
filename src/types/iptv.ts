@@ -48,6 +48,8 @@ export interface AppSettings {
   vignetteRadius: number;
   edgeAberration: number;
   frameEdgeBlur: number;
+  centerSharpness: number;
+  sharpenFirst: boolean;
   showLoadingVideo: boolean;
   clockStyle: 'flip' | 'matrix' | 'digital' | 'minimal' | 'retro' | 'neon';
   panelStyle: 'bordered' | 'shadow';

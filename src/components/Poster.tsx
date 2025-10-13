@@ -1,5 +1,5 @@
 import { Program } from "@/types/iptv";
-import { X } from "lucide-react";
+import { X, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface PosterProps {
@@ -61,8 +61,9 @@ export const Poster = ({ program, onClose, isIdle }: PosterProps) => {
         )} */}
         <div className="text-sm flex items-center justify-center gap-3">
           {program.year && (
-            <span>
-              <span className="font-medium">Year:</span> {searchYear}
+            <span className="text-muted-foreground flex items-center">
+              <Calendar className="w-3 h-3 inline mr-1" />
+              {searchYear}
             </span>
           )}
           <a

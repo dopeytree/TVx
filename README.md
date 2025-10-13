@@ -6,6 +6,9 @@ TVx brings back the ritual of watching—not scrolling, not seeking, just *being
 
 This is television the way you remember feeling: present, unhurried, *analog*.
 
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/dopeytree?style=for-the-badge&logo=githubsponsors&logoColor=white&label=Sponsor&labelColor=ea4aaa&color=ea4aaa)](https://github.com/sponsors/dopeytree)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-dopeytree-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dopeytree)
+
 ## What it does
 
 An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. Built for channel surfing, not catalog anxiety. Anti‑algorithm. Pro‑moment.

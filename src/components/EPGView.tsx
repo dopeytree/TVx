@@ -116,8 +116,14 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selected
                 />
               )}
               <div className="flex-1 min-w-0">
-                <div className="absolute top-2 right-2 bg-background/20 rounded px-2 py-0.5 text-xs font-medium">
-                  Now Playing <Play className="w-3 h-3 inline" /> {formatTime(currentProgram.start)}
+                <div className="absolute top-2 right-2 flex items-center gap-2 text-xs font-medium">
+                  <span className="bg-cyan-500 text-white rounded px-2 py-0.5 flex items-center gap-1">
+                    <Play className="w-3 h-3" />
+                    Now Playing
+                  </span>
+                  <span className="bg-background/20 rounded px-2 py-0.5 flex items-center gap-1">
+                    <Play className="w-3 h-3 inline" /> {formatTime(currentProgram.start)}
+                  </span>
                 </div>
                 <h3 className="font-bold text-lg mb-1">
                   {truncateWords(

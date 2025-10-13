@@ -6,14 +6,15 @@ export const useKeyboardShortcuts = (callbacks: {
   onToggleGuide?: () => void;
   onToggleStats?: () => void;
   onToggleMute?: () => void;
+  onPlayPause?: () => void;
 }) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Skip if typing in input/textarea
       const isTyping = ['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement).tagName);
       
-      // , for settings (just comma, not Ctrl/Cmd + ,)
-      if (event.key === ',') {
+      // . for settings (just period, not Ctrl/Cmd + .)
+      if (event.key === '.') {
         if (!isTyping) {
           event.preventDefault();
           callbacks.onSettings?.();
@@ -49,6 +50,14 @@ export const useKeyboardShortcuts = (callbacks: {
         if (!isTyping) {
           event.preventDefault();
           callbacks.onToggleMute?.();
+        }
+      }
+
+      // Space for play/pause
+      if (event.key === ' ') {
+        if (!isTyping) {
+          event.preventDefault();
+          callbacks.onPlayPause?.();
         }
       }
     };

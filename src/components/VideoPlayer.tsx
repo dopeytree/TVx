@@ -33,7 +33,36 @@ uniform float u_vignette;
 uniform float u_vignette_radius;
 uniform float u_edge_aberration;
 uniform float u_frame_edge_blur;
+uniform float u_center_sharpness;
+uniform float u_sharpen_first;
 uniform vec2 u_resolution;
+
+// Sharpening helper function - applies unsharp mask with center feathering
+vec3 applySharpen(sampler2D tex, vec2 coord, float amount, float centerMask) {
+    if (amount < 0.01) return texture2D(tex, coord).rgb;
+    
+    vec2 pixelSize = 1.0 / u_resolution;
+    
+    // Sample center and neighbors
+    vec3 center = texture2D(tex, coord).rgb;
+    vec3 blur = vec3(0.0);
+    
+    // Simple 3x3 box blur for the unsharp mask
+    blur += texture2D(tex, coord + vec2(-pixelSize.x, -pixelSize.y)).rgb;
+    blur += texture2D(tex, coord + vec2(0.0, -pixelSize.y)).rgb;
+    blur += texture2D(tex, coord + vec2(pixelSize.x, -pixelSize.y)).rgb;
+    blur += texture2D(tex, coord + vec2(-pixelSize.x, 0.0)).rgb;
+    blur += texture2D(tex, coord).rgb;
+    blur += texture2D(tex, coord + vec2(pixelSize.x, 0.0)).rgb;
+    blur += texture2D(tex, coord + vec2(-pixelSize.x, pixelSize.y)).rgb;
+    blur += texture2D(tex, coord + vec2(0.0, pixelSize.y)).rgb;
+    blur += texture2D(tex, coord + vec2(pixelSize.x, pixelSize.y)).rgb;
+    blur /= 9.0;
+    
+    // Unsharp mask: original + (original - blurred) * amount * centerMask
+    vec3 sharpened = center + (center - blur) * amount * centerMask;
+    return clamp(sharpened, 0.0, 1.0);
+}
 
 void main()
 {
@@ -52,6 +81,11 @@ void main()
     float vignette = 1.0 - vignette_factor * u_vignette;
     vignette = clamp(vignette, 0.0, 1.0);
     
+    // Center sharpening mask - full strength at center, fades to 0 at edges
+    // Creates a feathered circle that's strongest in the middle 40% of the screen
+    float centerDist = length(ndc_pos);
+    float sharpenMask = 1.0 - smoothstep(0.3, 0.9, centerDist);
+    
     // Standard chromatic aberration (center to edge)
     float radialShift = 1.0 + length(ndc_pos) * 0.5;
     float shift = u_rgbshift * radialShift;
@@ -69,25 +103,66 @@ void main()
     
     // Sample with standard chromatic aberration and edge blur
     float texR, texG, texB;
+    vec3 finalColor;
     
-    if (u_edge_aberration > 0.01 && edgeMask > 0.01) {
-        // Multi-sample blur for vaseline effect on edges
-        vec3 blurredColor = vec3(0.0);
-        blurredColor += texture2D(u_texture, texCoord.st).rgb * 0.4;
-        blurredColor += texture2D(u_texture, texCoord.st + vec2(blurAmount, 0.0)).rgb * 0.15;
-        blurredColor += texture2D(u_texture, texCoord.st - vec2(blurAmount, 0.0)).rgb * 0.15;
-        blurredColor += texture2D(u_texture, texCoord.st + vec2(0.0, blurAmount)).rgb * 0.15;
-        blurredColor += texture2D(u_texture, texCoord.st - vec2(0.0, blurAmount)).rgb * 0.15;
+    // Apply sharpening first if enabled, otherwise apply after other effects
+    if (u_sharpen_first > 0.5 && u_center_sharpness > 0.01) {
+        // Sharpen first, then apply chromatic aberration
+        vec3 sharpened = applySharpen(u_texture, texCoord.st, u_center_sharpness * 2.0, sharpenMask);
         
-        // Apply standard chromatic aberration to the blurred edge
-        texR = texture2D(u_texture, texCoord.st - vec2(shift)).r;
-        texG = blurredColor.g;
-        texB = texture2D(u_texture, texCoord.st + vec2(shift)).b;
+        // Now apply effects to the sharpened result (approximation - just use the sharpened center for green)
+        if (u_edge_aberration > 0.01 && edgeMask > 0.01) {
+            vec3 blurredColor = vec3(0.0);
+            blurredColor += applySharpen(u_texture, texCoord.st, u_center_sharpness * 2.0, sharpenMask) * 0.4;
+            blurredColor += applySharpen(u_texture, texCoord.st + vec2(blurAmount, 0.0), u_center_sharpness * 2.0, sharpenMask) * 0.15;
+            blurredColor += applySharpen(u_texture, texCoord.st - vec2(blurAmount, 0.0), u_center_sharpness * 2.0, sharpenMask) * 0.15;
+            blurredColor += applySharpen(u_texture, texCoord.st + vec2(0.0, blurAmount), u_center_sharpness * 2.0, sharpenMask) * 0.15;
+            blurredColor += applySharpen(u_texture, texCoord.st - vec2(0.0, blurAmount), u_center_sharpness * 2.0, sharpenMask) * 0.15;
+            
+            texR = applySharpen(u_texture, texCoord.st - vec2(shift), u_center_sharpness * 2.0, sharpenMask).r;
+            texG = blurredColor.g;
+            texB = applySharpen(u_texture, texCoord.st + vec2(shift), u_center_sharpness * 2.0, sharpenMask).b;
+        } else {
+            texR = applySharpen(u_texture, texCoord.st - vec2(shift), u_center_sharpness * 2.0, sharpenMask).r;
+            texG = sharpened.g;
+            texB = applySharpen(u_texture, texCoord.st + vec2(shift), u_center_sharpness * 2.0, sharpenMask).b;
+        }
     } else {
-        // Standard chromatic aberration only (no edge blur)
-        texR = texture2D(u_texture, texCoord.st - vec2(shift)).r;
-        texG = texture2D(u_texture, texCoord.st).g;
-        texB = texture2D(u_texture, texCoord.st + vec2(shift)).b;
+        // Apply chromatic aberration and edge blur first
+        if (u_edge_aberration > 0.01 && edgeMask > 0.01) {
+            // Multi-sample blur for vaseline effect on edges
+            vec3 blurredColor = vec3(0.0);
+            blurredColor += texture2D(u_texture, texCoord.st).rgb * 0.4;
+            blurredColor += texture2D(u_texture, texCoord.st + vec2(blurAmount, 0.0)).rgb * 0.15;
+            blurredColor += texture2D(u_texture, texCoord.st - vec2(blurAmount, 0.0)).rgb * 0.15;
+            blurredColor += texture2D(u_texture, texCoord.st + vec2(0.0, blurAmount)).rgb * 0.15;
+            blurredColor += texture2D(u_texture, texCoord.st - vec2(0.0, blurAmount)).rgb * 0.15;
+            
+            // Apply standard chromatic aberration to the blurred edge
+            texR = texture2D(u_texture, texCoord.st - vec2(shift)).r;
+            texG = blurredColor.g;
+            texB = texture2D(u_texture, texCoord.st + vec2(shift)).b;
+        } else {
+            // Standard chromatic aberration only (no edge blur)
+            texR = texture2D(u_texture, texCoord.st - vec2(shift)).r;
+            texG = texture2D(u_texture, texCoord.st).g;
+            texB = texture2D(u_texture, texCoord.st + vec2(shift)).b;
+        }
+        
+        // Apply sharpening after other effects
+        if (u_center_sharpness > 0.01) {
+            vec3 baseColor = vec3(texR, texG, texB);
+            vec3 sharpened = applySharpen(u_texture, texCoord.st, u_center_sharpness * 2.0, sharpenMask);
+            // Blend the sharpened center with the aberrated RGB
+            finalColor = mix(baseColor, sharpened, sharpenMask * u_center_sharpness);
+        } else {
+            finalColor = vec3(texR, texG, texB);
+        }
+    }
+    
+    // If sharpen first was used, finalize the color
+    if (u_sharpen_first > 0.5 && u_center_sharpness > 0.01) {
+        finalColor = vec3(texR, texG, texB);
     }
     
     // Anti-aliased/blurred frame edge (smooth clipping)
@@ -97,7 +172,7 @@ void main()
     float clipY = smoothstep(0.0, edgeWidth, texCoord.t) * smoothstep(1.0, 1.0 - edgeWidth, texCoord.t);
     float clip = clipX * clipY;
     
-    gl_FragColor  = vec4( vec3(texR, texG, texB) * stripFac * vignette * clip, 1.0 );
+    gl_FragColor  = vec4( finalColor * stripFac * vignette * clip, 1.0 );
 }`;
 
 
@@ -160,6 +235,8 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       const u_vignette_radius = gl.getUniformLocation(program, 'u_vignette_radius');
       const u_edge_aberration = gl.getUniformLocation(program, 'u_edge_aberration');
       const u_frame_edge_blur = gl.getUniformLocation(program, 'u_frame_edge_blur');
+      const u_center_sharpness = gl.getUniformLocation(program, 'u_center_sharpness');
+      const u_sharpen_first = gl.getUniformLocation(program, 'u_sharpen_first');
       const u_resolution = gl.getUniformLocation(program, 'u_resolution');
       // buffer
       const bufRect = gl.createBuffer();
@@ -205,6 +282,8 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
         gl.uniform1f(u_vignette_radius, settings.vignetteRadius);
         gl.uniform1f(u_edge_aberration, settings.edgeAberration || 0);
         gl.uniform1f(u_frame_edge_blur, settings.frameEdgeBlur || 2);
+        gl.uniform1f(u_center_sharpness, settings.centerSharpness || 0);
+        gl.uniform1f(u_sharpen_first, settings.sharpenFirst ? 1.0 : 0.0);
         gl.uniform2f(u_resolution, canvas.width, canvas.height);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
         animationRef.current = requestAnimationFrame(render);
