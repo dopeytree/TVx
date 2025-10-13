@@ -10,8 +10,30 @@ This is the way - television you remember feeling: present, unhurried, *analog*.
 
 - The soft bokeh of vintage anamorphic lenses 🎥—edges that blur like looking through aged glass, chromatic fringing that feels organic, not digital.
 
-- The glow of a neon clock 🕰️ counting Saturday mornings long past.
+- The glow of a neon clock 🕰️ counting Saturday mornings long past
 
+
+## Main View
+
+![TVx Screenshot 1](https://github.com/dopeytree/TVx/blob/main/public/screenshot-1.png?raw=true)
+
+## Full TV Guide View
+
+![TVx Screenshot 2](https://github.com/dopeytree/TVx/blob/main/public/screenshot-2.png?raw=true)
+
+## Full TV Guide View + Poster
+
+![TVx Screenshot 3](https://github.com/dopeytree/TVx/blob/main/public/screenshot-3.png?raw=true)
+
+## Full screen (vintage filter off) View
+
+![TVx Screenshot 4](https://github.com/dopeytree/TVx/blob/main/public/screenshot-4.png?raw=true)
+
+## Full screen (vintage filter on) View
+
+![TVx Screenshot 5](https://github.com/dopeytree/TVx/blob/main/public/screenshot-5.png?raw=true)
+
+## Buy me a coffee
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/dopeytree?style=for-the-badge&logo=githubsponsors&logoColor=white&label=Sponsor&labelColor=ea4aaa&color=ea4aaa)](https://github.com/sponsors/dopeytree)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-dopeytree-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dopeytree)
