@@ -1,0 +1,49 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Run npm audit fix
+        run: npm audit fix --dry-run
+        continue-on-error: true
+
+      - name: Check for vulnerabilities
+        run: |
+          AUDIT_RESULT=$(npm audit --json)
+          HIGH=$(echo $AUDIT_RESULT | jq '.metadata.vulnerabilities.high // 0')
+          CRITICAL=$(echo $AUDIT_RESULT | jq '.metadata.vulnerabilities.critical // 0')
+          
+          echo "High vulnerabilities: $HIGH"
+          echo "Critical vulnerabilities: $CRITICAL"
+          
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "::error::Found $CRITICAL critical vulnerabilities!"
+            exit 1
+          elif [ "$HIGH" -gt 0 ]; then
+            echo "::warning::Found $HIGH high vulnerabilities!"
+          fi

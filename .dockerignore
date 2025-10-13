@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+
+# Build output
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# Development files
+.env*
+.eslintrc*
+.prettierrc*
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+*.log
+.cache

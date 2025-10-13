@@ -40,6 +40,38 @@ An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. 
 
 Point TVx at your M3U and XMLTV URLs in Settings. That's it.
 
+## Docker
+
+### Run with Docker
+
+```bash
+docker run -d \
+  --name tvx \
+  -p 8777:80 \
+  --restart unless-stopped \
+  dopeytree/tvx:latest
+```
+
+Then open <http://localhost:8777>
+
+### Run with Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+### Build locally
+
+```bash
+# Build the image
+docker build -t tvx .
+
+# Run it
+docker run -d -p 8777:80 --name tvx tvx
+```
+
+**Tiny Alpine-based image** — Production-ready with nginx, gzip compression, and health checks built in.
+
 ---
 
 ## Original README
