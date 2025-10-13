@@ -55,19 +55,15 @@ An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. 
   - *The Tesla Files History* → The Tesla Files [📜]
   - *Cosmos Documentaries* → Cosmos [📜]
 
-## ⌨️ Keyboard shortcuts
-
-| Key | Action |
-|-----|--------|
-| `↑` `↓` | Channel surf (hold to skim) |
-| `G` | Toggle full TV guide |
-| `F` | Fullscreen |
-| `M` | Mute/Unmute |
-| `Esc` | Close modals/Exit theater |
 
 ## 🚀 Quick start
 
-Point TVx at your M3U and XMLTV URLs in Settings. That's it.
+- You need to have set up Plex/Jellyfin media server
+- Tunarr or Dizquetv for channel streaming
+- Open - `http://localhost:8777`
+- Point TVx at your M3U and XMLTV URLs in Settings. 
+- That's it
+- Use the up/down arrow keys to browse your personal media
 
 ## 💾 Install
 
@@ -147,6 +143,16 @@ docker run -d -p 8777:80 --name tvx tvx
 **Note**: An official Unraid Community Apps template is coming soon for one-click installation!
 
 </details>
+
+## ⌨️ Keyboard shortcuts
+
+| Key | Action |
+|-----|--------|
+| `↑` `↓` | Channel surf (hold to skim) |
+| `G` | Toggle full TV guide |
+| `F` | Fullscreen |
+| `M` | Mute/Unmute |
+| `Esc` | Close modals/Exit theater |
 
 ## 🛠️ Tech Stack
 
