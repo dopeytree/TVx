@@ -1,14 +1,20 @@
 # TVx - Modern IPTV Viewer with EPG
 
-A passion project bringing back the joy of traditional TV viewing in the streaming era. TVx combines the nostalgia of vintage CRT televisions with modern IPTV technology, creating a distraction-free, cinematic viewing experience.
-
-**Designed for [TunaRR](https://github.com/chrisbenincasa/tunarr)** - Works seamlessly with TunaRR to create custom IPTV channels from your Plex or Jellyfin library. TVx is a viewer only - it does not provide any content or streaming material.
-
 ## Philosophy
 
 TVx is about reclaiming the experience of "watching TV" - not endlessly scrolling through catalogs, not being bombarded with autoplay previews, just sitting down and watching. The vintage CRT aesthetic isn't mere decoration; it's a deliberate choice to make digital content feel less clinical and more inviting, like settling in front of an old television set.
 
-This is a passion project built for the joy of it. No ads, no tracking, no subscriptions - just a clean, focused viewing experience that respects your time and attention.
+This is a passion project built for the joy of it. No ads, no tracking, no subscriptions - just a clean, focused viewing experience that respects your time and attention. Creating a distraction-free, cinematic viewing experience.
+
+https://github.com/user-attachments/assets/1.mp4
+
+https://github.com/user-attachments/assets/2.mp4
+
+https://github.com/user-attachments/assets/3.mp4
+
+
+## Designed
+For [Tunarr](https://github.com/chrisbenincasa/tunarr) - Works seamlessly with Tunarr to view IPTV channels from your Plex or Jellyfin library. TVx is a viewer only - it does not provide any content or streaming material.
 
 ## Usage
 
