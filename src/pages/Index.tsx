@@ -287,15 +287,28 @@ const Index = () => {
   }, [settings.m3uUrl, settings.xmltvUrl]);
 
   // Automatic EPG updates every 4 hours
-  useEffect(() => {
-    if (!settings.m3uUrl && !settings.xmltvUrl) return;
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const urlsConfigured = !!(settings.m3uUrl || settings.xmltvUrl);
 
-    const interval = setInterval(() => {
+  useEffect(() => {
+    if (!urlsConfigured) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+    intervalRef.current = setInterval(() => {
       loadFromUrls(true); // Silent reload
     }, 4 * 60 * 60 * 1000); // 4 hours
 
-    return () => clearInterval(interval);
-  }, [settings.m3uUrl, settings.xmltvUrl]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [urlsConfigured]);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -1045,7 +1058,11 @@ const Index = () => {
                             >
                               <div className="absolute bottom-1 right-1">
                                 <Star 
-                                  className={`w-3 h-3 ${isFavorite ? 'fill-white text-white' : 'text-white/70'}`} 
+                                  className={`w-3 h-3 cursor-pointer ${isFavorite ? 'fill-white text-white' : 'text-white/70'}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent triggering the program click
+                                    toggleFavorite(program);
+                                  }} 
                                 />
                               </div>
                               {showText && (
@@ -1220,7 +1237,11 @@ const Index = () => {
                             >
                               <div className="absolute bottom-1 right-1">
                                 <Star 
-                                  className={`w-3 h-3 ${isFavorite ? 'fill-white text-white' : 'text-white/70'}`} 
+                                  className={`w-3 h-3 cursor-pointer ${isFavorite ? 'fill-white text-white' : 'text-white/70'}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent triggering the program click
+                                    toggleFavorite(program);
+                                  }} 
                                 />
                               </div>
                               {showText && (
