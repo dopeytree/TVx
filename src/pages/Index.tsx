@@ -286,6 +286,17 @@ const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings.m3uUrl, settings.xmltvUrl]);
 
+  // Automatic EPG updates every 4 hours
+  useEffect(() => {
+    if (!settings.m3uUrl && !settings.xmltvUrl) return;
+
+    const interval = setInterval(() => {
+      loadFromUrls(true); // Silent reload
+    }, 4 * 60 * 60 * 1000); // 4 hours
+
+    return () => clearInterval(interval);
+  }, [settings.m3uUrl, settings.xmltvUrl]);
+
   // Keep refs in sync with state
   useEffect(() => {
     fullGuideOpenRef.current = fullGuideOpen;
@@ -715,10 +726,11 @@ const Index = () => {
               <button
                 className={`w-8 h-8 flex items-center justify-center bg-background/80 hover:bg-background ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md transition-colors`}
                 onClick={() => {
-                  // Increment key to force instant remount
+                  // Reload EPG data and reset view to current time
+                  loadFromUrls(true);
                   setGuideResetKey(prev => prev + 1);
                 }}
-                title="Reset to Current Time"
+                title="Refresh EPG Data & Reset to Current Time"
               >
                 <RotateCw className="w-4 h-4" />
               </button>
@@ -939,11 +951,11 @@ const Index = () => {
                   </div>
                   {/* Programs grid */}
                   <div className="flex-1">
-                    {/* 12-hour timeline starting at current hour */}
-                    <div className="relative" style={{ width: '2880px', height: channels.length * 64 + 64 + 'px' }}>
+                    {/* 24-hour timeline starting at current hour */}
+                    <div className="relative" style={{ width: '5760px', height: channels.length * 64 + 64 + 'px' }}>
                       {/* Time headers */}
                       <div className={`absolute top-0 left-0 right-0 h-16 bg-muted flex ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>
-                        {Array.from({ length: 12 }, (_, i) => {
+                        {Array.from({ length: 24 }, (_, i) => {
                           const time = new Date();
                           time.setMinutes(0, 0, 0);
                           time.setHours(time.getHours() + i);
@@ -957,15 +969,31 @@ const Index = () => {
                           );
                         })}
                       </div>
+                      {/* Current time indicator line */}
+                      {(() => {
+                        const now = new Date();
+                        const baseTime = new Date(now);
+                        baseTime.setMinutes(0, 0, 0);
+                        const minutesFromBase = (now.getTime() - baseTime.getTime()) / 1000 / 60;
+                        const leftPosition = minutesFromBase * 4; // 4px per minute
+                        return (
+                          <div 
+                            className="absolute top-0 bottom-0 w-0.5 z-10 pointer-events-none"
+                            style={{ left: `${leftPosition}px`, backgroundColor: '#00d9ff', boxShadow: '0 0 10px #00d9ff' }}
+                          >
+                            <div className="absolute -top-1 -left-1 w-2 h-2 rounded-full" style={{ backgroundColor: '#00d9ff', boxShadow: '0 0 5px #00d9ff' }}></div>
+                          </div>
+                        );
+                      })()}
                       {/* Programs */}
                       {channels.map((channel, channelIndex) => {
                         const now = new Date();
                         const baseTime = new Date(now);
                         baseTime.setMinutes(0, 0, 0);
                         const endTime = new Date(baseTime);
-                        endTime.setHours(endTime.getHours() + 12);
+                        endTime.setHours(endTime.getHours() + 24);
                         
-                        // Filter, deduplicate, and sort programs to show only those within the 12-hour window
+                        // Filter, deduplicate, and sort programs
                         const visiblePrograms = (epgData[channel.id] || [])
                           .filter(program => {
                             // Show program if it starts before the end of the window and ends after the beginning
@@ -1098,15 +1126,14 @@ const Index = () => {
                 </div>
                 {/* Programs grid */}
                 <div ref={mainTimelineRef} className="flex-1 overflow-x-auto">
-                  {/* 13-hour timeline: 1 hour past + 12 hours future */}
-                  <div className="relative" style={{ width: '3120px', height: channels.length * 48 + 48 + 'px' }}>
+                  {/* 24-hour timeline starting at current hour */}
+                  <div className="relative" style={{ width: '5760px', height: channels.length * 64 + 64 + 'px' }}>
                     {/* Time headers */}
-                    <div className={`absolute top-0 left-0 right-0 h-12 bg-muted flex ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>
-                      {Array.from({ length: 13 }, (_, i) => {
+                    <div className={`absolute top-0 left-0 right-0 h-16 bg-muted flex ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>
+                      {Array.from({ length: 24 }, (_, i) => {
                         const time = new Date();
                         time.setMinutes(0, 0, 0);
-                        // Start from 1 hour ago
-                        time.setHours(time.getHours() - 1 + i);
+                        time.setHours(time.getHours() + i);
                         const hour = time.getHours();
                         const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
                         const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -1122,7 +1149,6 @@ const Index = () => {
                       const now = new Date();
                       const baseTime = new Date(now);
                       baseTime.setMinutes(0, 0, 0);
-                      baseTime.setHours(baseTime.getHours() - 1);
                       const minutesFromBase = (now.getTime() - baseTime.getTime()) / 1000 / 60;
                       const leftPosition = minutesFromBase * 4; // 4px per minute
                       return (
@@ -1139,15 +1165,13 @@ const Index = () => {
                       const now = new Date();
                       const baseTime = new Date(now);
                       baseTime.setMinutes(0, 0, 0);
-                      // Start from 1 hour ago
-                      baseTime.setHours(baseTime.getHours() - 1);
                       const endTime = new Date(baseTime);
-                      endTime.setHours(endTime.getHours() + 13); // 13 hours total
+                      endTime.setHours(endTime.getHours() + 24);
                       
                       // Filter, deduplicate, and sort programs
                       const visiblePrograms = (epgData[channel.id] || [])
                         .filter(program => {
-                          // Show program if it overlaps with the viewing window
+                          // Show program if it starts before the end of the window and ends after the beginning
                           return program.start < endTime && program.end > baseTime;
                         })
                         // Deduplicate programs with same title and start time
@@ -1158,65 +1182,60 @@ const Index = () => {
                           )
                         )
                         .sort((a, b) => a.start.getTime() - b.start.getTime());
-                      
-                      return visiblePrograms.map((program, programIndex) => {
-                        const now = new Date();
-                        const baseTime = new Date(now);
-                        baseTime.setMinutes(0, 0, 0);
-                        baseTime.setHours(baseTime.getHours() - 1);
                         
-                        // Calculate display start (clipped to base time if program started earlier)
-                        const displayStart = program.start < baseTime ? baseTime : program.start;
-                        const displayEnd = program.end;
-                        
-                        const startMinutes = (displayStart.getTime() - baseTime.getTime()) / 1000 / 60;
-                        const durationMinutes = (displayEnd.getTime() - displayStart.getTime()) / 1000 / 60;
-                        const left = Math.max(0, startMinutes * 4); // 4px per minute
-                        const width = Math.max(40, durationMinutes * 4);
-                        const showText = width >= 80; // Only show text if width is sufficient
-                        const top = channelIndex * 48 + 48;
-                        const isFavorite = favorites.has(`${program.title}-${program.start.getTime()}`);
-                        // Check if this program is currently playing AND on the selected channel
-                        const isNowPlaying = program.start <= now && program.end > now && channel.id === selectedChannel?.id;
-                        // Version 1: Alternating dark/light slate colors
-                        // const colors = ['bg-slate-700/50', 'bg-slate-600/50'];
-                        // Version 2: Alternating background/no background (comment out version 1, uncomment this)
-                        const colors = ['bg-slate-700/40', 'bg-black/30'];
-                        // Use program index for consistent alternating pattern
-                        const selectedColor = colors[programIndex % colors.length];
-                        
-                        return (
-                          <div
-                            key={`${channel.id}-${program.start.getTime()}-${programIndex}`}
-                            className={`absolute p-2 ${isNowPlaying ? 'ring-2 ring-cyan-400 bg-cyan-900/30' : selectedColor} text-white rounded cursor-pointer hover:opacity-80`}
-                            style={{ left: left + 'px', top: top + 'px', width: width + 'px', height: '40px' }}
-                            onClick={() => {
-                              const channel = channels.find(c => c.id === program.channelId);
-                              if (channel) setFocusedProgram({ program, channel });
-                            }}
-                          >
-                            <div className="absolute bottom-1 right-1">
-                              <Star 
-                                className={`w-3 h-3 ${isFavorite ? 'fill-white text-white' : 'text-white/70'} cursor-pointer`} 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFavorite(program);
-                                }}
-                              />
+                        return visiblePrograms.map((program, programIndex) => {
+                          const now = new Date();
+                          const baseTime = new Date(now);
+                          baseTime.setMinutes(0, 0, 0);
+                          
+                          // Calculate the actual display start (clipped to base time if program started earlier)
+                          const displayStart = program.start < baseTime ? baseTime : program.start;
+                          const displayEnd = program.end;
+                          
+                          const startMinutes = (displayStart.getTime() - baseTime.getTime()) / 1000 / 60;
+                          const durationMinutes = (displayEnd.getTime() - displayStart.getTime()) / 1000 / 60;
+                          const left = Math.max(0, startMinutes * 4); // 4px per minute
+                          const width = Math.max(40, durationMinutes * 4);
+                          const showText = width >= 80; // Only show text if width is at least 80px
+                          const top = channelIndex * 64 + 64;
+                          const isFavorite = favorites.has(`${program.title}-${program.start.getTime()}`);
+                          // Check if this program is currently playing AND on the selected channel
+                          const isNowPlaying = program.start <= now && program.end > now && channel.id === selectedChannel?.id;
+                          // Version 1: Alternating dark/light slate colors
+                          // const colors = ['bg-slate-700/50', 'bg-slate-600/50'];
+                          // Version 2: Alternating background/no background (comment out version 1, uncomment this)
+                          const colors = ['bg-slate-700/40', 'bg-black/30'];
+                          // Use program index for consistent alternating pattern
+                          const selectedColor = colors[programIndex % colors.length];
+                          
+                          return (
+                            <div
+                              key={`${channel.id}-${program.start.getTime()}-${programIndex}`}
+                              className={`absolute p-2 ${isNowPlaying ? 'ring-2 ring-cyan-400 bg-cyan-900/30' : selectedColor} text-white rounded cursor-pointer hover:opacity-80`}
+                              style={{ left: left + 'px', top: top + 'px', width: width + 'px', height: '56px' }}
+                              onClick={() => {
+                                const channel = channels.find(c => c.id === program.channelId);
+                                if (channel) setFocusedProgram({ program, channel });
+                              }}
+                            >
+                              <div className="absolute bottom-1 right-1">
+                                <Star 
+                                  className={`w-3 h-3 ${isFavorite ? 'fill-white text-white' : 'text-white/70'}`} 
+                                />
+                              </div>
+                              {showText && (
+                                <>
+                                  <div className="font-semibold text-xs truncate">{program.title}</div>
+                                  <div className="text-xs opacity-90 truncate">
+                                    <Play className="w-2 h-2 inline mr-1" />
+                                    {program.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} ({Math.round((program.end.getTime() - program.start.getTime()) / 1000 / 60)}min)
+                                  </div>
+                                </>
+                              )}
                             </div>
-                            {showText && (
-                              <>
-                                <div className="font-semibold text-xs truncate">{program.title}</div>
-                                <div className="text-xs opacity-90 truncate">
-                                  <Play className="w-2 h-2 inline mr-1" />
-                                  {program.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} ({Math.round((program.end.getTime() - program.start.getTime()) / 1000 / 60)}min)
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        );
-                      });
-                    })}
+                          );
+                        });
+                      })}
                   </div>
                 </div>
               </div>
