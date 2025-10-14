@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
-import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell, ChevronDown, ChevronUp, Github, RotateCcw } from "lucide-react";
+import { Keyboard, X, FileText, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell, ChevronDown, ChevronUp, Github, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
