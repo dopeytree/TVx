@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
-import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell, ChevronDown, ChevronUp, Github } from "lucide-react";
+import { Save, Keyboard, X, Link, FileText, Zap, Play, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell, ChevronDown, ChevronUp, Github, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -81,6 +81,20 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
   // For text inputs, just update local state (will save on blur or close)
   const updateLocalSetting = (newSettings: AppSettings) => {
     setLocalSettings(newSettings);
+  };
+
+  const handleResetAdvancedSettings = () => {
+    const defaultAdvancedSettings = {
+      vignetteStrength: 0.35,
+      vignetteRadius: 0.75,
+      rgbShiftStrength: 0.0012,
+      edgeAberration: 10,
+      frameEdgeBlur: 10,
+      centerSharpness: 0.75,
+      sharpenFirst: true,
+    };
+    const resetSettings = { ...localSettings, ...defaultAdvancedSettings };
+    updateSetting(resetSettings, 'Advanced TV effects reset to defaults');
   };
 
   const handleClose = () => {
@@ -252,6 +266,22 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             {showAdvanced && (
               <>
                 <Separator />
+                
+                {/* Reset to Default Button */}
+                <div className="flex justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResetAdvancedSettings}
+                    className="flex items-center gap-2"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Reset to Default
+                  </Button>
+                </div>
+                
+                <Separator />
+                
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <Contrast className="w-4 h-4" />
