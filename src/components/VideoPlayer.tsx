@@ -191,6 +191,105 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
   const [mainVideoReady, setMainVideoReady] = useState(false);
   const [currentChannelId, setCurrentChannelId] = useState<string | null>(null);
 
+  const setupWebGL = () => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const gl = canvas.getContext('webgl');
+    if (!gl) {
+      console.error('WebGL not supported');
+      return;
+    }
+    canvas.width = canvas.clientWidth || 640;
+    canvas.height = canvas.clientHeight || 360;
+    // compile shaders
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.compileShader(vertexShader);
+    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+      console.error('Vertex shader compile error:', gl.getShaderInfoLog(vertexShader));
+      return;
+    }
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, fragmentShaderSource);
+    gl.compileShader(fragmentShader);
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+      console.error('Fragment shader compile error:', gl.getShaderInfoLog(fragmentShader));
+      return;
+    }
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return;
+    }
+    gl.useProgram(program);
+    const inPos = gl.getAttribLocation(program, 'inPos');
+    const u_texture = gl.getUniformLocation(program, 'u_texture');
+    const u_distortion = gl.getUniformLocation(program, 'u_distortion');
+    const u_stripe = gl.getUniformLocation(program, 'u_stripe');
+    const u_rgbshift = gl.getUniformLocation(program, 'u_rgbshift');
+    const u_vignette = gl.getUniformLocation(program, 'u_vignette');
+    const u_vignette_radius = gl.getUniformLocation(program, 'u_vignette_radius');
+    const u_edge_aberration = gl.getUniformLocation(program, 'u_edge_aberration');
+    const u_frame_edge_blur = gl.getUniformLocation(program, 'u_frame_edge_blur');
+    const u_center_sharpness = gl.getUniformLocation(program, 'u_center_sharpness');
+    const u_sharpen_first = gl.getUniformLocation(program, 'u_sharpen_first');
+    const u_resolution = gl.getUniformLocation(program, 'u_resolution');
+    // buffer
+    const bufRect = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufRect);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(inPos);
+    gl.vertexAttribPointer(inPos, 2, gl.FLOAT, false, 0, 0);
+    // texture
+    const texture = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    // render
+    const render = () => {
+      let currentVideo = videoRef.current;
+
+      // Priority: main video when ready > loading video during channel change > fallback to loading video
+      if (mainVideoReady && videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
+        currentVideo = videoRef.current;
+      } else if (settings.showLoadingVideo && isChannelChanging &&
+          loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA) {
+        currentVideo = loadingVideoRef.current;
+      } else if (videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
+        currentVideo = videoRef.current;
+      } else if (loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA) {
+        currentVideo = loadingVideoRef.current;
+      }
+
+      if (currentVideo) {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, currentVideo);
+      }
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clearColor(0, 0, 0, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1i(u_texture, 0);
+      gl.uniform1f(u_distortion, 0.12);
+      gl.uniform1f(u_stripe, 0.004);
+      gl.uniform1f(u_rgbshift, settings.rgbShiftStrength);
+      gl.uniform1f(u_vignette, settings.vignetteStrength);
+      gl.uniform1f(u_vignette_radius, settings.vignetteRadius);
+      gl.uniform1f(u_edge_aberration, settings.edgeAberration || 0);
+      gl.uniform1f(u_frame_edge_blur, settings.frameEdgeBlur || 2);
+      gl.uniform1f(u_center_sharpness, settings.centerSharpness || 0);
+      gl.uniform1f(u_sharpen_first, settings.sharpenFirst ? 1.0 : 0.0);
+      gl.uniform2f(u_resolution, canvas.width, canvas.height);
+      gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+      animationRef.current = requestAnimationFrame(render);
+    };
+    render();
+  };
+
   useEffect(() => {
     const setupWebGL = () => {
       if (!canvasRef.current) return;
@@ -454,6 +553,14 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
     };
   }, [channel, settings.vintageTV, settings.vignetteStrength, settings.rgbShiftStrength, settings.vignetteRadius, settings.showLoadingVideo]);
 
+  // Handle video player resizing
+  useEffect(() => {
+    if (settings.vintageTV && canvasRef.current) {
+      // Re-setup WebGL with new canvas dimensions when size changes
+      setupWebGL();
+    }
+  }, [isFullGuide, isFullGuideExpanded, settings.vintageTV]);
+
   if (!channel) {
     return (
       <Card className={`aspect-video w-full flex items-center justify-center bg-gradient-card ${settings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border'}`}>
@@ -463,7 +570,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
   }
 
   return (
-    <Card className={`${isFullGuide ? 'h-[35vh]' : 'aspect-video'} w-full overflow-hidden bg-black rounded-3xl ${settings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border shadow-glow'}`} style={isFullGuide ? (isFullGuideExpanded ? { height: '100vh', width: 'calc(100vh * 16 / 9)', margin: '0 auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)' } : { height: '35vh', width: 'calc(35vh * 16 / 9)', margin: '0 auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)' }) : { boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)', maxHeight: 'calc(100vh - 50px)' }}>
+    <Card className={`${isFullGuide ? 'h-[35vh]' : 'aspect-video'} w-full overflow-hidden bg-black rounded-3xl ${settings.panelStyle === 'shadow' ? 'border-none shadow-lg' : 'border-border shadow-glow'}`} style={isFullGuide ? (isFullGuideExpanded ? { height: '100vh', width: 'calc(100vh * 16 / 9)', margin: '0 auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)' } : { height: '35vh', width: 'calc(35vh * 16 / 9)', marginLeft: 'auto', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)' }) : { boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px hsl(215.4 25% 26.7% / 0.3)', maxHeight: 'calc(100vh - 50px)' }}>
       {settings.vintageTV ? (
         <>
           <video

@@ -11,19 +11,16 @@ interface EPGViewProps {
   onPosterClick: (program: Program) => void;
   selectedPoster?: Program | null;
   panelStyle?: 'bordered' | 'shadow';
+  favorites: Set<string>;
+  toggleFavorite: (program: Program) => void;
 }
 
-export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selectedPoster, panelStyle = 'bordered' }: EPGViewProps) => {
+export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selectedPoster, panelStyle = 'bordered', favorites, toggleFavorite }: EPGViewProps) => {
   const now = new Date();
   
   const currentProgram = programs.find(
     p => p.start <= now && p.end > now
   );
-  
-  const [favorites, setFavorites] = useState<Set<string>>(() => {
-    const stored = localStorage.getItem('tvx-favorites');
-    return stored ? new Set(JSON.parse(stored)) : new Set();
-  });
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -32,20 +29,6 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selected
   const formatDuration = (start: Date, end: Date) => {
     const minutes = Math.round((end.getTime() - start.getTime()) / 60000);
     return `${minutes}min`;
-  };
-
-  const toggleFavorite = (program: Program) => {
-    const key = `${program.title}-${program.start.getTime()}`;
-    setFavorites(prev => {
-      const newFav = new Set(prev);
-      if (newFav.has(key)) {
-        newFav.delete(key);
-      } else {
-        newFav.add(key);
-      }
-      localStorage.setItem('tvx-favorites', JSON.stringify([...newFav]));
-      return newFav;
-    });
   };
 
   const isFavorite = (program: Program) => {

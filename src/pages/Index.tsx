@@ -129,6 +129,11 @@ const Index = () => {
       setSelectedPoster(program);
     }
 
+    // If focused program popup is open in full guide, update it to show current program of new channel
+    if (fullGuideOpen && focusedProgram && selectedChannel && program) {
+      setFocusedProgram({ program, channel: selectedChannel });
+    }
+
     // Save selected channel to localStorage and show notification
     if (selectedChannel) {
       localStorage.setItem('last-watched-channel', selectedChannel.id);
@@ -534,6 +539,7 @@ const Index = () => {
         // Exit theater mode and full guide if open, then show settings
         setTheaterMode(false);
         setFullGuideOpen(false);
+        setSelectedPoster(null);
         setSettingsOpen(true);
       }
     },
@@ -547,6 +553,9 @@ const Index = () => {
     onToggleGuide: () => {
       setTheaterMode(false);
       setFullGuideOpen(!fullGuideOpen);
+      if (fullGuideOpen) {
+        setSelectedPoster(null);
+      }
       toast.info(fullGuideOpen ? 'Closed: Full TV Guide' : 'Opened: Full TV Guide');
     },
     onToggleStats: () => {
@@ -590,13 +599,13 @@ const Index = () => {
 
   // Scroll selected channel into view in full guide
   useEffect(() => {
-    if (fullGuideOpen && selectedChannelRowRef.current) {
+    if (fullGuideOpen && !focusedProgram && selectedChannelRowRef.current) {
       selectedChannelRowRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
       });
     }
-  }, [selectedChannel, fullGuideOpen]);
+  }, [selectedChannel, fullGuideOpen, focusedProgram]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -645,19 +654,29 @@ const Index = () => {
       setFullGuideOpen(true);
       setIsIdle(false);
       setSidebarVisible(true);
+      // Auto-open popup for currently playing program
+      if (selectedChannel) {
+        const now = new Date();
+        const currentProgram = (epgData[selectedChannel.id] || []).find(
+          p => p.start <= now && p.end > now
+        );
+        if (currentProgram) {
+          setFocusedProgram({ program: currentProgram, channel: selectedChannel });
+        }
+      }
     }
   };
 
   return (
     <div className={`h-screen grid overflow-hidden ${sidebarVisible ? 'lg:grid-cols-[75%_25%]' : 'grid-cols-[1fr]'} ${settings.panelStyle === 'shadow' ? 'bg-slate-950' : 'bg-background'}`}>
       <main className={`space-y-6 h-full ${sidebarVisible ? 'pt-4 pl-4' : 'p-[30px]'}`}>
-        <div onClick={handleVideoPlayerClick} className="cursor-pointer">
+        <div onClick={handleVideoPlayerClick} className={`cursor-pointer ${fullGuideOpen ? 'flex justify-end' : ''}`}>
           <VideoPlayer channel={selectedChannel} settings={settings} muted={muted} isFullGuide={fullGuideOpen} isFullGuideExpanded={fullGuideExpanded} />
         </div>
         
         {selectedChannel && !fullGuideOpen && activeTab === 'guide' && (
           <div ref={epgViewRef}>
-            <EPGView key={selectedChannel.id} programs={currentPrograms} channelName={selectedChannel.name} isIdle={isIdle} onPosterClick={handlePosterToggle} selectedPoster={selectedPoster} panelStyle={settings.panelStyle} />
+            <EPGView key={selectedChannel.id} programs={currentPrograms} channelName={selectedChannel.name} isIdle={isIdle} onPosterClick={handlePosterToggle} selectedPoster={selectedPoster} panelStyle={settings.panelStyle} favorites={favorites} toggleFavorite={toggleFavorite} />
           </div>
         )}
         
@@ -693,7 +712,10 @@ const Index = () => {
               </button>
               <button
                 className={`w-8 h-8 flex items-center justify-center bg-background/80 hover:bg-background ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md transition-colors`}
-                onClick={() => setFullGuideOpen(false)}
+                onClick={() => {
+                  setFullGuideOpen(false);
+                  setSelectedPoster(null);
+                }}
                 title="Close Full TV Guide"
               >
                 <X className="w-4 h-4" />
@@ -702,25 +724,13 @@ const Index = () => {
             <div ref={fullGuideRef} className="h-full overflow-auto pt-12">
             {focusedProgram ? (
               <div className="flex flex-1 h-full relative">
-                {/* Dimmed background */}
-                <div className="absolute inset-0 bg-black/50 z-10" onClick={() => setFocusedProgram(null)} />
-                {/* Expanded program */}
-                <div className={`absolute z-20 ${getPanelClasses('rounded-lg p-6 shadow-lg')} w-[420px] min-w-[420px]`} 
+                {/* Dimmed background - hidden to prevent interference with grid */}
+                <div className="hidden" />
+                {/* Expanded program - positioned next to video player on left */}
+                <div className={`fixed z-50 ${getPanelClasses('rounded-lg p-4 shadow-lg')} w-[555px] min-w-[555px] max-h-[calc(100vh-7rem)] overflow-y-auto`} 
                      style={{ 
-                       left: Math.max(200, Math.min(window.innerWidth - 450, (focusedProgram.program.start.getTime() - new Date().getTime()) / 1000 / 60 * 4 + 200)), 
-                       top: (() => {
-                         const channelIndex = channels.findIndex(c => c.id === focusedProgram.program.channelId);
-                         // Account for: header (48px) + channel rows (48px each) + scroll offset
-                         const scrollOffset = fullGuideRef.current?.scrollTop || 0;
-                         const headerHeight = 48;
-                         const channelRowTop = headerHeight + (channelIndex * 48);
-                         // Position relative to viewport, accounting for scroll
-                         const viewportRelativeTop = channelRowTop - scrollOffset - 290; // Move up 290px
-                         const popupHeight = 400;
-                         const containerHeight = fullGuideRef.current?.clientHeight || window.innerHeight * 0.65;
-                         // Clamp to visible area with padding
-                         return Math.max(20, Math.min(viewportRelativeTop, containerHeight - popupHeight - 20)) + 'px';
-                       })()
+                       left: sidebarVisible ? '20px' : '20px',
+                       top: '2rem'
                      }}>
                   <button 
                     className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center hover:bg-muted rounded"
@@ -729,14 +739,14 @@ const Index = () => {
                     <X className="w-4 h-4" />
                   </button>
                   
-                  <div className="flex items-start gap-4 mb-4 w-full">
+                  <div className="flex items-start gap-3 mb-3 w-full">
                     {/* Poster artwork or channel logo with channel name */}
-                    <div className="flex flex-col items-center gap-2 flex-shrink-0 w-32">
+                    <div className="flex flex-col items-center gap-1.5 flex-shrink-0 w-28">
                       {(focusedProgram.program.image || focusedProgram.program.icon) ? (
                         <img
                           src={focusedProgram.program.image || focusedProgram.program.icon}
                           alt="Poster"
-                          className="w-32 h-auto max-h-[200px] object-contain rounded cursor-pointer hover:opacity-80 transition-opacity"
+                          className="w-28 h-auto max-h-[300px] object-contain rounded cursor-pointer hover:opacity-80 transition-opacity"
                           onClick={() => {
                             const searchYear = focusedProgram.program.year 
                               ? (typeof focusedProgram.program.year === 'number' && focusedProgram.program.year > 9999
@@ -756,20 +766,35 @@ const Index = () => {
                           className="w-12 h-12 rounded object-cover"
                         />
                       ) : null}
-                      {/* Channel name with icon */}
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        {focusedProgram.channel.name.toLowerCase().includes('movie') ? (
-                          <Clapperboard className="w-3 h-3" />
-                        ) : focusedProgram.channel.name.toLowerCase().includes('sport') ? (
-                          <Trophy className="w-3 h-3" />
-                        ) : focusedProgram.channel.name.toLowerCase().includes('history') || focusedProgram.channel.name.toLowerCase().includes('doc') ? (
-                          <History className="w-3 h-3" />
-                        ) : (
-                          <Tv className="w-3 h-3" />
-                        )}
-                        <span className="text-center">
-                          {focusedProgram.channel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim()}
-                        </span>
+                      {/* Channel name with icon - clickable */}
+                      <div 
+                        className="flex flex-col items-center gap-1"
+                        onClick={() => {
+                          setSelectedChannel(focusedProgram.channel);
+                        }}
+                      >
+                        {/* Star icon above channel name */}
+                        <Star 
+                          className={`w-[13px] h-[13px] mb-[5px] cursor-pointer ${favorites.has(`${focusedProgram.program.title}-${focusedProgram.program.start.getTime()}`) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(focusedProgram.program);
+                          }}
+                        />
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground cursor-pointer hover:text-primary transition-colors">
+                          {focusedProgram.channel.name.toLowerCase().includes('movie') ? (
+                            <Clapperboard className="w-3 h-3" />
+                          ) : focusedProgram.channel.name.toLowerCase().includes('sport') ? (
+                            <Trophy className="w-3 h-3" />
+                          ) : focusedProgram.channel.name.toLowerCase().includes('history') || focusedProgram.channel.name.toLowerCase().includes('doc') ? (
+                            <History className="w-3 h-3" />
+                          ) : (
+                            <Tv className="w-3 h-3" />
+                          )}
+                          <span className="text-center">
+                            {focusedProgram.channel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim()}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -842,22 +867,11 @@ const Index = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => { setSelectedChannel(focusedProgram.channel); setFullGuideOpen(false); setFocusedProgram(null); }}>
-                      <Play className="w-4 h-4" />
-                    </Button>
-                    <div className="ml-auto">
-                      <Star 
-                        className={`w-5 h-5 cursor-pointer ${favorites.has(`${focusedProgram.program.title}-${focusedProgram.program.start.getTime()}`) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} 
-                        onClick={() => toggleFavorite(focusedProgram.program)}
-                      />
-                    </div>
-                  </div>
                 </div>
                 {/* Grid underneath */}
                 <div className="flex flex-1 h-full">
                   {/* Channel column */}
-                  <div className={`w-48 flex-shrink-0 overflow-y-auto ${settings.panelStyle === 'shadow' ? '' : 'border-r border-border'}`}>
+                  <div className={`w-48 flex-shrink-0 ${settings.panelStyle === 'shadow' ? '' : 'border-r border-border'}`}>
                     <div className={`h-16 bg-muted flex items-center px-4 font-semibold ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'}`}>Channel</div>
                     {channels.map((channel, index) => {
                       const cleanName = channel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim();
@@ -877,6 +891,10 @@ const Index = () => {
                             const currentProg = getCurrentProgram(channel);
                             if (currentProg && (currentProg.image || currentProg.icon)) {
                               setSelectedPoster(currentProg);
+                            }
+                            // Update focused program popup to show current program
+                            if (currentProg) {
+                              setFocusedProgram({ program: currentProg, channel });
                             }
                           }}
                         >
@@ -906,8 +924,6 @@ const Index = () => {
                         </div>
                       );
                     })}
-                    {/* Add padding at bottom to allow scrolling to last channel */}
-                    <div className="h-[calc(65vh-200px)]"></div>
                   </div>
                   {/* Programs grid */}
                   <div className="flex-1">
@@ -1032,6 +1048,10 @@ const Index = () => {
                           const currentProg = getCurrentProgram(channel);
                           if (currentProg && (currentProg.image || currentProg.icon)) {
                             setSelectedPoster(currentProg);
+                          }
+                          // Update focused program popup to show current program
+                          if (currentProg) {
+                            setFocusedProgram({ program: currentProg, channel });
                           }
                         }}
                       >
@@ -1165,7 +1185,11 @@ const Index = () => {
                           >
                             <div className="absolute bottom-1 right-1">
                               <Star 
-                                className={`w-3 h-3 ${isFavorite ? 'fill-white text-white' : 'text-white/70'}`} 
+                                className={`w-3 h-3 ${isFavorite ? 'fill-white text-white' : 'text-white/70'} cursor-pointer`} 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleFavorite(program);
+                                }}
                               />
                             </div>
                             {showText && (
@@ -1245,6 +1269,16 @@ const Index = () => {
               onClick={() => {
                 setTheaterMode(false);
                 setFullGuideOpen(true);
+                // Auto-open popup for currently playing program
+                if (selectedChannel) {
+                  const now = new Date();
+                  const currentProgram = (epgData[selectedChannel.id] || []).find(
+                    p => p.start <= now && p.end > now
+                  );
+                  if (currentProgram) {
+                    setFocusedProgram({ program: currentProgram, channel: selectedChannel });
+                  }
+                }
                 toast.info('Opened: Full TV Guide');
               }}
               className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
@@ -1262,7 +1296,7 @@ const Index = () => {
             </Button>
           )}
           <div className={`${getSidebarPanelClasses('rounded-lg relative max-h-[500px]')}`}>
-            {selectedPoster ? (
+            {selectedPoster && !focusedProgram ? (
               <Poster program={selectedPoster} onClose={handleClosePoster} isIdle={isIdle} />
             ) : settingsOpen ? (
               <div ref={settingsRef}>
@@ -1281,6 +1315,10 @@ const Index = () => {
                       const currentProg = getCurrentProgram(channel);
                       if (currentProg && (currentProg.image || currentProg.icon)) {
                         setSelectedPoster(currentProg);
+                      }
+                      // Update focused program popup to show current program
+                      if (currentProg) {
+                        setFocusedProgram({ program: currentProg, channel });
                       }
                     }
                   }}
