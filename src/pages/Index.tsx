@@ -552,11 +552,23 @@ const Index = () => {
     },
     onToggleGuide: () => {
       setTheaterMode(false);
+      const wasOpen = fullGuideOpen;
       setFullGuideOpen(!fullGuideOpen);
-      if (fullGuideOpen) {
+      if (wasOpen) {
         setSelectedPoster(null);
+      } else {
+        // Auto-open popup for currently playing program when opening guide
+        if (selectedChannel) {
+          const now = new Date();
+          const currentProgram = (epgData[selectedChannel.id] || []).find(
+            p => p.start <= now && p.end > now
+          );
+          if (currentProgram) {
+            setFocusedProgram({ program: currentProgram, channel: selectedChannel });
+          }
+        }
       }
-      toast.info(fullGuideOpen ? 'Closed: Full TV Guide' : 'Opened: Full TV Guide');
+      toast.info(wasOpen ? 'Closed: Full TV Guide' : 'Opened: Full TV Guide');
     },
     onToggleStats: () => {
       setTheaterMode(false);
@@ -989,7 +1001,7 @@ const Index = () => {
                           // Version 1: Alternating dark/light slate colors
                           // const colors = ['bg-slate-700/50', 'bg-slate-600/50'];
                           // Version 2: Alternating background/no background (comment out version 1, uncomment this)
-                          const colors = ['bg-slate-700/40', 'bg-transparent'];
+                          const colors = ['bg-slate-700/40', 'bg-black/30'];
                           // Use program index for consistent alternating pattern
                           const selectedColor = colors[programIndex % colors.length];
                           
@@ -1169,7 +1181,7 @@ const Index = () => {
                         // Version 1: Alternating dark/light slate colors
                         // const colors = ['bg-slate-700/50', 'bg-slate-600/50'];
                         // Version 2: Alternating background/no background (comment out version 1, uncomment this)
-                        const colors = ['bg-slate-700/40', 'bg-transparent'];
+                        const colors = ['bg-slate-700/40', 'bg-black/30'];
                         // Use program index for consistent alternating pattern
                         const selectedColor = colors[programIndex % colors.length];
                         
