@@ -67,6 +67,13 @@ An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. 
 - That's it
 - Use the up/down arrow keys to browse your personal media
 
+## 🧠 Wiki Documentation
+
+- [Wiki](https://github.com/dopeytree/TVx/wiki)
+- [Main View](https://github.com/dopeytree/TVx/wiki#main-view)
+- [Theatre Mode](https://github.com/dopeytree/TVx/wiki#theatre-mode)
+- [Full TV Guide](https://github.com/dopeytree/TVx/wiki#full-tv-guide)
+
 ## 💾 Install
 
 <details>
