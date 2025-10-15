@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AppSettings } from '@/types/iptv';
+import { logger } from '@/utils/logger';
 
 const defaultSettings: AppSettings = {
   m3uUrl: (window as any).ENV?.VITE_M3U_URL || 'http://your-tunarr-ip-address:8000/channels.m3u',
@@ -58,8 +59,9 @@ export const useSettings = () => {
         return uiSettings;
       }
     } catch (error) {
-      console.error('Error loading UI settings from localStorage:', error);
+      logger.error(`Error loading UI settings from localStorage: ${error}`);
     }
+    logger.log('Loaded UI settings from localStorage');
     return {};
   };
 
@@ -72,8 +74,9 @@ export const useSettings = () => {
       });
       localStorage.setItem('tvx-ui-settings', JSON.stringify(uiSettings));
     } catch (error) {
-      console.error('Error saving UI settings to localStorage:', error);
+      logger.error(`Error saving UI settings to localStorage: ${error}`);
     }
+    logger.log('Saved UI settings to localStorage');
   };
 
   useEffect(() => {
@@ -97,6 +100,7 @@ export const useSettings = () => {
         };
         setSettings(mergedSettings);
         setIsFirstRun(false);
+        logger.log('Loaded settings from /config/settings.json');
       })
       .catch(() => {
         // If no settings.json, merge UI settings with defaults
@@ -116,6 +120,7 @@ export const useSettings = () => {
 
     // Save UI settings to localStorage
     saveUISettings(updated);
+    logger.log('Settings updated');
   };
 
   return { settings, updateSettings, isFirstRun };

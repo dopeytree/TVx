@@ -12,6 +12,7 @@ import { Poster } from "@/components/Poster";
 import { ClockDisplay } from "@/components/ClockDisplay";
 import { useSettings } from "@/hooks/useSettings";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { logger } from "@/utils/logger";
 import { Button } from "@/components/ui/button";
 import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Star, X, Play, Clock, Clapperboard, Film, RotateCw, Book, BookOpen, History, Trophy, Calendar } from "lucide-react";
 import { toast } from "sonner";
@@ -238,27 +239,37 @@ const Index = () => {
   const queuedToast = {
     success: (message: string | React.ReactNode) => {
       const messageKey = typeof message === 'string' ? message : 'jsx-success';
+      if (typeof message === 'string') logger.log(message);
       return queueNotification(() => toast.success(message), messageKey);
     },
     error: (message: string | React.ReactNode) => {
       const messageKey = typeof message === 'string' ? message : 'jsx-error';
+      if (typeof message === 'string') logger.error(message);
       return queueNotification(() => toast.error(message), messageKey);
     },
     info: (message: string | React.ReactNode) => {
       const messageKey = typeof message === 'string' ? message : 'jsx-info';
+      if (typeof message === 'string') logger.info(message);
       return queueNotification(() => toast.info(message), messageKey);
     },
     warning: (message: string | React.ReactNode) => {
       const messageKey = typeof message === 'string' ? message : 'jsx-warning';
+      if (typeof message === 'string') logger.warn(message);
       return queueNotification(() => toast.warning(message), messageKey);
     },
   };
 
   const handleClosePoster = useCallback(() => {
+    logger.info('Closed: Poster');
     setSelectedPoster(null);
   }, []);
 
   const handlePosterToggle = useCallback((program: Program | null) => {
+    if (program) {
+      logger.info(`Opened: Poster for "${program.title}"`);
+    } else {
+      logger.info('Closed: Poster');
+    }
     setSelectedPoster(program);
   }, []);
 
@@ -394,6 +405,7 @@ const Index = () => {
         queuedToast.success(`Loaded: ${parsedChannels.length} Channels`);
       }
     } catch (error) {
+      logger.error('Error: Failed to Parse M3U File');
       toast.error('Error: Failed to Parse M3U File');
       console.error(error);
     }
@@ -410,6 +422,7 @@ const Index = () => {
         queuedToast.success(`Loaded: EPG Data for ${programCount} Programs`);
       }
     } catch (error) {
+      logger.error('Error: Failed to Parse XMLTV File');
       toast.error('Error: Failed to Parse XMLTV File');
       console.error(error);
     }
@@ -705,6 +718,7 @@ const Index = () => {
 
   useKeyboardShortcuts({
     onSettings: () => {
+      logger.info(settingsOpen ? 'Closed: Settings' : 'Opened: Settings');
       if (settingsOpen) {
         setSettingsOpen(false);
       } else {
@@ -718,11 +732,14 @@ const Index = () => {
     onFullscreen: () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
+        logger.info('Entered: Fullscreen Mode (Keyboard)');
       } else {
         document.exitFullscreen();
+        logger.info('Exited: Fullscreen Mode (Keyboard)');
       }
     },
     onToggleGuide: () => {
+      logger.info(fullGuideOpen ? 'Closed: Full TV Guide (Keyboard)' : 'Opened: Full TV Guide (Keyboard)');
       setTheaterMode(false);
       const wasOpen = fullGuideOpen;
       setFullGuideOpen(!fullGuideOpen);
@@ -743,11 +760,13 @@ const Index = () => {
       queuedToast.info(wasOpen ? 'Closed: Full TV Guide' : 'Opened: Full TV Guide');
     },
     onToggleStats: () => {
+      logger.info(statsOpen ? 'Closed: Stats (Keyboard)' : 'Opened: Stats (Keyboard)');
       setTheaterMode(false);
       setStatsOpen(!statsOpen);
       queuedToast.info(statsOpen ? 'Closed: Stats' : 'Opened: Stats');
     },
     onToggleMute: () => {
+      logger.info(!muted ? 'Muted: Audio (Keyboard)' : 'Unmuted: Audio (Keyboard)');
       setMuted(!muted);
       queuedToast.info(!muted ? 'Muted: Audio' : 'Unmuted: Audio');
     },
@@ -756,10 +775,12 @@ const Index = () => {
         // Stop/Pause - store current channel and set to null
         pausedChannelRef.current = selectedChannel;
         setSelectedChannel(null);
+        logger.info('Video: Stopped (Keyboard)');
         queuedToast.info('Video: Stopped');
       } else if (pausedChannelRef.current) {
         // Play/Resume - restore the paused channel
         setSelectedChannel(pausedChannelRef.current);
+        logger.info('Video: Playing (Keyboard)');
         queuedToast.info('Video: Playing');
       }
     },
@@ -776,8 +797,10 @@ const Index = () => {
       const newFav = new Set(prev);
       if (newFav.has(key)) {
         newFav.delete(key);
+        logger.info(`Removed: Favorite "${program.title}"`);
       } else {
         newFav.add(key);
+        logger.info(`Added: Favorite "${program.title}"`);
       }
       localStorage.setItem('tvx-favorites', JSON.stringify([...newFav]));
       return newFav;
@@ -823,6 +846,7 @@ const Index = () => {
     
     if (fullGuideOpen) {
       // State 1: Full TV Guide is open → Go to Normal View
+      logger.info('Switched: Normal View (from Full TV Guide)');
       setFullGuideOpen(false);
       setFullGuideExpanded(false);
       setFocusedProgram(null);
@@ -834,6 +858,7 @@ const Index = () => {
       
     } else if (!theaterMode && sidebarVisible) {
       // State 2: Normal View (sidebar + EPG visible) → Go to Theater Mode
+      logger.info('Switched: Theater Mode');
       setTheaterMode(true);
       setIsIdle(true);
       setSidebarVisible(false);
@@ -841,6 +866,7 @@ const Index = () => {
       
     } else {
       // State 3: Theater Mode → Go to Full TV Guide
+      logger.info('Switched: Full TV Guide');
       setTheaterMode(false);
       setFullGuideOpen(true);
       setIsIdle(false);
@@ -905,6 +931,7 @@ const Index = () => {
               <button
                 className={`w-8 h-8 flex items-center justify-center bg-background/80 hover:bg-background ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md transition-colors`}
                 onClick={() => {
+                  logger.info('Closed: Full TV Guide');
                   setFullGuideOpen(false);
                   setSelectedPoster(null);
                 }}
@@ -926,7 +953,10 @@ const Index = () => {
                      }}>
                   <button 
                     className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center hover:bg-muted rounded"
-                    onClick={() => setFocusedProgram(null)}
+                    onClick={() => {
+                      logger.info('Closed: Program Popup');
+                      setFocusedProgram(null);
+                    }}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -948,6 +978,7 @@ const Index = () => {
                             const googleSearchQuery = searchYear 
                               ? `${focusedProgram.program.title} (${searchYear})`
                               : focusedProgram.program.title;
+                            logger.info(`Opened: Google Search for "${googleSearchQuery}"`);
                             window.open(`https://www.google.com/search?q=${encodeURIComponent(googleSearchQuery)}`, '_blank');
                           }}
                         />
@@ -1053,6 +1084,17 @@ const Index = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:underline"
+                          onClick={() => {
+                            const searchYear = focusedProgram.program.year 
+                              ? (typeof focusedProgram.program.year === 'number' && focusedProgram.program.year > 9999
+                                  ? String(focusedProgram.program.year).substring(0, 4)
+                                  : focusedProgram.program.year)
+                              : '';
+                            const googleSearchQuery = searchYear 
+                              ? `${focusedProgram.program.title} (${searchYear})`
+                              : focusedProgram.program.title;
+                            logger.info(`Opened: Google Search for "${googleSearchQuery}"`);
+                          }}
                         >
                           More Info
                         </a>
@@ -1078,6 +1120,7 @@ const Index = () => {
                           ref={channel.id === selectedChannel?.id ? selectedChannelRowRef : null}
                           className={`h-16 flex items-center px-3 cursor-pointer hover:bg-secondary/50 ${settings.panelStyle === 'shadow' ? '' : 'border-b border-border'} ${channel.id === selectedChannel?.id ? 'bg-gradient-primary text-primary-foreground' : index % 2 === 0 ? 'bg-background' : 'bg-muted/50'}`} 
                           onClick={() => {
+                            logger.info(`Selected: Channel "${channel.name}" in Full Guide`);
                             setSelectedChannel(channel);
                             // Show poster for current program of clicked channel
                             const currentProg = getCurrentProgram(channel);
@@ -1208,7 +1251,10 @@ const Index = () => {
                               style={{ left: left + 'px', top: top + 'px', width: width + 'px', height: '56px' }}
                               onClick={() => {
                                 const channel = channels.find(c => c.id === program.channelId);
-                                if (channel) setFocusedProgram({ program, channel });
+                                if (channel) {
+                                  logger.info(`Opened: Program Popup for "${program.title}" on ${channel.name}`);
+                                  setFocusedProgram({ program, channel });
+                                }
                               }}
                             >
                               <div className="absolute bottom-1 right-1">
@@ -1387,7 +1433,10 @@ const Index = () => {
                               style={{ left: left + 'px', top: top + 'px', width: width + 'px', height: '56px' }}
                               onClick={() => {
                                 const channel = channels.find(c => c.id === program.channelId);
-                                if (channel) setFocusedProgram({ program, channel });
+                                if (channel) {
+                                  logger.info(`Opened: Program Popup for "${program.title}" on ${channel.name}`);
+                                  setFocusedProgram({ program, channel });
+                                }
                               }}
                             >
                               <div className="absolute bottom-1 right-1">
@@ -1437,8 +1486,14 @@ const Index = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => {
-                    document.documentElement.requestFullscreen();
-                    queuedToast.info('Entered: Fullscreen Mode');
+                    if (!document.fullscreenElement) {
+                      document.documentElement.requestFullscreen();
+                      logger.info('Entered: Fullscreen Mode');
+                    } else {
+                      document.exitFullscreen();
+                      logger.info('Exited: Fullscreen Mode');
+                    }
+                    queuedToast.info(!document.fullscreenElement ? 'Entered: Fullscreen Mode' : 'Exited: Fullscreen Mode');
                   }}
                   className="hover:bg-secondary"
                   title="Fullscreen"
@@ -1520,6 +1575,7 @@ const Index = () => {
                   selectedChannel={selectedChannel}
                   panelStyle={settings.panelStyle}
                   onSelectChannel={(channel) => {
+                    logger.info(`Selected: Channel "${channel.name}" in Sidebar`);
                     setSelectedChannel(channel);
                     // Show poster for current program when in full guide
                     if (fullGuideOpen) {
@@ -1540,7 +1596,10 @@ const Index = () => {
           {selectedChannel && !statsOpen && (
             <Button
               variant="outline"
-              onClick={() => setStatsOpen(true)}
+              onClick={() => {
+                logger.info(statsOpen ? 'Closed: Stats' : 'Opened: Stats');
+                setStatsOpen(true);
+              }}
               className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
             >
               Stats
@@ -1552,7 +1611,10 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setStatsOpen(false)}
+                  onClick={() => {
+                    logger.info('Closed: Stats');
+                    setStatsOpen(false);
+                  }}
                   className="absolute top-1 right-1 h-5 w-5 hover:bg-secondary"
                 >
                   <X className="w-3 h-3" />

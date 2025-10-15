@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import { Program, EPGData } from "@/types/iptv";
+import { logger } from "./logger";
 
 export const parseXMLTV = (content: string): EPGData => {
   // Clean the XML content to fix common issues
@@ -30,8 +31,6 @@ export const parseXMLTV = (content: string): EPGData => {
     programmes.forEach((prog: any) => {
       const channelId = prog['@_channel'];
       if (!channelId) return;
-      
-      console.log('Processing programme for channel:', channelId, 'title:', prog.title?.['#text'] || prog.title);
       
       const program: Program = {
         channelId,
@@ -84,6 +83,8 @@ export const parseXMLTV = (content: string): EPGData => {
       epgData[channelId].push(program);
     });
     
+    const totalProgrammes = Object.values(epgData).reduce((sum, progs) => sum + progs.length, 0);
+    logger.log(`Loaded EPG data for ${totalProgrammes} programmes`);
     console.log('Parsed EPG data:', epgData);
     
     // Sort programs by start time
@@ -93,7 +94,7 @@ export const parseXMLTV = (content: string): EPGData => {
     
     return epgData;
   } catch (error) {
-    console.error('Failed to parse XMLTV:', error);
+    logger.error(`Failed to parse XMLTV: ${error}`);
     console.log('Original content sample:', content.substring(0, 500));
     return {};
   }

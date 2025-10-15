@@ -26,12 +26,21 @@ An IPTV + EPG viewer for **Tunarr** (Plex/Jellyfin) playlists and XMLTV guides. 
 - 🎬 **Theater modes** — click the player to cycle views (guide → normal → immersive)
 - 🏷️ **Smart channel names** — strips filler words, adds icons
 
-## Quick Links
+## Documentation
 
-- [Installation](installation.md)
-- [Usage](usage.md)
-- [Development](development.md)
+### Getting Started
+- [Installation](installation.md) - Setup guide for Docker, Unraid, and local development
+- [Usage](usage.md) - Keyboard shortcuts, features, and logging
+- [Troubleshooting](troubleshooting.md) - Common issues and solutions
+
+### Technical Documentation
+- [Development](development.md) - Contributing, code style, and bug fix documentation
+- [Server Implementation](server-implementation.md) - Node.js server details, logging, and architecture
+- [Bug Fixes](bugfix/README.md) - Documented bug fixes and lessons learned
+
+### Resources
 - [GitHub Repository](https://github.com/dopeytree/TVx)
+- [Bug Fix System](BUG_FIX_SYSTEM.md) - How we document significant bug fixes
 
 ## Screenshots
 

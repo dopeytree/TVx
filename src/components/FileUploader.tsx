@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 
 interface FileUploaderProps {
   label: string;
@@ -22,9 +23,11 @@ export const FileUploader = ({ label, accept, onFileLoad, icon }: FileUploaderPr
     reader.onload = (e) => {
       const content = e.target?.result as string;
       onFileLoad(content);
+      logger.log(`Uploaded file: ${file.name}`);
       toast.success(`Loaded: ${label}`);
     };
     reader.onerror = () => {
+      logger.error(`Error loading file: ${file.name}`);
       toast.error(`Error: Failed to Load ${label}`);
     };
     reader.readAsText(file);

@@ -1,4 +1,5 @@
 import { Channel } from "@/types/iptv";
+import { logger } from "./logger";
 
 export const parseM3U = (content: string): Channel[] => {
   const lines = content.split('\n').map(line => line.trim());
@@ -28,5 +29,6 @@ export const parseM3U = (content: string): Channel[] => {
     }
   }
   
+  logger.log(`Loaded ${channels.length} channels`);
   return channels;
 };

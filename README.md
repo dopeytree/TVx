@@ -50,6 +50,7 @@ An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. 
 - 📟 **CRT warmth** — curvature, chromatic aberration, scanlines, vignette
 - 📅 **Full TV guide** — press G for a 12‑hour timeline across all channels with poster artwork
 - 🎬 **Theater modes** — click the player to cycle views (guide → normal → immersive)
+- 📊 **Comprehensive logging** — All user interactions logged to Docker container for monitoring and debugging
 - 🏷️ **Smart channel names** — strips filler words, adds icons:
   - *Pulp Fiction Movies* → Pulp Fiction [🎬]
   - *The Hitchhiker's Guide to the Galaxy Shows* → The Hitchhiker's Guide to the Galaxy [📺]
@@ -69,10 +70,16 @@ An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. 
 
 ## 📚 Documentation
 
-- [Full Documentation](docs/)
-- [Installation Guide](docs/installation.md)
-- [Usage Guide](docs/usage.md)
-- [Development](docs/development.md)
+### Getting Started
+- [Full Documentation](docs/) - Complete documentation index
+- [Installation Guide](docs/installation.md) - Docker, Unraid, and local setup
+- [Usage Guide](docs/usage.md) - Features, keyboard shortcuts, and logging
+- [Troubleshooting](docs/troubleshooting.md) - Common issues and solutions
+
+### Technical Documentation
+- [Development](docs/development.md) - Contributing and bug fix documentation
+- [Server Implementation](docs/server-implementation.md) - Node.js server architecture
+- [Bug Fixes](docs/bugfix/) - Documented bug fixes with lessons learned
 
 **Note**: To host documentation on GitHub Pages, go to Repository Settings → Pages → Source: "Deploy from a branch" → Branch: `main` → Folder: `/docs`
 
@@ -211,6 +218,75 @@ docker run -d \
 | `F` | Fullscreen |
 | `M` | Mute/Unmute |
 | `Esc` | Close modals/Exit theater |
+
+## 📊 Logging & Monitoring
+
+TVx provides comprehensive logging of all user interactions directly to your Docker container logs, making it easy to monitor usage and troubleshoot issues in Unraid or other container environments.
+
+### What Gets Logged
+
+- **Channel Selection**: When channels are selected (including channel names)
+- **Program Interactions**: Opening/closing program popups with show details
+- **Poster Views**: Opening/closing program posters
+- **Google Searches**: When "More Info" links are clicked (with show name and year)
+- **Guide Navigation**: Opening/closing full TV guide and channel guide
+- **Settings Changes**: All settings operations and modifications
+- **File Operations**: M3U/XMLTV file uploads and parsing
+- **Video Controls**: Play/pause, mute/unmute, fullscreen toggles
+- **UI Interactions**: Stats panel, favorites, keyboard shortcuts
+- **Errors**: All application errors and parsing failures
+
+### Viewing Logs
+
+**Docker Container Logs:**
+```bash
+docker logs tvx
+docker logs -f tvx  # Follow/tail logs
+```
+
+**Docker Compose Logs:**
+```bash
+docker-compose logs -f tvx
+```
+
+**Persistent Log File:**
+```bash
+# View the persistent log file (survives container restarts)
+cat ./config/tvx.log
+tail -f ./config/tvx.log  # Follow/tail logs
+```
+
+**Unraid Logs:**
+- **Container Logs**: Docker tab → TVx container → Logs button
+- **Persistent Log File**: Navigate to `/mnt/user/appdata/tvx/tvx.log` in Unraid's file browser or use terminal:
+  ```bash
+  tail -f /mnt/user/appdata/tvx/tvx.log
+  ```
+
+### Sample Log Output
+
+```log
+2025-01-15 10:30:15 INFO: Opened: Program Popup for "Breaking Bad" on AMC
+2025-01-15 10:30:20 INFO: Opened: Google Search for "Breaking Bad (2008)"
+2025-01-15 10:30:25 INFO: Selected: Channel "HBO" in Sidebar
+2025-01-15 10:30:30 INFO: Opened: Full TV Guide
+2025-01-15 10:30:45 INFO: Closed: Program Popup
+```
+
+### Log Rotation
+
+Docker automatically rotates container logs (max 10MB per file, keeps 3 files). The persistent log file (`config/tvx.log`) grows continuously - you may want to rotate it manually or set up logrotate.
+
+### Benefits
+
+This logging system helps you:
+
+- Monitor viewing patterns and popular channels
+- Debug user interaction issues
+- Track application usage in multi-user environments
+- Persistent logs survive container restarts and rebuilds
+- Easy to backup, analyze, or monitor with external tools
+- Verify that features are working correctly
 
 ## 🛠️ Tech Stack
 
