@@ -185,11 +185,253 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
   const animationRef = useRef<number>();
   const hlsRef = useRef<Hls>();
   const channelChangeTimeoutRef = useRef<NodeJS.Timeout>();
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  // const lowMidFilterRef = useRef<BiquadFilterNode | null>(null);
+  // const presenceFilterRef = useRef<BiquadFilterNode | null>(null);
+  // const highpassFilterRef = useRef<BiquadFilterNode | null>(null);
+  // const lowpassFilterRef = useRef<BiquadFilterNode | null>(null);
+  // const reverbNodeRef = useRef<ConvolverNode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);
   const [isChannelChanging, setIsChannelChanging] = useState(false);
   const [mainVideoReady, setMainVideoReady] = useState(false);
   const [currentChannelId, setCurrentChannelId] = useState<string | null>(null);
+
+  const [audioContextReady, setAudioContextReady] = useState(false);
+
+  // const ensureAudioContext = async (): Promise<boolean> => {
+  //   try {
+  //     // Create audio context if not exists
+  //     if (!audioContextRef.current) {
+  //       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+  //       console.log('ensureAudioContext: created new AudioContext, state:', audioContextRef.current.state);
+  //     }
+      
+  //     const ctx = audioContextRef.current;
+      
+  //     // If already running, return true
+  //     if (ctx.state === 'running') {
+  //       console.log('ensureAudioContext: context already running');
+  //       setAudioContextReady(true);
+  //       return true;
+  //     }
+      
+  //     // If suspended, try to resume
+  //     if (ctx.state === 'suspended') {
+  //       console.log('ensureAudioContext: attempting to resume suspended context');
+  //       await ctx.resume();
+  //       console.log('ensureAudioContext: context resumed successfully, new state:', ctx.state);
+  //       setAudioContextReady(true);
+  //       return true;
+  //     }
+      
+  //     // If closed or interrupted, we can't use it
+  //     if (ctx.state === 'closed' || ctx.state === 'interrupted') {
+  //       console.log('ensureAudioContext: context is closed or interrupted, creating new one');
+  //       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+  //       const newCtx = audioContextRef.current;
+  //       if (newCtx.state === 'running') {
+  //         setAudioContextReady(true);
+  //         return true;
+  //       }
+  //       if (newCtx.state === 'suspended') {
+  //         await newCtx.resume();
+  //         setAudioContextReady(true);
+  //         return true;
+  //       }
+  //     }
+      
+  //     console.log('ensureAudioContext: context state:', ctx.state);
+  //     return false;
+  //   } catch (error) {
+  //     console.error('ensureAudioContext: failed to ensure audio context:', error);
+  //     return false;
+  //   }
+  // };
+
+  // const setupAudioEffects = async () => {
+  //   if (!videoRef.current || !settings.audioFilterEnabled) {
+  //     console.log('setupAudioEffects: skipping - no video element or filter disabled');
+  //     return;
+  //   }
+
+  //   // Check if video has audio data
+  //   if (videoRef.current.readyState < videoRef.current.HAVE_CURRENT_DATA) {
+  //     console.log('setupAudioEffects: video not ready, readyState:', videoRef.current.readyState, 'for channel:', channel?.name);
+  //     return;
+  //   }
+
+  //   console.log('setupAudioEffects: starting audio setup for channel:', channel?.name, 'video readyState:', videoRef.current.readyState);
+
+  //   // Ensure AudioContext is ready
+  //   const contextReady = await ensureAudioContext();
+  //   if (!contextReady) {
+  //     console.log('setupAudioEffects: AudioContext not ready, will retry later');
+  //     return;
+  //   }
+
+  //   try {
+  //     const ctx = audioContextRef.current!;
+      
+  //     // CRITICAL: The video element must NOT be muted for Web Audio API to capture audio!
+  //     // We'll control volume through the gain node instead
+  //     videoRef.current.muted = false;
+  //     console.log('setupAudioEffects: video element UNMUTED for Web Audio API capture');
+      
+  //     // CRITICAL: You can only create a MediaElementAudioSourceNode ONCE per video element
+  //     // If we already have one, just reconnect it. Don't try to create a new one.
+  //     if (!sourceNodeRef.current) {
+  //       console.log('setupAudioEffects: creating MediaElementAudioSourceNode (FIRST TIME ONLY)');
+  //       try {
+  //         sourceNodeRef.current = ctx.createMediaElementSource(videoRef.current);
+  //         console.log('setupAudioEffects: MediaElementAudioSourceNode created successfully');
+  //       } catch (error) {
+  //         console.error('setupAudioEffects: FAILED to create MediaElementAudioSourceNode:', error);
+  //         // If creation fails, it's likely already been created - this is the problem!
+  //         return;
+  //       }
+  //     } else {
+  //       console.log('setupAudioEffects: reusing existing MediaElementAudioSourceNode');
+  //     }
+
+  //     // Create gain node if it doesn't exist (for volume control)
+  //     if (!gainNodeRef.current) {
+  //       gainNodeRef.current = ctx.createGain();
+  //       console.log('setupAudioEffects: created gain node for volume control');
+  //     }
+
+  //     // Create vintage audio filter chain if it doesn't exist
+  //     // This creates the classic "warm vintage valve/tube amplifier" sound by:
+  //     // 1. Removing very low frequencies (< 450Hz) - highpass filter
+  //     // 2. Boosting low-mids for warmth (700Hz) - peaking filter for body
+  //     // 3. Boosting upper-mids for presence (2.8kHz) - peaking filter for clarity
+  //     // 4. Rolling off high frequencies aggressively (> 3.5kHz) - lowpass filter for smoothness
+      
+  //     if (!highpassFilterRef.current) {
+  //       highpassFilterRef.current = ctx.createBiquadFilter();
+  //       highpassFilterRef.current.type = 'highpass';
+  //       highpassFilterRef.current.frequency.value = 450; // Cut bass below 450Hz (very tight vintage speaker sound)
+  //       highpassFilterRef.current.Q.value = 0.8; // Slightly steeper rolloff
+  //       console.log('setupAudioEffects: created highpass filter (450Hz)');
+  //     }
+
+  //     if (!lowMidFilterRef.current) {
+  //       lowMidFilterRef.current = ctx.createBiquadFilter();
+  //       lowMidFilterRef.current.type = 'peaking';
+  //       lowMidFilterRef.current.frequency.value = 700; // Boost low-mids (warmth and body)
+  //       lowMidFilterRef.current.Q.value = 1.0; // Moderate bandwidth for pronounced warmth
+  //       lowMidFilterRef.current.gain.value = 8; // +8dB boost for strong warmth
+  //       console.log('setupAudioEffects: created low-mid warmth filter (700Hz, +8dB)');
+  //     }
+
+  //     if (!presenceFilterRef.current) {
+  //       presenceFilterRef.current = ctx.createBiquadFilter();
+  //       presenceFilterRef.current.type = 'peaking';
+  //       presenceFilterRef.current.frequency.value = 2800; // Boost upper-mids (presence/clarity)
+  //       presenceFilterRef.current.Q.value = 1.5; // Narrower boost for strong character
+  //       presenceFilterRef.current.gain.value = 10; // +10dB boost for very "forward" vintage sound
+  //       console.log('setupAudioEffects: created presence filter (2.8kHz, +10dB)');
+  //     }
+
+  //     if (!lowpassFilterRef.current) {
+  //       lowpassFilterRef.current = ctx.createBiquadFilter();
+  //       lowpassFilterRef.current.type = 'lowpass';
+  //       lowpassFilterRef.current.frequency.value = 3500; // Cut highs above 3.5kHz (heavily muffled vintage sound)
+  //       lowpassFilterRef.current.Q.value = 0.7; // Moderate rolloff for vintage character
+  //       console.log('setupAudioEffects: created lowpass filter (3.5kHz)');
+  //     }
+
+  //     // Create a subtle reverb/echo effect using ConvolverNode
+  //     if (!reverbNodeRef.current) {
+  //       reverbNodeRef.current = ctx.createConvolver();
+  //       // Generate a short impulse response (mono, 60ms, gentle decay)
+  //       const sampleRate = ctx.sampleRate;
+  //       const length = Math.floor(sampleRate * 0.06); // 60ms
+  //       const impulse = ctx.createBuffer(1, length, sampleRate);
+  //       const channelData = impulse.getChannelData(0);
+  //       for (let i = 0; i < length; i++) {
+  //         // Exponential decay, very low amplitude
+  //         channelData[i] = (Math.random() * 2 - 1) * 0.08 * Math.pow(1 - i / length, 2.5);
+  //       }
+  //       reverbNodeRef.current.buffer = impulse;
+  //       console.log('setupAudioEffects: created short impulse response for reverb');
+  //     }
+
+  //     // Disconnect existing connections before reconnecting
+  //     try {
+  //       sourceNodeRef.current.disconnect();
+  //       highpassFilterRef.current.disconnect();
+  //       lowMidFilterRef.current.disconnect();
+  //       presenceFilterRef.current.disconnect();
+  //       lowpassFilterRef.current.disconnect();
+  //       reverbNodeRef.current.disconnect();
+  //       gainNodeRef.current.disconnect();
+  //       console.log('setupAudioEffects: disconnected existing connections');
+  //     } catch (e) {
+  //       // Ignore disconnect errors
+  //     }
+
+  //     // Connect vintage audio chain: source → highpass → low-mid warmth → presence → lowpass → reverb → gain → destination
+  //     console.log('setupAudioEffects: connecting vintage audio filter chain with reverb');
+  //     sourceNodeRef.current.connect(highpassFilterRef.current);
+  //     highpassFilterRef.current.connect(lowMidFilterRef.current);
+  //     lowMidFilterRef.current.connect(presenceFilterRef.current);
+  //     presenceFilterRef.current.connect(lowpassFilterRef.current);
+  //     lowpassFilterRef.current.connect(reverbNodeRef.current);
+  //     reverbNodeRef.current.connect(gainNodeRef.current);
+  //     gainNodeRef.current.connect(ctx.destination);
+      
+  //     // Set gain based on muted prop
+  //     gainNodeRef.current.gain.value = muted ? 0 : 1;
+  //     console.log('setupAudioEffects: gain set to', muted ? 0 : 1, '(muted:', muted + ')');
+      
+  //     console.log('setupAudioEffects: audio setup complete for channel:', channel?.name);
+  //   } catch (error) {
+  //     console.error('setupAudioEffects: error setting up audio:', error);
+  //   }
+  // };  // const teardownAudioEffects = () => {
+  //   console.log('teardownAudioEffects: called');
+  //   try {
+  //     // CRITICAL: Do NOT set sourceNodeRef.current to null
+  //     // The MediaElementAudioSourceNode must persist for the lifetime of the video element
+  //     // We can disconnect it, but we must keep the reference
+      
+  //     if (sourceNodeRef.current) {
+  //       console.log('teardownAudioEffects: disconnecting source node');
+  //       sourceNodeRef.current.disconnect();
+  //     }
+      
+  //     // Disconnect filter nodes if they exist
+  //     if (highpassFilterRef.current) {
+  //       highpassFilterRef.current.disconnect();
+  //     }
+  //     if (lowMidFilterRef.current) {
+  //       lowMidFilterRef.current.disconnect();
+  //     }
+  //     if (presenceFilterRef.current) {
+  //       presenceFilterRef.current.disconnect();
+  //     }
+  //     if (lowpassFilterRef.current) {
+  //       lowpassFilterRef.current.disconnect();
+  //     }
+  //     if (reverbNodeRef.current) {
+  //       reverbNodeRef.current.disconnect();
+  //     }
+  //     if (gainNodeRef.current) {
+  //       gainNodeRef.current.disconnect();
+  //     }
+      
+  //     // If audio filter is disabled, unmute the video so we get native audio
+  //     if (videoRef.current && !settings.audioFilterEnabled) {
+  //       videoRef.current.muted = muted; // Restore to prop value
+  //       console.log('teardownAudioEffects: video muted set to', muted);
+  //     }
+  //   } catch (error) {
+  //     console.error('teardownAudioEffects: error:', error);
+  //   }
+  // };
 
   const setupWebGL = () => {
     if (!canvasRef.current) return;
@@ -403,8 +645,10 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
     }
 
     if (channel) {
+      console.log('VideoPlayer: channel changed to:', channel?.name, channel?.id);
       // Check if this is a channel change
       const isChannelChange = currentChannelId !== channel.id;
+      const isFirstLoad = currentChannelId === null;
       setCurrentChannelId(channel.id);
 
       // Always treat as channel change to ensure loading video shows
@@ -413,6 +657,11 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       setMainVideoReady(false); // Reset main video ready state
       setIsLoading(true);
       setIsBuffering(true);
+
+      // IMPORTANT: Do NOT teardown audio or clear sourceNodeRef on channel changes!
+      // The MediaElementAudioSourceNode must persist for the lifetime of the video element
+      // We'll just disconnect and reconnect it when the new channel loads
+      console.log('VideoPlayer: keeping audio nodes intact during channel change');
 
       // Unmute loading video during channel changes
       if (loadingVideoRef.current) {
@@ -445,6 +694,31 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
           hls.loadSource(channel.url);
           hls.attachMedia(video);
 
+          // Add canplaythrough listener immediately after attachMedia
+          video.addEventListener('canplaythrough', async () => {
+            console.log('VideoPlayer: canplaythrough fired for HLS, setting mainVideoReady=true');
+            setMainVideoReady(true);
+            // Setup audio effects after video can play through
+            // if (settings.audioFilterEnabled) {
+            //   await setupAudioEffects();
+            // }
+          }, { once: true });
+
+          // Also add loadeddata listener as backup - fires when first frame is loaded
+          video.addEventListener('loadeddata', async () => {
+            console.log('VideoPlayer: loadeddata fired for HLS (backup trigger)');
+            // Only setup audio if not already set up
+            // if (settings.audioFilterEnabled && !sourceNodeRef.current) {
+            //   console.log('VideoPlayer: Setting up audio from loadeddata event');
+            //   await setupAudioEffects();
+            // }
+          }, { once: true });
+
+          // Reset ready state when video pauses
+          video.addEventListener('pause', () => {
+            setMainVideoReady(false);
+          });
+
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             // Start playing and completely pause loading video when stream is ready
             video.play().catch(err => console.error('Play error:', err));
@@ -452,15 +726,15 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
               loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
-            // Set main video as ready when it starts playing
-            video.addEventListener('playing', () => {
-              setMainVideoReady(true);
-            }, { once: true });
-            // Reset ready state when video pauses
-            video.addEventListener('pause', () => {
-              setMainVideoReady(false);
-            });
             // Loading will be set to false by the timeout (always 2 seconds minimum)
+            
+            // Additional check: if audio filter is enabled and audio isn't set up yet, try to set it up
+            setTimeout(async () => {
+              // if (settings.audioFilterEnabled && !sourceNodeRef.current && video.readyState >= video.HAVE_CURRENT_DATA) {
+              //   console.log('VideoPlayer: Setting up audio from MANIFEST_PARSED timeout');
+              //   await setupAudioEffects();
+              // }
+            }, 500);
           });
 
           hls.on(Hls.Events.BUFFER_APPENDED, () => {
@@ -498,6 +772,31 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
 
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           video.src = channel.url;
+
+          // Add canplaythrough listener immediately after setting src
+          video.addEventListener('canplaythrough', async () => {
+            console.log('VideoPlayer: canplaythrough fired for native HLS, setting mainVideoReady=true');
+            setMainVideoReady(true);
+            // Setup audio effects after video can play through
+            // if (settings.audioFilterEnabled) {
+            //   await setupAudioEffects();
+            // }
+          }, { once: true });
+
+          // Also add loadeddata listener as backup
+          video.addEventListener('loadeddata', async () => {
+            console.log('VideoPlayer: loadeddata fired for native HLS (backup trigger)');
+            // if (settings.audioFilterEnabled && !sourceNodeRef.current) {
+            //   console.log('VideoPlayer: Setting up audio from loadeddata event');
+            //   await setupAudioEffects();
+            // }
+          }, { once: true });
+
+          // Reset ready state when video pauses
+          video.addEventListener('pause', () => {
+            setMainVideoReady(false);
+          });
+
           video.addEventListener('loadedmetadata', () => {
             // Start playing and completely pause loading video when stream is ready
             video.play().catch(err => console.error('Play error:', err));
@@ -505,19 +804,44 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
               loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
-            // Set main video as ready when it starts playing
-            video.addEventListener('playing', () => {
-              setMainVideoReady(true);
-            }, { once: true });
-            // Reset ready state when video pauses
-            video.addEventListener('pause', () => {
-              setMainVideoReady(false);
-            });
             // Loading will be set to false by the timeout (always 2 seconds minimum)
+            
+            // Additional check for audio setup
+            setTimeout(async () => {
+              // if (settings.audioFilterEnabled && !sourceNodeRef.current && video.readyState >= video.HAVE_CURRENT_DATA) {
+              //   console.log('VideoPlayer: Setting up audio from loadedmetadata timeout (native HLS)');
+              //   await setupAudioEffects();
+              // }
+            }, 500);
           });
           // For channel changes, buffering is managed by the timeout
         } else {
           video.src = channel.url.replace('.m3u8', '.mp4');
+
+          // Add canplaythrough listener immediately after setting src
+          video.addEventListener('canplaythrough', async () => {
+            console.log('VideoPlayer: canplaythrough fired for MP4, setting mainVideoReady=true');
+            setMainVideoReady(true);
+            // Setup audio effects after video can play through
+            // if (settings.audioFilterEnabled) {
+            //   await setupAudioEffects();
+            // }
+          }, { once: true });
+
+          // Also add loadeddata listener as backup
+          video.addEventListener('loadeddata', async () => {
+            console.log('VideoPlayer: loadeddata fired for MP4 (backup trigger)');
+            // if (settings.audioFilterEnabled && !sourceNodeRef.current) {
+            //   console.log('VideoPlayer: Setting up audio from loadeddata event');
+            //   await setupAudioEffects();
+            // }
+          }, { once: true });
+
+          // Reset ready state when video pauses
+          video.addEventListener('pause', () => {
+            setMainVideoReady(false);
+          });
+
           video.addEventListener('loadedmetadata', () => {
             // Start playing and completely pause loading video when stream is ready
             video.play().catch(err => console.error('Play error:', err));
@@ -525,15 +849,15 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
               loadingVideoRef.current.pause();
               loadingVideoRef.current.muted = true;
             }
-            // Set main video as ready when it starts playing
-            video.addEventListener('playing', () => {
-              setMainVideoReady(true);
-            }, { once: true });
-            // Reset ready state when video pauses
-            video.addEventListener('pause', () => {
-              setMainVideoReady(false);
-            });
             // Loading will be set to false by the timeout (always 2 seconds minimum)
+            
+            // Additional check for audio setup
+            setTimeout(async () => {
+              // if (settings.audioFilterEnabled && !sourceNodeRef.current && video.readyState >= video.HAVE_CURRENT_DATA) {
+              //   console.log('VideoPlayer: Setting up audio from loadedmetadata timeout (MP4)');
+              //   await setupAudioEffects();
+              // }
+            }, 500);
           });
           // For channel changes, buffering is managed by the timeout
         }
@@ -560,6 +884,98 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       setupWebGL();
     }
   }, [isFullGuide, isFullGuideExpanded, settings.vintageTV]);
+
+  // // Handle audio filter enable/disable - setup or teardown audio routing
+  // useEffect(() => {
+  //   const handleAudioFilterToggle = async () => {
+  //     if (!videoRef.current) return;
+      
+  //     if (settings.audioFilterEnabled) {
+  //       console.log('VideoPlayer: Audio filter enabled, setting up Web Audio API');
+  //       // Setup audio effects if video is ready
+  //       if (videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
+  //         await setupAudioEffects();
+  //       }
+  //     } else {
+  //       console.log('VideoPlayer: Audio filter disabled, using native audio');
+  //       // Disconnect Web Audio API routing
+  //       if (sourceNodeRef.current) {
+  //         try {
+  //           sourceNodeRef.current.disconnect();
+  //           console.log('VideoPlayer: Disconnected Web Audio API');
+  //         } catch (e) {
+  //           // Ignore
+  //         }
+  //       }
+  //       // Unmute video to use native audio
+  //       videoRef.current.muted = muted;
+  //       console.log('VideoPlayer: Video unmuted for native audio, muted =', muted);
+  //     }
+  //   };
+    
+  //   handleAudioFilterToggle();
+  // }, [settings.audioFilterEnabled, muted]);
+
+  // // Handle muted prop changes - control audio output based on audio filter state
+  // useEffect(() => {
+  //   if (!videoRef.current) return;
+    
+  //   if (settings.audioFilterEnabled && gainNodeRef.current) {
+  //     // Audio filter is enabled - control volume via gain node
+  //     // Video element must stay UNMUTED for Web Audio API to capture audio
+  //     videoRef.current.muted = false;
+  //     gainNodeRef.current.gain.value = muted ? 0 : 1;
+  //     console.log('VideoPlayer: audio filter enabled, gain set to', muted ? 0 : 1);
+  //   } else {
+  //     // Audio filter disabled - use native video audio
+  //     videoRef.current.muted = muted;
+  //     console.log('VideoPlayer: using native audio, video muted =', muted);
+  //   }
+  // }, [muted, settings.audioFilterEnabled]);
+
+  // // When AudioContext becomes ready, try to set up audio if video is ready
+  // useEffect(() => {
+  //   const setupAudioIfReady = async () => {
+  //     if (audioContextReady && mainVideoReady && settings.audioFilterEnabled && videoRef.current) {
+  //       console.log('VideoPlayer: AudioContext ready and video ready, setting up audio');
+  //       await setupAudioEffects();
+  //     }
+  //   };
+  //   setupAudioIfReady();
+  // }, [audioContextReady, mainVideoReady, settings.audioFilterEnabled]);
+
+  // // Resume AudioContext on user interactions to ensure audio works after page reload
+  // useEffect(() => {
+  //   const resumeAudioContext = async () => {
+  //     if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+  //       console.log('VideoPlayer: attempting to resume AudioContext');
+  //       const success = await ensureAudioContext();
+  //       if (success && mainVideoReady && settings.audioFilterEnabled) {
+  //         console.log('VideoPlayer: AudioContext resumed, setting up audio effects');
+  //         await setupAudioEffects();
+  //       }
+  //     } else {
+  //       console.log('VideoPlayer: AudioContext already running or not created yet');
+  //     }
+  //   };
+
+  //   // Try to resume immediately (might fail if no user gesture)
+  //   resumeAudioContext();
+
+  //   // Also resume on user interaction
+  //   const events = ['click', 'touchstart', 'keydown', 'play'];
+  //   const handlers = events.map(event => {
+  //     const handler = () => resumeAudioContext();
+  //     document.addEventListener(event, handler);
+  //     return { event, handler };
+  //   });
+
+  //   return () => {
+  //     handlers.forEach(({ event, handler }) => {
+  //       document.removeEventListener(event, handler);
+  //     });
+  //   };
+  // }, [mainVideoReady, settings.audioFilterEnabled]);
 
   if (!channel) {
     return (

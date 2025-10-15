@@ -37,6 +37,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [lastNotificationTime, setLastNotificationTime] = useState<number>(0);
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -50,9 +51,8 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         // Switch to theater mode after closing
         setTimeout(() => {
           if (onGlobalSave) {
-            onGlobalSave({ ...localSettings, vintageTV: true });
+            onGlobalSave({ ...localSettings });
           }
-          toast.info('Entering theater mode');
         }, 100);
       }, 20000); // 20 seconds
       setTimeoutId(id);
@@ -67,6 +67,15 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
     };
   }, [open]);
 
+  // Throttled toast function to prevent spam (minimum 1s between notifications)
+  const throttledToast = (message: string) => {
+    const now = Date.now();
+    if (now - lastNotificationTime >= 1000) {
+      setLastNotificationTime(now);
+      toast.info(message);
+    }
+  };
+
   // Auto-save for immediate changes (toggles, selects, sliders) with notifications
   const updateSetting = (newSettings: AppSettings, notification?: string) => {
     setLocalSettings(newSettings);
@@ -74,7 +83,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
       onGlobalSave(newSettings);
     }
     if (notification && newSettings.showNotifications) {
-      toast.info(notification);
+      throttledToast(notification);
     }
   };
 
@@ -103,6 +112,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
       onGlobalSave(localSettings);
     }
     onSave(localSettings);
+    throttledToast('Settings saved');
     onOpenChange(false);
   };
 
@@ -130,7 +140,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
                 const newSettings = { ...localSettings, showNotifications: checked };
                 updateSetting(newSettings);
                 if (checked) {
-                  toast.info('Enabled: Notifications');
+                  throttledToast('Enabled: Notifications');
                 }
               }}
             />
@@ -141,9 +151,24 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
       <Separator />
 
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">
-          Sources
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">
+            Sources
+          </h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (onGlobalSave) {
+                onGlobalSave(localSettings);
+              }
+              throttledToast('Settings saved');
+            }}
+            className={`${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
+          >
+            Save
+          </Button>
+        </div>
         <div className="space-y-3">
           <div>
             <Label htmlFor="m3u-url" className="flex items-center gap-2">
@@ -155,6 +180,11 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               placeholder="https://example.com/playlist.m3u"
               value={localSettings.m3uUrl || ''}
               onChange={(e) => updateLocalSetting({ ...localSettings, m3uUrl: e.target.value })}
+              onBlur={() => {
+                if (onGlobalSave) {
+                  onGlobalSave(localSettings);
+                }
+              }}
               className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
             />
           </div>
@@ -168,6 +198,11 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               placeholder="https://example.com/epg.xml"
               value={localSettings.xmltvUrl || ''}
               onChange={(e) => updateLocalSetting({ ...localSettings, xmltvUrl: e.target.value })}
+              onBlur={() => {
+                if (onGlobalSave) {
+                  onGlobalSave(localSettings);
+                }
+              }}
               className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
             />
           </div>
@@ -205,6 +240,25 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             </SelectContent>
           </Select>
         </div>
+        {/* <div className="flex items-center justify-between">
+          <div className="space-y-0.5 flex-1">
+            <Label className="flex items-center gap-2">
+              <Film className="w-4 h-4" />
+              Audio Filter
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Warm valve & vinyl sound effects
+            </p>
+          </div>
+          <Switch
+            checked={localSettings.audioFilterEnabled}
+            onCheckedChange={(checked) => {
+              const newSettings = { ...localSettings, audioFilterEnabled: checked };
+              updateSetting(newSettings);
+              toast.info(checked ? 'Audio filter enabled' : 'Audio filter disabled');
+            }}
+          />
+        </div> */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5 flex-1">
             <Label className="flex items-center gap-2">
@@ -220,7 +274,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             onCheckedChange={(checked) => {
               const newSettings = { ...localSettings, showLoadingVideo: checked };
               updateSetting(newSettings);
-              toast.info(checked ? 'Loading animation enabled' : 'Loading animation disabled');
+              throttledToast(checked ? 'Loading animation enabled' : 'Loading animation disabled');
             }}
           />
         </div>
@@ -239,7 +293,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             onCheckedChange={(checked) => {
               const newSettings = { ...localSettings, vintageTV: checked };
               updateSetting(newSettings);
-              toast.info(checked ? 'Vintage TV filter enabled' : 'Vintage TV filter disabled');
+              throttledToast(checked ? 'Vintage TV filter enabled' : 'Vintage TV filter disabled');
             }}
           />
         </div>
@@ -463,8 +517,8 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
                 retro: 'Retro Red'
               };
               const newSettings = { ...localSettings, clockStyle: value };
-              updateSetting(newSettings, `Clock style: ${styleNames[value]}`);
-              toast.info(`Clock style: ${styleNames[value] || value}`);
+              updateSetting(newSettings);
+              throttledToast(`Clock style: ${styleNames[value] || value}`);
             }}
           >
             <SelectTrigger id="clock-style" className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}>
@@ -496,7 +550,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             onCheckedChange={(checked) => {
               const newSettings = { ...localSettings, panelStyle: (checked ? 'shadow' : 'bordered') as 'shadow' | 'bordered' };
               updateSetting(newSettings);
-              toast.info(checked ? 'Shadow style enabled' : 'Bordered style enabled');
+              throttledToast(checked ? 'Shadow style enabled' : 'Bordered style enabled');
             }}
           />
         </div>
