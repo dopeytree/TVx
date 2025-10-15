@@ -1,3 +1,8 @@
+---
+layout: default
+title: Bug Fix Documentation System
+---
+
 # Bug Fix Documentation System
 
 ## Overview

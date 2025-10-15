@@ -1,0 +1,41 @@
+# Jekyll Configuration for TVx Documentation
+
+# Theme
+theme: jekyll-theme-midnight
+remote_theme: pages-themes/midnight@v0.2.0
+
+# Site settings
+title: TVx Documentation
+description: The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr
+url: https://dopeytree.github.io
+baseurl: /TVx
+
+# GitHub metadata
+repository: dopeytree/TVx
+
+# Plugins
+plugins:
+  - jekyll-remote-theme
+  - jekyll-relative-links
+
+# Relative links configuration
+relative_links:
+  enabled: true
+  collections: true
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  
+# Collections and navigation
+include:
+  - README.md
+  - DOCUMENTATION_UPDATE_SUMMARY.md
+  - BUG_FIX_SYSTEM.md
+
+# Exclude from processing
+exclude:
+  - Screenshots/
+  - .DS_Store

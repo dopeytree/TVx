@@ -1,3 +1,8 @@
+---
+layout: default
+title: Home
+---
+
 # 📺 TVx — the warmth of modern nostalgia
 
 This is the way - television you remember feeling: present, unhurried, *analog*.
