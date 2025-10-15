@@ -640,11 +640,11 @@ const Index = () => {
         toast.info('Playing: Video resumed');
       }
     },
-    onToggleAudioFilter: () => {
-      const newState = !settings.audioFilterEnabled;
-      updateSettings({ audioFilterEnabled: newState });
-      toast.info(newState ? 'Enabled: Vintage Audio Filter' : 'Disabled: Vintage Audio Filter');
-    },
+    // onToggleAudioFilter: () => {
+    //   const newState = !settings.audioFilterEnabled;
+    //   updateSettings({ audioFilterEnabled: newState });
+    //   toast.info(newState ? 'Enabled: Vintage Audio Filter' : 'Disabled: Vintage Audio Filter');
+    // },
   });
 
   const toggleFavorite = (program: Program) => {

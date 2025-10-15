@@ -205,7 +205,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <div className="space-y-0.5 flex-1">
             <Label className="flex items-center gap-2">
               <Film className="w-4 h-4" />
@@ -223,7 +223,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               toast.info(checked ? 'Audio filter enabled' : 'Audio filter disabled');
             }}
           />
-        </div>
+        </div> */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5 flex-1">
             <Label className="flex items-center gap-2">

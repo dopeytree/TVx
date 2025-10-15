@@ -1,7 +1,7 @@
 ## To do
 
-    - the audio is sometimes not loading and the page has to be refreshed, conduct a code review.
-
+- audio filter (currently commented out as only works on chrome)
+- 
 - links to plex show/movie
 - show age rating
 - random channel button

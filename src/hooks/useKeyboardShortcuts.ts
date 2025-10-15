@@ -62,21 +62,21 @@ export const useKeyboardShortcuts = (callbacks: {
         }
       }
 
-      // 1 for enable audio filter (vintage audio)
-      if (event.key === '1') {
-        if (!isTyping) {
-          event.preventDefault();
-          callbacks.onToggleAudioFilter?.();
-        }
-      }
+      // // 1 for enable audio filter (vintage audio)
+      // if (event.key === '1') {
+      //   if (!isTyping) {
+      //     event.preventDefault();
+      //     callbacks.onToggleAudioFilter?.();
+      //   }
+      // }
 
-      // 2 for disable audio filter (native audio)
-      if (event.key === '2') {
-        if (!isTyping) {
-          event.preventDefault();
-          callbacks.onToggleAudioFilter?.();
-        }
-      }
+      // // 2 for disable audio filter (native audio)
+      // if (event.key === '2') {
+      //   if (!isTyping) {
+      //     event.preventDefault();
+      //     callbacks.onToggleAudioFilter?.();
+      //   }
+      // }
     };
 
     window.addEventListener('keydown', handleKeyDown);

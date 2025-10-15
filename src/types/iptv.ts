@@ -53,7 +53,7 @@ export interface AppSettings {
   showLoadingVideo: boolean;
   clockStyle: 'flip' | 'matrix' | 'digital' | 'minimal' | 'retro' | 'neon';
   panelStyle: 'bordered' | 'shadow';
-  audioFilterEnabled: boolean;
+  // audioFilterEnabled: boolean;
 }
 
 export interface EPGData {
