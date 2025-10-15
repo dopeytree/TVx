@@ -49,7 +49,7 @@ The glow of a neon clock 🕰️ counting Saturday mornings long past&#xD;
   <DonateText>Support the project</DonateText>
   <DonateLink>https://github.com/sponsors/dopeytree</DonateLink>
   <Requires/>
-  <Description>*** Requires Tunarr or Dizquetv + Plex or Jellyfin media server. *** A warm, nostalgic IPTV player bringing back the analog TV experience. Load M3U playlists and XMLTV guides, browse channels with CRT effects, scanlines, vignette, and chromatic aberration. Settings and URLs are permanently stored in the AppData volume.</Description>
+  <Description>*** Requires Tunarr or Dizquetv + Plex or Jellyfin media server. *** A warm, nostalgic IPTV player bringing back the analog TV experience. Load M3U playlists and XMLTV guides, browse channels with CRT effects, scanlines, vignette, and chromatic aberration.</Description>
   <Networking>
     <Mode>bridge</Mode>
     <Publish>
@@ -71,5 +71,4 @@ The glow of a neon clock 🕰️ counting Saturday mornings long past&#xD;
   </Changes>
   <Config Name="WebUI Port" Target="80" Default="8777" Mode="tcp" Description="Port for accessing the TVx web interface. After installation, access TVx at http://[IP]:[PORT]. Default: 8777" Type="Port" Display="always" Required="true" Mask="false">8777</Config>
   <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone for proper EPG time display. Examples: America/New_York, Europe/London, Asia/Tokyo, etc. See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for full list." Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
-  <Config Name="AppData" Target="/config" Default="/mnt/user/appdata/tvx" Mode="rw" Description="Path for storing TVx configuration files (settings, M3U/EPG URLs). This should be a persistent storage location." Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/tvx</Config>
 </Container>

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AppSettings } from "@/types/iptv";
-import { Keyboard, X, FileText, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell, ChevronDown, ChevronUp, Github, RotateCcw, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Keyboard, X, FileText, Sparkles, Film, Contrast, Focus, Droplets, Clock, Layers, Bell, ChevronDown, ChevronUp, Github, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -37,10 +37,6 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  const [testingM3U, setTestingM3U] = useState(false);
-  const [testingEPG, setTestingEPG] = useState(false);
-  const [m3uValid, setM3uValid] = useState<boolean | null>(null);
-  const [epgValid, setEpgValid] = useState<boolean | null>(null);
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -101,36 +97,6 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
     updateSetting(resetSettings, 'Advanced TV effects reset to defaults');
   };
 
-  const testUrl = async (url: string, type: 'm3u' | 'epg') => {
-    if (!url) return;
-
-    if (type === 'm3u') setTestingM3U(true);
-    else setTestingEPG(true);
-
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const valid = response.ok;
-      if (type === 'm3u') {
-        setM3uValid(valid);
-        toast(valid ? 'M3U URL is reachable' : 'M3U URL is not reachable');
-      } else {
-        setEpgValid(valid);
-        toast(valid ? 'EPG URL is reachable' : 'EPG URL is not reachable');
-      }
-    } catch (error) {
-      if (type === 'm3u') {
-        setM3uValid(false);
-        toast.error('Failed to test M3U URL');
-      } else {
-        setEpgValid(false);
-        toast.error('Failed to test EPG URL');
-      }
-    } finally {
-      if (type === 'm3u') setTestingM3U(false);
-      else setTestingEPG(false);
-    }
-  };
-
   const handleClose = () => {
     // Save any pending text input changes
     if (onGlobalSave) {
@@ -184,76 +150,26 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               <FileText className="w-4 h-4" />
               M3U Playlist URL
             </Label>
-            <div className="flex gap-2 mt-1">
-              <Input
-                id="m3u-url"
-                placeholder="https://example.com/playlist.m3u"
-                value={localSettings.m3uUrl || ''}
-                onChange={(e) => updateLocalSetting({ ...localSettings, m3uUrl: e.target.value })}
-                onBlur={() => {
-                  if (onGlobalSave) {
-                    onGlobalSave(localSettings);
-                  }
-                }}
-                className={`bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => testUrl(localSettings.m3uUrl || '', 'm3u')}
-                disabled={testingM3U || !localSettings.m3uUrl}
-                className="flex items-center gap-1"
-              >
-                {testingM3U ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                ) : m3uValid === true ? (
-                  <CheckCircle className="w-3 h-3 text-green-500" />
-                ) : m3uValid === false ? (
-                  <XCircle className="w-3 h-3 text-red-500" />
-                ) : (
-                  <FileText className="w-3 h-3" />
-                )}
-                Test
-              </Button>
-            </div>
+            <Input
+              id="m3u-url"
+              placeholder="https://example.com/playlist.m3u"
+              value={localSettings.m3uUrl || ''}
+              onChange={(e) => updateLocalSetting({ ...localSettings, m3uUrl: e.target.value })}
+              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
+            />
           </div>
           <div>
             <Label htmlFor="xmltv-url" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
               XMLTV EPG URL
             </Label>
-            <div className="flex gap-2 mt-1">
-              <Input
-                id="xmltv-url"
-                placeholder="https://example.com/epg.xml"
-                value={localSettings.xmltvUrl || ''}
-                onChange={(e) => updateLocalSetting({ ...localSettings, xmltvUrl: e.target.value })}
-                onBlur={() => {
-                  if (onGlobalSave) {
-                    onGlobalSave(localSettings);
-                  }
-                }}
-                className={`bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => testUrl(localSettings.xmltvUrl || '', 'epg')}
-                disabled={testingEPG || !localSettings.xmltvUrl}
-                className="flex items-center gap-1"
-              >
-                {testingEPG ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                ) : epgValid === true ? (
-                  <CheckCircle className="w-3 h-3 text-green-500" />
-                ) : epgValid === false ? (
-                  <XCircle className="w-3 h-3 text-red-500" />
-                ) : (
-                  <FileText className="w-3 h-3" />
-                )}
-                Test
-              </Button>
-            </div>
+            <Input
+              id="xmltv-url"
+              placeholder="https://example.com/epg.xml"
+              value={localSettings.xmltvUrl || ''}
+              onChange={(e) => updateLocalSetting({ ...localSettings, xmltvUrl: e.target.value })}
+              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
+            />
           </div>
         </div>
       </div>

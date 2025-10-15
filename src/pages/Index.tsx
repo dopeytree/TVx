@@ -17,7 +17,6 @@ import { Tv, FileText, Upload, Settings, Menu, Maximize, Volume2, VolumeX, Star,
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { logger } from "@/utils/logger";
 
 const Index = () => {
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -202,31 +201,26 @@ const Index = () => {
   }, [focusedProgram, selectedPoster]);
 
   const handleM3ULoad = (content: string, silent = false) => {
-    logger.log("info", "Starting M3U parsing", { contentLength: content.length, silent });
     try {
       const parsedChannels = parseM3U(content);
-      logger.log("info", "M3U parsed successfully", { channelCount: parsedChannels.length });
-
       setChannels(parsedChannels);
-
+      
       // Try to restore last watched channel
       const lastWatchedId = localStorage.getItem('last-watched-channel');
       console.log('Index: Loading from localStorage - last-watched-channel:', lastWatchedId);
       let channelToSelect = null;
-
+      
       if (lastWatchedId) {
         channelToSelect = parsedChannels.find(ch => ch.id === lastWatchedId);
         console.log('Index: Found matching channel:', channelToSelect?.name, channelToSelect?.id);
-        logger.log("info", "Restored last watched channel", { channelId: lastWatchedId, channelName: channelToSelect?.name });
       }
-
+      
       // If no last watched or channel not found, use first channel
       if (!channelToSelect && parsedChannels.length > 0) {
         channelToSelect = parsedChannels[0];
         console.log('Index: No saved channel found, using first channel:', channelToSelect.name);
-        logger.log("info", "Using first channel as default", { channelName: channelToSelect.name });
       }
-
+      
       if (channelToSelect) {
         // On page refresh, we need to ensure AudioContext is resumed before loading the channel
         // This is crucial for audio filters to work properly
@@ -236,44 +230,33 @@ const Index = () => {
             const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
             if (audioContext.state === 'suspended') {
               console.log('Index: AudioContext suspended on page load, will resume on user interaction');
-              logger.log("info", "AudioContext suspended, will resume on user interaction");
             } else {
               console.log('Index: AudioContext running on page load');
-              logger.log("info", "AudioContext running on page load");
             }
           } catch (error) {
             console.error('Index: Error checking AudioContext on page load:', error);
-            logger.log("error", "Error checking AudioContext", { error: error instanceof Error ? error.message : String(error) });
           }
-
+          
           setSelectedChannel(channelToSelect);
-          logger.log("info", "Channel selected", { channelId: channelToSelect.id, channelName: channelToSelect.name });
         };
-
+        
         resumeAudioAndLoadChannel();
-      }
-      // Only show notification if not silent mode and notifications are enabled
+      }      // Only show notification if not silent mode and notifications are enabled
       if (!silent && settings.showNotifications) {
         toast.success(`Loaded: ${parsedChannels.length} Channels`);
       }
-      logger.log("info", "M3U load completed", { channelCount: parsedChannels.length, silent });
     } catch (error) {
       toast.error('Error: Failed to Parse M3U File');
       console.error(error);
-      logger.log("error", "M3U parsing failed", { error: error instanceof Error ? error.message : String(error) });
     }
   };
 
   const handleXMLTVLoad = (content: string, silent = false) => {
-    logger.log("info", "Starting XMLTV parsing", { contentLength: content.length, silent });
     try {
       const parsedEPG = parseXMLTV(content);
-      logger.log("info", "XMLTV parsed successfully", { channelCount: Object.keys(parsedEPG).length });
-
       setEpgData(parsedEPG);
       const programCount = Object.values(parsedEPG).reduce((sum, progs) => sum + progs.length, 0);
-      logger.log("info", "EPG data loaded", { channelCount: Object.keys(parsedEPG).length, programCount });
-
+      
       // Only show notification if not silent mode and notifications are enabled
       if (!silent && settings.showNotifications) {
         toast.success(`Loaded: EPG Data for ${Object.keys(parsedEPG).length} Channels (${programCount} Programs)`);
@@ -281,39 +264,30 @@ const Index = () => {
     } catch (error) {
       toast.error('Error: Failed to Parse XMLTV File');
       console.error(error);
-      logger.log("error", "XMLTV parsing failed", { error: error instanceof Error ? error.message : String(error) });
     }
   };
 
   const loadFromUrls = async (silent = false) => {
     if (!settings.m3uUrl && !settings.xmltvUrl) {
       toast.error('Error: Please Configure URLs in Settings First');
-      logger.log("error", "Load from URLs failed: no URLs configured");
       return;
     }
 
-    logger.log("info", "Starting load from URLs", { m3uUrl: !!settings.m3uUrl, xmltvUrl: !!settings.xmltvUrl, silent });
     setIsLoading(true);
 
     try {
       if (settings.m3uUrl) {
-        logger.log("info", "Loading M3U from URL", { url: settings.m3uUrl });
         const m3uContent = await loadFromUrl(settings.m3uUrl);
-        logger.log("info", "M3U content loaded", { contentLength: m3uContent.length });
         handleM3ULoad(m3uContent, silent);
       }
 
       if (settings.xmltvUrl) {
-        logger.log("info", "Loading XMLTV from URL", { url: settings.xmltvUrl });
         const xmltvContent = await loadFromUrl(settings.xmltvUrl);
-        logger.log("info", "XMLTV content loaded", { contentLength: xmltvContent.length });
         handleXMLTVLoad(xmltvContent, silent);
       }
-      logger.log("info", "Load from URLs completed successfully");
     } catch (error) {
       toast.error('Error: Failed to Load from URLs');
       console.error(error);
-      logger.log("error", "Load from URLs failed", { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsLoading(false);
     }
