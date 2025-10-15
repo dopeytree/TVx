@@ -23,13 +23,45 @@ const Index = () => {
   const [epgData, setEpgData] = useState<EPGData>({});
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings, isFirstRun } = useSettings();
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
+
+  // Open settings on first run
+  useEffect(() => {
+    if (isFirstRun) {
+      setSettingsOpen(true);
+    }
+  }, [isFirstRun]);
+
   const pausedChannelRef = useRef<Channel | null>(null);
 
+  // Automatic EPG updates every 4 hours using current input field values
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    setLocalSettings(settings);
-  }, [settings]);
+    // Only start auto-updates if we have URLs configured (either saved or in input fields)
+    const hasUrls = (settings.m3uUrl || settings.xmltvUrl) || (localSettings.m3uUrl || localSettings.xmltvUrl);
+    
+    if (!hasUrls) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
+      // Use current input field values for auto-updates
+      loadFromUrlsFromInputs(true); // Silent reload
+    }, 4 * 60 * 60 * 1000); // 4 hours
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [settings.m3uUrl, settings.xmltvUrl, localSettings.m3uUrl, localSettings.xmltvUrl]);
 
   // Helper function to get panel classes based on style setting
   const getPanelClasses = (baseClasses: string = '') => {
@@ -53,8 +85,9 @@ const Index = () => {
 
   const handleSettingsToggle = () => {
     if (settingsOpen) {
-      // Save settings and close
+      // Save settings and load URLs
       updateSettings(localSettings);
+      loadFromUrlsFromInputs(false); // Load with notifications
       toast.success('Saved: Settings');
       setSettingsOpen(false);
     } else {
@@ -267,73 +300,47 @@ const Index = () => {
     }
   };
 
-  const loadFromUrls = async (silent = false) => {
-    if (!settings.m3uUrl && !settings.xmltvUrl) {
-      toast.error('Error: Please Configure URLs in Settings First');
+  const loadFromUrlsFromInputs = async (silent = false) => {
+    const currentM3uUrl = localSettings.m3uUrl || settings.m3uUrl;
+    const currentXmltvUrl = localSettings.xmltvUrl || settings.xmltvUrl;
+
+    if (!currentM3uUrl && !currentXmltvUrl) {
+      if (!silent) {
+        toast.error('Error: Please Configure URLs in Settings First');
+      }
       return;
     }
 
     setIsLoading(true);
 
     try {
-      if (settings.m3uUrl) {
-        const m3uContent = await loadFromUrl(settings.m3uUrl);
-        handleM3ULoad(m3uContent, silent);
+      if (currentM3uUrl) {
+        try {
+          const m3uContent = await loadFromUrl(currentM3uUrl);
+          handleM3ULoad(m3uContent, silent);
+        } catch (error) {
+          console.error('Failed to load M3U:', error);
+          if (!silent && settings.showNotifications) {
+            toast.error(`Error: Failed to Load M3U from ${currentM3uUrl}`);
+          }
+        }
       }
 
-      if (settings.xmltvUrl) {
-        const xmltvContent = await loadFromUrl(settings.xmltvUrl);
-        handleXMLTVLoad(xmltvContent, silent);
+      if (currentXmltvUrl) {
+        try {
+          const xmltvContent = await loadFromUrl(currentXmltvUrl);
+          handleXMLTVLoad(xmltvContent, silent);
+        } catch (error) {
+          console.error('Failed to load XMLTV:', error);
+          if (!silent && settings.showNotifications) {
+            toast.error(`Error: Failed to Load XMLTV from ${currentXmltvUrl}`);
+          }
+        }
       }
-    } catch (error) {
-      toast.error('Error: Failed to Load from URLs');
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (settings.m3uUrl || settings.xmltvUrl) {
-      // Auto-load silently on page refresh to avoid notification spam
-      loadFromUrls(true);
-    } else if (!settings.m3uUrl && !settings.xmltvUrl) {
-      // First startup - no sources configured
-      const hasSeenWelcome = localStorage.getItem('tvx-welcome-shown');
-      if (!hasSeenWelcome && settings.showNotifications) {
-        setTimeout(() => {
-          toast.info('Welcome: Please Configure M3U and XMLTV Sources to Get Started');
-          setSettingsOpen(true);
-          localStorage.setItem('tvx-welcome-shown', 'true');
-        }, 1000);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings.m3uUrl, settings.xmltvUrl]);
-
-  // Automatic EPG updates every 4 hours
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const urlsConfigured = !!(settings.m3uUrl || settings.xmltvUrl);
-
-  useEffect(() => {
-    if (!urlsConfigured) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
-    intervalRef.current = setInterval(() => {
-      loadFromUrls(true); // Silent reload
-    }, 4 * 60 * 60 * 1000); // 4 hours
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [urlsConfigured]);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -771,8 +778,8 @@ const Index = () => {
               <button
                 className={`w-8 h-8 flex items-center justify-center bg-background/80 hover:bg-background ${settings.panelStyle === 'shadow' ? 'shadow-md' : 'border border-border'} rounded-md transition-colors`}
                 onClick={() => {
-                  // Reload EPG data and reset view to current time
-                  loadFromUrls(true);
+                  // Reload EPG data using current input field values
+                  loadFromUrlsFromInputs(true);
                   setGuideResetKey(prev => prev + 1);
                 }}
                 title="Refresh EPG Data & Reset to Current Time"
@@ -1388,7 +1395,7 @@ const Index = () => {
               <Poster program={selectedPoster} onClose={handleClosePoster} isIdle={isIdle} />
             ) : settingsOpen ? (
               <div ref={settingsRef}>
-                <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={localSettings} onSave={setLocalSettings} onGlobalSave={updateSettings} inline />
+                <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={localSettings} onSave={setLocalSettings} onGlobalSave={updateSettings} onLoad={() => loadFromUrlsFromInputs(false)} inline />
               </div>
             ) : (
               <div ref={channelListRef} className="h-full overflow-y-auto">
