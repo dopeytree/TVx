@@ -64,31 +64,31 @@ When a stream loads, TVx displays a vintage VHS loading animation while disks sp
 
 ### Main View
 
-![Main View](Screenshots/Main View.png)
+![Main View](https://github.com/dopeytree/TVx/blob/main/docs/Screenshots/Main%20View.png?raw=true)
 
 ### Theatre Mode
 
-![Theatre Mode](Screenshots/Theatre View.png)
+![Theatre Mode](https://github.com/dopeytree/TVx/blob/main/docs/Screenshots/Theatre%20View.png?raw=true)
 
 ### Full TV Guide
 
-![Full TV Guide](Screenshots/Full TV Guide.png)
+![Full TV Guide](https://github.com/dopeytree/TVx/blob/main/docs/Screenshots/Full%20TV%20Guide.png?raw=true)
 
 ### Keyboard Shortcuts Display
 
-![Keyboard Shortcuts](Screenshots/Key shortcuts.png)
+![Keyboard Shortcuts](https://github.com/dopeytree/TVx/blob/main/docs/Screenshots/Key%20shortcuts.png?raw=true)
 
 ### Vintage TV Filter = On
 
-![Vintage TV Filter On](Screenshots/Vintage TV Filter = On.png)
+![Vintage TV Filter On](https://github.com/dopeytree/TVx/blob/main/docs/Screenshots/Vintage%20TV%20Filter%20=%20On.png?raw=true)
 
 ### Vintage TV Filter = OFF
 
-![Vintage TV Filter Off](Screenshots/Vintage TV Filter = Off.png)
+![Vintage TV Filter Off](https://github.com/dopeytree/TVx/blob/main/docs/Screenshots/Vintage%20TV%20Filter%20=%20Off.png?raw=true)
 
 ### VHS Buffering Video
 
-![VHS Buffering](Screenshots/VHS Buffering Video.png)
+![VHS Buffering](https://github.com/dopeytree/TVx/blob/main/docs/Screenshots/VHS%20Buffering%20Video.png?raw=true)
 
 ## Browser Support
 
