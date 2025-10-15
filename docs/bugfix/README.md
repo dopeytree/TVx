@@ -1,3 +1,8 @@
+---
+layout: default
+title: Bug Fix Documentation
+---
+
 # Bug Fix Documentation
 
 This directory contains detailed documentation for major bug fixes in TVx.

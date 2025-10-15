@@ -1,3 +1,8 @@
+---
+layout: default
+title: Server Implementation
+---
+
 # Server Implementation
 
 ## Overview
