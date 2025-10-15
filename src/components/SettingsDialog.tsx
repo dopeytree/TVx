@@ -50,7 +50,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
         // Switch to theater mode after closing
         setTimeout(() => {
           if (onGlobalSave) {
-            onGlobalSave({ ...localSettings, vintageTV: true });
+            onGlobalSave({ ...localSettings });
           }
           toast.info('Entering theater mode');
         }, 100);
@@ -204,6 +204,25 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               <SelectItem value="low">Low</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5 flex-1">
+            <Label className="flex items-center gap-2">
+              <Film className="w-4 h-4" />
+              Audio Filter
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Warm valve & vinyl sound effects
+            </p>
+          </div>
+          <Switch
+            checked={localSettings.audioFilterEnabled}
+            onCheckedChange={(checked) => {
+              const newSettings = { ...localSettings, audioFilterEnabled: checked };
+              updateSetting(newSettings);
+              toast.info(checked ? 'Audio filter enabled' : 'Audio filter disabled');
+            }}
+          />
         </div>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5 flex-1">

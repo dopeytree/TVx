@@ -7,6 +7,7 @@ export const useKeyboardShortcuts = (callbacks: {
   onToggleStats?: () => void;
   onToggleMute?: () => void;
   onPlayPause?: () => void;
+  onToggleAudioFilter?: () => void;
 }) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -58,6 +59,22 @@ export const useKeyboardShortcuts = (callbacks: {
         if (!isTyping) {
           event.preventDefault();
           callbacks.onPlayPause?.();
+        }
+      }
+
+      // 1 for enable audio filter (vintage audio)
+      if (event.key === '1') {
+        if (!isTyping) {
+          event.preventDefault();
+          callbacks.onToggleAudioFilter?.();
+        }
+      }
+
+      // 2 for disable audio filter (native audio)
+      if (event.key === '2') {
+        if (!isTyping) {
+          event.preventDefault();
+          callbacks.onToggleAudioFilter?.();
         }
       }
     };

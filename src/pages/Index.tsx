@@ -93,6 +93,8 @@ const Index = () => {
   // Track if this is the initial load to prevent notification spam
   const isInitialLoadRef = useRef(true);
   const hasShownInitialChannelRef = useRef(false);
+  // Track if we're currently doing a resync channel switch
+  const isResyncingRef = useRef(false);
   
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [theaterMode, setTheaterMode] = useState(false); // Track if user clicked video to hide everything
@@ -136,7 +138,9 @@ const Index = () => {
 
     // Save selected channel to localStorage and show notification
     if (selectedChannel) {
+      // Save the actual current channel (no offset needed since we handle AudioContext properly)
       localStorage.setItem('last-watched-channel', selectedChannel.id);
+      console.log(`Index: Saving current channel ${selectedChannel.name} (${selectedChannel.id}) to localStorage`);
       
       // Only show notification if:
       // 1. Channels are loaded
@@ -175,6 +179,8 @@ const Index = () => {
         isInitialLoadRef.current = false;
         hasShownInitialChannelRef.current = true;
       }
+
+      // No longer need the simulated key press since we save the correct channel
     }
   }, [selectedChannel, epgData, channels.length, settings.showNotifications]);
 
@@ -201,22 +207,41 @@ const Index = () => {
       
       // Try to restore last watched channel
       const lastWatchedId = localStorage.getItem('last-watched-channel');
+      console.log('Index: Loading from localStorage - last-watched-channel:', lastWatchedId);
       let channelToSelect = null;
       
       if (lastWatchedId) {
         channelToSelect = parsedChannels.find(ch => ch.id === lastWatchedId);
+        console.log('Index: Found matching channel:', channelToSelect?.name, channelToSelect?.id);
       }
       
       // If no last watched or channel not found, use first channel
       if (!channelToSelect && parsedChannels.length > 0) {
         channelToSelect = parsedChannels[0];
+        console.log('Index: No saved channel found, using first channel:', channelToSelect.name);
       }
       
       if (channelToSelect) {
-        setSelectedChannel(channelToSelect);
-      }
-      
-      // Only show notification if not silent mode and notifications are enabled
+        // On page refresh, we need to ensure AudioContext is resumed before loading the channel
+        // This is crucial for audio filters to work properly
+        const resumeAudioAndLoadChannel = async () => {
+          try {
+            // Try to resume AudioContext immediately (may fail without user gesture)
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+              console.log('Index: AudioContext suspended on page load, will resume on user interaction');
+            } else {
+              console.log('Index: AudioContext running on page load');
+            }
+          } catch (error) {
+            console.error('Index: Error checking AudioContext on page load:', error);
+          }
+          
+          setSelectedChannel(channelToSelect);
+        };
+        
+        resumeAudioAndLoadChannel();
+      }      // Only show notification if not silent mode and notifications are enabled
       if (!silent && settings.showNotifications) {
         toast.success(`Loaded: ${parsedChannels.length} Channels`);
       }
@@ -615,6 +640,11 @@ const Index = () => {
         toast.info('Playing: Video resumed');
       }
     },
+    onToggleAudioFilter: () => {
+      const newState = !settings.audioFilterEnabled;
+      updateSettings({ audioFilterEnabled: newState });
+      toast.info(newState ? 'Enabled: Vintage Audio Filter' : 'Disabled: Vintage Audio Filter');
+    },
   });
 
   const toggleFavorite = (program: Program) => {
@@ -654,8 +684,10 @@ const Index = () => {
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         const currentIndex = channels.findIndex(c => c.id === selectedChannel?.id);
-        if (currentIndex < channels.length - 1) {
-          setSelectedChannel(channels[currentIndex + 1]);
+        if (currentIndex >= 0) {
+          // Cycle to next channel, wrapping around to first channel
+          const nextIndex = (currentIndex + 1) % channels.length;
+          setSelectedChannel(channels[nextIndex]);
         }
       }
     };
