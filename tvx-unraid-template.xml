@@ -33,9 +33,8 @@ The glow of a neon clock 🕰️ counting Saturday mornings long past&#xD;
 &#xD;
 🚀 QUICK START:&#xD;
 1. Access the web interface at http://[IP]:[PORT:8777]&#xD;
-2. Click Settings and add your M3U playlist URL&#xD;
-3. (Optional) Add XMLTV guide URL for EPG data&#xD;
-4. Start channel surfing!&#xD;
+2. Configure your Tunarr M3U and XMLTV URLs via the environment variables below&#xD;
+3. Start channel surfing!&#xD;
 &#xD;
 📺 The warmth returns.</Overview>
   <Category>MediaApp:Video Status:Stable</Category>
@@ -70,5 +69,8 @@ The glow of a neon clock 🕰️ counting Saturday mornings long past&#xD;
 - Theater modes and full guide view
   </Changes>
   <Config Name="WebUI Port" Target="80" Default="8777" Mode="tcp" Description="Port for accessing the TVx web interface. After installation, access TVx at http://[IP]:[PORT]. Default: 8777" Type="Port" Display="always" Required="true" Mask="false">8777</Config>
+  <Config Name="M3U URL" Target="VITE_M3U_URL" Default="http://your-tunarr-ip-address:8000/api/channels.m3u" Mode="" Description="URL to your Tunarr M3U playlist. Replace 'your-tunarr-ip-address' with your actual Tunarr server IP." Type="Variable" Display="always" Required="true" Mask="false">http://your-tunarr-ip-address:8000/api/channels.m3u</Config>
+  <Config Name="XMLTV URL" Target="VITE_XMLTV_URL" Default="http://your-tunarr-ip-address:8000/api/xmltv.xml" Mode="" Description="URL to your Tunarr XMLTV EPG guide. Replace 'your-tunarr-ip-address' with your actual Tunarr server IP." Type="Variable" Display="always" Required="true" Mask="false">http://your-tunarr-ip-address:8000/api/xmltv.xml</Config>
+  <Config Name="Appdata" Target="/config" Default="/mnt/user/appdata/tvx" Mode="rw" Description="Path for persistent storage of settings and configuration files." Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdata/tvx</Config>
   <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone for proper EPG time display. Examples: America/New_York, Europe/London, Asia/Tokyo, etc. See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for full list." Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
 </Container>

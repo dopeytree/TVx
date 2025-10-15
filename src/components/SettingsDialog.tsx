@@ -108,14 +108,29 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
   };
 
   const handleClose = () => {
+    // Check if any video-related settings changed that require reloading
+    const videoSettingsChanged = 
+      settings.videoQuality !== localSettings.videoQuality ||
+      settings.vintageTV !== localSettings.vintageTV ||
+      settings.vignetteStrength !== localSettings.vignetteStrength ||
+      settings.rgbShiftStrength !== localSettings.rgbShiftStrength ||
+      settings.vignetteRadius !== localSettings.vignetteRadius ||
+      settings.edgeAberration !== localSettings.edgeAberration ||
+      settings.frameEdgeBlur !== localSettings.frameEdgeBlur ||
+      settings.centerSharpness !== localSettings.centerSharpness ||
+      settings.sharpenFirst !== localSettings.sharpenFirst;
+
     // Save any pending text input changes
     if (onGlobalSave) {
       onGlobalSave(localSettings);
     }
     onSave(localSettings);
-    if (onLoad) {
+    
+    // Only reload channels & EPG if video settings changed
+    if (videoSettingsChanged && onLoad) {
       onLoad();
     }
+    
     throttledToast('Settings saved');
     onOpenChange(false);
   };
@@ -147,70 +162,6 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
                   throttledToast('Enabled: Notifications');
                 }
               }}
-            />
-          </div>
-        </div>
-      </div>
-
-      <Separator />
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">
-            Sources
-          </h3>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              if (onGlobalSave) {
-                onGlobalSave(localSettings);
-              }
-              if (onLoad) {
-                onLoad();
-              }
-              throttledToast('Settings saved');
-            }}
-            className={`${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
-          >
-            Save
-          </Button>
-        </div>
-        <div className="space-y-3">
-          <div>
-            <Label htmlFor="m3u-url" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              M3U Playlist URL
-            </Label>
-            <Input
-              id="m3u-url"
-              placeholder="https://example.com/playlist.m3u"
-              value={localSettings.m3uUrl || ''}
-              onChange={(e) => updateLocalSetting({ ...localSettings, m3uUrl: e.target.value })}
-              onBlur={() => {
-                if (onGlobalSave) {
-                  onGlobalSave(localSettings);
-                }
-              }}
-              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
-            />
-          </div>
-          <div>
-            <Label htmlFor="xmltv-url" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              XMLTV EPG URL
-            </Label>
-            <Input
-              id="xmltv-url"
-              placeholder="https://example.com/epg.xml"
-              value={localSettings.xmltvUrl || ''}
-              onChange={(e) => updateLocalSetting({ ...localSettings, xmltvUrl: e.target.value })}
-              onBlur={() => {
-                if (onGlobalSave) {
-                  onGlobalSave(localSettings);
-                }
-              }}
-              className={`mt-1 bg-background ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
             />
           </div>
         </div>
@@ -620,9 +571,48 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground flex items-center gap-2">
               <Keyboard className="w-4 h-4" />
-              Play/Pause
+              Play/Stop
             </span>
             <kbd className="px-2 py-1 bg-secondary rounded text-xs font-mono">Space</kbd>
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">
+          Sources
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          URLs are configured via settings.json or environment variables. Edit the mounted config file to change sources.
+        </p>
+        <div className="space-y-3">
+          <div>
+            <Label htmlFor="m3u-url" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              M3U Playlist URL
+            </Label>
+            <Input
+              id="m3u-url"
+              placeholder="https://example.com/playlist.m3u"
+              value={localSettings.m3uUrl || ''}
+              disabled
+              className={`mt-1 bg-muted ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
+            />
+          </div>
+          <div>
+            <Label htmlFor="xmltv-url" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              XMLTV EPG URL
+            </Label>
+            <Input
+              id="xmltv-url"
+              placeholder="https://example.com/epg.xml"
+              value={localSettings.xmltvUrl || ''}
+              disabled
+              className={`mt-1 bg-muted ${localSettings.panelStyle === 'shadow' ? 'border-none shadow-md' : ''}`}
+            />
           </div>
         </div>
       </div>

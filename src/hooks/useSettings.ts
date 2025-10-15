@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { AppSettings } from '@/types/iptv';
 
-const SETTINGS_KEY = 'iptv-settings';
-
 const defaultSettings: AppSettings = {
-  m3uUrl: 'http://192.168.22.2:8000/api/channels.m3u',
-  xmltvUrl: 'http://192.168.22.2:8000/api/xmltv.xml',
+  m3uUrl: (window as any).ENV?.VITE_M3U_URL || 'http://your-tunarr-ip-address:8000/channels.m3u',
+  xmltvUrl: (window as any).ENV?.VITE_XMLTV_URL || 'http://your-tunarr-ip-address:8000/xmltv.xml',
   autoLoad: true,
   showNotifications: true,
   videoQuality: 'high',
@@ -22,31 +20,102 @@ const defaultSettings: AppSettings = {
   panelStyle: 'shadow',
 };
 
+// UI settings that should be persisted in localStorage
+const uiSettingsKeys: (keyof AppSettings)[] = [
+  'autoLoad',
+  'showNotifications',
+  'videoQuality',
+  'vintageTV',
+  'vignetteStrength',
+  'rgbShiftStrength',
+  'vignetteRadius',
+  'edgeAberration',
+  'frameEdgeBlur',
+  'centerSharpness',
+  'sharpenFirst',
+  'showLoadingVideo',
+  'clockStyle',
+  'panelStyle',
+];
+
 export const useSettings = () => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [isFirstRun, setIsFirstRun] = useState(true);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(SETTINGS_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setSettings(parsed);
-        setIsFirstRun(false);
-      } catch (e) {
-        console.error('Failed to parse settings:', e);
+  // Load UI settings from localStorage
+  const loadUISettings = (): Partial<AppSettings> => {
+    try {
+      const stored = localStorage.getItem('tvx-ui-settings');
+      if (stored) {
+        const parsed = JSON.parse(stored) as Partial<AppSettings>;
+        // Only return UI settings, filter out any URL settings that might be stored
+        const uiSettings: Partial<AppSettings> = {};
+        uiSettingsKeys.forEach(key => {
+          if (parsed[key] !== undefined) {
+            (uiSettings as any)[key] = parsed[key];
+          }
+        });
+        return uiSettings;
       }
-    } else {
-      // First run - keep defaults and mark as first run
-      setIsFirstRun(true);
+    } catch (error) {
+      console.error('Error loading UI settings from localStorage:', error);
     }
+    return {};
+  };
+
+  // Save UI settings to localStorage
+  const saveUISettings = (settings: AppSettings) => {
+    try {
+      const uiSettings: Partial<AppSettings> = {};
+      uiSettingsKeys.forEach(key => {
+        (uiSettings as any)[key] = settings[key];
+      });
+      localStorage.setItem('tvx-ui-settings', JSON.stringify(uiSettings));
+    } catch (error) {
+      console.error('Error saving UI settings to localStorage:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Load UI settings from localStorage first
+    const uiSettings = loadUISettings();
+
+    // Try to load settings from /config/settings.json
+    fetch('/config/settings.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Settings file not found');
+        }
+        return response.json();
+      })
+      .then(loadedSettings => {
+        // Merge: URLs from external config, UI settings from localStorage (with defaults)
+        const mergedSettings = {
+          ...defaultSettings,
+          ...uiSettings, // UI settings from localStorage take precedence over defaults
+          ...loadedSettings, // External config takes precedence for URLs
+        };
+        setSettings(mergedSettings);
+        setIsFirstRun(false);
+      })
+      .catch(() => {
+        // If no settings.json, merge UI settings with defaults
+        const mergedSettings = {
+          ...defaultSettings,
+          ...uiSettings, // UI settings from localStorage
+        };
+        setSettings(mergedSettings);
+        setIsFirstRun(true);
+      });
   }, []);
 
   const updateSettings = (newSettings: Partial<AppSettings>) => {
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
-    setIsFirstRun(false); // Mark that we've saved settings
+    setIsFirstRun(false); // Mark that we've updated settings
+
+    // Save UI settings to localStorage
+    saveUISettings(updated);
   };
 
   return { settings, updateSettings, isFirstRun };

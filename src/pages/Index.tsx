@@ -26,12 +26,9 @@ const Index = () => {
   const { settings, updateSettings, isFirstRun } = useSettings();
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
 
-  // Open settings on first run
   useEffect(() => {
-    if (isFirstRun) {
-      setSettingsOpen(true);
-    }
-  }, [isFirstRun]);
+    setLocalSettings(settings);
+  }, [settings]);
 
   const pausedChannelRef = useRef<Channel | null>(null);
 
@@ -63,6 +60,66 @@ const Index = () => {
     };
   }, [settings.m3uUrl, settings.xmltvUrl, localSettings.m3uUrl, localSettings.xmltvUrl]);
 
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
+  // Load URLs when settings are first loaded and contain URLs (on initial page load)
+  useEffect(() => {
+    if (settings.m3uUrl || settings.xmltvUrl) {
+      // Save settings globally (like closing settings panel does)
+      updateSettings(settings);
+      // Update local settings to match
+      setLocalSettings(settings);
+      // Load channels and EPG using the loaded settings
+      loadFromUrlsFromInputs(true, settings).then(() => {
+        setInitialLoadComplete(true);
+      });
+    }
+  }, [settings.m3uUrl, settings.xmltvUrl]);
+
+  // Show sequential notifications after initial load completes
+  useEffect(() => {
+    if (initialLoadComplete && settings.showNotifications) {
+      // 1. Channels loaded
+      queueNotification(() => toast.success(`Loaded: ${channels.length} Channels`), `Loaded: ${channels.length} Channels`);
+
+      // 2. Current channel (after 2 seconds)
+      setTimeout(() => {
+        if (selectedChannel) {
+          const cleanName = selectedChannel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim();
+          const nameLower = selectedChannel.name.toLowerCase();
+          const groupLower = selectedChannel.group?.toLowerCase() || '';
+          
+          let icon = null;
+          if (nameLower.includes('movie') || groupLower.includes('movie')) {
+            icon = <Clapperboard className="w-4 h-4 inline-block" />;
+          } else if (nameLower.includes('show') || groupLower.includes('show')) {
+            icon = <Tv className="w-4 h-4 inline-block" />;
+          } else if (nameLower.includes('sport') || groupLower.includes('sport')) {
+            icon = <Trophy className="w-4 h-4 inline-block" />;
+          } else if (nameLower.includes('history') || groupLower.includes('history')) {
+            icon = <History className="w-4 h-4 inline-block" />;
+          } else if (nameLower.includes('doc')) {
+            icon = <History className="w-4 h-4 inline-block" />;
+          }
+          
+          toast.info(
+            <span className="flex items-center gap-2">
+              Now Playing: {cleanName} {icon}
+            </span>
+          );
+        }
+      }, 2000);
+
+      // 3. EPG programs count (after 4 seconds)
+      setTimeout(() => {
+        const totalPrograms = Object.values(epgData).reduce((sum, programs) => sum + programs.length, 0);
+        toast.success(`Loaded: EPG Data for ${totalPrograms} Programs`);
+        setInitialLoadComplete(false); // Reset for next load
+        initialNotificationSequenceCompleteRef.current = true; // Allow manual channel change notifications
+      }, 4000);
+    }
+  }, [initialLoadComplete, channels.length, selectedChannel, epgData, settings.showNotifications]);
+
   // Helper function to get panel classes based on style setting
   const getPanelClasses = (baseClasses: string = '') => {
     if (settings.panelStyle === 'shadow') {
@@ -88,7 +145,6 @@ const Index = () => {
       // Save settings and load URLs
       updateSettings(localSettings);
       loadFromUrlsFromInputs(false); // Load with notifications
-      toast.success('Saved: Settings');
       setSettingsOpen(false);
     } else {
       // Close poster if open, then open settings
@@ -128,6 +184,8 @@ const Index = () => {
   const hasShownInitialChannelRef = useRef(false);
   // Track if we're currently doing a resync channel switch
   const isResyncingRef = useRef(false);
+  // Track if initial notification sequence has completed
+  const initialNotificationSequenceCompleteRef = useRef(false);
   
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [theaterMode, setTheaterMode] = useState(false); // Track if user clicked video to hide everything
@@ -138,6 +196,63 @@ const Index = () => {
 
   const [selectedPoster, setSelectedPoster] = useState<Program | null>(null);
   const [currentProgram, setCurrentProgram] = useState<Program | null>(null);
+
+  // Notification queue to ensure 2-second gaps between all notifications
+  const notificationQueueRef = useRef<Array<() => void>>([]);
+  const isProcessingNotificationsRef = useRef(false);
+  // Track last shown time for each notification to prevent duplicates within 5 seconds
+  const lastNotificationTimesRef = useRef<Map<string, number>>(new Map());
+
+  const queueNotification = useCallback((notificationFn: () => void, messageKey: string) => {
+    const now = Date.now();
+    const lastShown = lastNotificationTimesRef.current.get(messageKey);
+    
+    // Only allow the same notification if 5 seconds have passed since last shown
+    if (lastShown && (now - lastShown) < 5000) {
+      return; // Skip this notification
+    }
+    
+    // Update last shown time
+    lastNotificationTimesRef.current.set(messageKey, now);
+    
+    notificationQueueRef.current.push(notificationFn);
+    if (!isProcessingNotificationsRef.current) {
+      isProcessingNotificationsRef.current = true;
+      processNotificationQueue();
+    }
+  }, []);
+
+  const processNotificationQueue = useCallback(() => {
+    if (notificationQueueRef.current.length > 0) {
+      const notificationFn = notificationQueueRef.current.shift()!;
+      notificationFn();
+      setTimeout(() => {
+        processNotificationQueue();
+      }, 2000); // 2-second gap between notifications
+    } else {
+      isProcessingNotificationsRef.current = false;
+    }
+  }, []);
+
+  // Create queued versions of toast functions with deduplication
+  const queuedToast = {
+    success: (message: string | React.ReactNode) => {
+      const messageKey = typeof message === 'string' ? message : 'jsx-success';
+      return queueNotification(() => toast.success(message), messageKey);
+    },
+    error: (message: string | React.ReactNode) => {
+      const messageKey = typeof message === 'string' ? message : 'jsx-error';
+      return queueNotification(() => toast.error(message), messageKey);
+    },
+    info: (message: string | React.ReactNode) => {
+      const messageKey = typeof message === 'string' ? message : 'jsx-info';
+      return queueNotification(() => toast.info(message), messageKey);
+    },
+    warning: (message: string | React.ReactNode) => {
+      const messageKey = typeof message === 'string' ? message : 'jsx-warning';
+      return queueNotification(() => toast.warning(message), messageKey);
+    },
+  };
 
   const handleClosePoster = useCallback(() => {
     setSelectedPoster(null);
@@ -178,15 +293,15 @@ const Index = () => {
       // Only show notification if:
       // 1. Channels are loaded
       // 2. Not the initial load (first channel selection on page load)
-      // 3. Or if user manually switched channels (hasShownInitialChannelRef is true)
-      const shouldShowNotification = channels.length > 0 && !isInitialLoadRef.current;
+      // 3. Initial notification sequence has completed (to avoid duplicates with sequential notifications)
+      const shouldShowNotification = channels.length > 0 && !isInitialLoadRef.current && initialNotificationSequenceCompleteRef.current;
       
       if (shouldShowNotification && settings.showNotifications) {
+        // Use the same formatting as the initial load notification
         const cleanName = selectedChannel.name.replace(/\b(movies?|shows?|sports?|history|doc|documentary)\b/gi, '').trim();
         const nameLower = selectedChannel.name.toLowerCase();
         const groupLower = selectedChannel.group?.toLowerCase() || '';
         
-        // Determine icon based on channel name/group
         let icon = null;
         if (nameLower.includes('movie') || groupLower.includes('movie')) {
           icon = <Clapperboard className="w-4 h-4 inline-block" />;
@@ -200,7 +315,7 @@ const Index = () => {
           icon = <History className="w-4 h-4 inline-block" />;
         }
         
-        toast.info(
+        queuedToast.info(
           <span className="flex items-center gap-2">
             Now Playing: {cleanName} {icon}
           </span>
@@ -276,7 +391,7 @@ const Index = () => {
         resumeAudioAndLoadChannel();
       }      // Only show notification if not silent mode and notifications are enabled
       if (!silent && settings.showNotifications) {
-        toast.success(`Loaded: ${parsedChannels.length} Channels`);
+        queuedToast.success(`Loaded: ${parsedChannels.length} Channels`);
       }
     } catch (error) {
       toast.error('Error: Failed to Parse M3U File');
@@ -292,7 +407,7 @@ const Index = () => {
       
       // Only show notification if not silent mode and notifications are enabled
       if (!silent && settings.showNotifications) {
-        toast.success(`Loaded: EPG Data for ${Object.keys(parsedEPG).length} Channels (${programCount} Programs)`);
+        queuedToast.success(`Loaded: EPG Data for ${programCount} Programs`);
       }
     } catch (error) {
       toast.error('Error: Failed to Parse XMLTV File');
@@ -300,13 +415,14 @@ const Index = () => {
     }
   };
 
-  const loadFromUrlsFromInputs = async (silent = false) => {
-    const currentM3uUrl = localSettings.m3uUrl || settings.m3uUrl;
-    const currentXmltvUrl = localSettings.xmltvUrl || settings.xmltvUrl;
+  const loadFromUrlsFromInputs = async (silent = false, overrideSettings?: AppSettings): Promise<void> => {
+    const currentSettings = overrideSettings || localSettings;
+    const currentM3uUrl = currentSettings.m3uUrl || settings.m3uUrl;
+    const currentXmltvUrl = currentSettings.xmltvUrl || settings.xmltvUrl;
 
     if (!currentM3uUrl && !currentXmltvUrl) {
       if (!silent) {
-        toast.error('Error: Please Configure URLs in Settings First');
+        queuedToast.error('Error: Please Configure URLs in Settings First');
       }
       return;
     }
@@ -321,7 +437,7 @@ const Index = () => {
         } catch (error) {
           console.error('Failed to load M3U:', error);
           if (!silent && settings.showNotifications) {
-            toast.error(`Error: Failed to Load M3U from ${currentM3uUrl}`);
+            queuedToast.error(`Error: Failed to Load M3U from ${currentM3uUrl}`);
           }
         }
       }
@@ -333,7 +449,7 @@ const Index = () => {
         } catch (error) {
           console.error('Failed to load XMLTV:', error);
           if (!silent && settings.showNotifications) {
-            toast.error(`Error: Failed to Load XMLTV from ${currentXmltvUrl}`);
+            queuedToast.error(`Error: Failed to Load XMLTV from ${currentXmltvUrl}`);
           }
         }
       }
@@ -624,27 +740,27 @@ const Index = () => {
           }
         }
       }
-      toast.info(wasOpen ? 'Closed: Full TV Guide' : 'Opened: Full TV Guide');
+      queuedToast.info(wasOpen ? 'Closed: Full TV Guide' : 'Opened: Full TV Guide');
     },
     onToggleStats: () => {
       setTheaterMode(false);
       setStatsOpen(!statsOpen);
-      toast.info(statsOpen ? 'Closed: Stats' : 'Opened: Stats');
+      queuedToast.info(statsOpen ? 'Closed: Stats' : 'Opened: Stats');
     },
     onToggleMute: () => {
       setMuted(!muted);
-      toast.info(!muted ? 'Muted: Audio' : 'Unmuted: Audio');
+      queuedToast.info(!muted ? 'Muted: Audio' : 'Unmuted: Audio');
     },
     onPlayPause: () => {
       if (selectedChannel) {
         // Stop/Pause - store current channel and set to null
         pausedChannelRef.current = selectedChannel;
         setSelectedChannel(null);
-        toast.info('Paused: Video stopped');
+        queuedToast.info('Video: Stopped');
       } else if (pausedChannelRef.current) {
         // Play/Resume - restore the paused channel
         setSelectedChannel(pausedChannelRef.current);
-        toast.info('Playing: Video resumed');
+        queuedToast.info('Video: Playing');
       }
     },
     // onToggleAudioFilter: () => {
@@ -1322,7 +1438,7 @@ const Index = () => {
                   size="icon"
                   onClick={() => {
                     document.documentElement.requestFullscreen();
-                    toast.info('Entered: Fullscreen Mode');
+                    queuedToast.info('Entered: Fullscreen Mode');
                   }}
                   className="hover:bg-secondary"
                   title="Fullscreen"
@@ -1335,7 +1451,7 @@ const Index = () => {
                   onClick={() => {
                     const newMutedState = !muted;
                     setMuted(newMutedState);
-                    toast.info(newMutedState ? 'Muted: Audio' : 'Unmuted: Audio');
+                    queuedToast.info(newMutedState ? 'Muted: Audio' : 'Unmuted: Audio');
                   }}
                   className="hover:bg-secondary"
                   title={muted ? "Unmute" : "Mute"}
@@ -1370,7 +1486,7 @@ const Index = () => {
                     setFocusedProgram({ program: currentProgram, channel: selectedChannel });
                   }
                 }
-                toast.info('Opened: Full TV Guide');
+                queuedToast.info('Opened: Full TV Guide');
               }}
               className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
             >
@@ -1383,7 +1499,7 @@ const Index = () => {
               onClick={() => { 
                 setActiveTab('guide'); 
                 setFullGuideOpen(false);
-                toast.info('Opened: Channel Guide');
+                queuedToast.info('Opened: Channel Guide');
               }}
               className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
             >
@@ -1445,7 +1561,7 @@ const Index = () => {
                   className="font-mono text-[10px] cursor-pointer hover:text-primary break-all" 
                   onClick={() => {
                     navigator.clipboard.writeText(selectedChannel.url);
-                    toast.success('Copied: Stream URL');
+                    queuedToast.success('Copied: Stream URL');
                   }}
                   title="Click to copy URL"
                 >
