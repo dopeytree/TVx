@@ -24,15 +24,21 @@ const defaultSettings: AppSettings = {
 
 export const useSettings = () => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
+  const [isFirstRun, setIsFirstRun] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem(SETTINGS_KEY);
     if (stored) {
       try {
-        setSettings({ ...defaultSettings, ...JSON.parse(stored) });
+        const parsed = JSON.parse(stored);
+        setSettings(parsed);
+        setIsFirstRun(false);
       } catch (e) {
         console.error('Failed to parse settings:', e);
       }
+    } else {
+      // First run - keep defaults and mark as first run
+      setIsFirstRun(true);
     }
   }, []);
 
@@ -40,7 +46,8 @@ export const useSettings = () => {
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
+    setIsFirstRun(false); // Mark that we've saved settings
   };
 
-  return { settings, updateSettings };
+  return { settings, updateSettings, isFirstRun };
 };

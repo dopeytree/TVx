@@ -30,10 +30,11 @@ interface SettingsDialogProps {
   settings: AppSettings;
   onSave: (settings: AppSettings) => void;
   onGlobalSave?: (settings: AppSettings) => void;
+  onLoad?: () => void;
   inline?: boolean;
 }
 
-export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalSave, inline }: SettingsDialogProps) => {
+export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalSave, onLoad, inline }: SettingsDialogProps) => {
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
@@ -112,6 +113,9 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
       onGlobalSave(localSettings);
     }
     onSave(localSettings);
+    if (onLoad) {
+      onLoad();
+    }
     throttledToast('Settings saved');
     onOpenChange(false);
   };
@@ -161,6 +165,9 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
             onClick={() => {
               if (onGlobalSave) {
                 onGlobalSave(localSettings);
+              }
+              if (onLoad) {
+                onLoad();
               }
               throttledToast('Settings saved');
             }}
