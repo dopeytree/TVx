@@ -78,9 +78,12 @@ An IPTV + EPG viewer for **TunaRR** (Plex/Jellyfin) playlists and XMLTV guides. 
 docker run -d \
   --name tvx \
   -p 8777:80 \
+  -v /path/to/config:/config \
   --restart unless-stopped \
   ghcr.io/dopeytree/tvx:latest
 ```
+
+**Important**: Mount a volume to `/config` to persist settings and URLs across container restarts.
 
 Then open <http://localhost:8777>
 
@@ -92,10 +95,14 @@ services:
     image: ghcr.io/dopeytree/tvx:latest
     ports:
       - "8777:80"
+    volumes:
+      - /path/to/config:/config
     restart: unless-stopped
     environment:
       - TZ=UTC
 ```
+
+**Important**: Mount a volume to `/config` to persist settings and URLs across container restarts.
 
 Save as `docker-compose.yml` and run:
 ```bash
@@ -133,14 +140,15 @@ docker run -d -p 8777:80 --name tvx tvx
 | **Icon URL** | `https://raw.githubusercontent.com/dopeytree/TVx/main/public/logo.png` |
 | **WebUI** | `http://[IP]:[PORT:8777]` |
 | **Port** | Container: `80`, Host: `8777` (or your preferred port) |
+| **Path** | Target: `/config`, Default:`/mnt/user/appdata/tvx`, Mode:`rw`,  Description:`Path for storing TVx configuration files (settings, M3U/EPG URLs)` |
 | **Network Type** | `Bridge` |
 
-4. Click **Apply**
-5. Access at: `http://YOUR-UNRAID-IP:8777`
+1. Click **Apply**
+2. Access at: `http://YOUR-UNRAID-IP:8777`
 
-**No AppData path or PIDs needed** — TVx stores all settings in your browser's localStorage (client-side only).
+**AppData path required** — Mount a volume to `/config` in the container to persist settings and URLs across container restarts. Logs are also stored in this directory as `tvx.log`.
 
-**Note**: An official Unraid Community Apps template is coming soon for one-click installation!
+**Note**: An official Unraid Community Apps template is available with proper AppData configuration!
 
 </details>
 
@@ -171,13 +179,63 @@ Works best in modern browsers with WebGL support:
 - 🟠 Firefox 88+
 - 🔵 Safari 14+
 
-## 📜 License
+## � Monitoring & Logs
 
-PolyForm Noncommercial 1.0.0
+TVx includes comprehensive logging for debugging, monitoring, and troubleshooting:
 
-This project is licensed under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/). You are free to use, modify, and share this software for any noncommercial purpose. Commercial use requires a separate license.
+### Server-Side Logging
 
-**In brief**: Use it for joy, learn from it, fork it, improve it - just don't sell it or use it to make money without permission.
+- **Request/Response Logging**: All HTTP requests and responses are logged with timestamps, IP addresses, user agents, and response times
+- **Settings Operations**: All settings saves and loads are logged with details
+- **Health Monitoring**: Server health endpoint at `GET /health` returns uptime, config status, and timestamp
+
+### Client-Side Logging
+
+- **Channel Loading**: M3U parsing, XMLTV loading, and channel selection events
+- **Settings Changes**: All user preference updates and configuration changes
+- **Error Tracking**: Failed operations, network errors, and parsing issues
+- **Performance Metrics**: Load times, parsing durations, and operation success rates
+
+### Log Storage
+
+- **Console Output**: Real-time logs visible in Docker logs (`docker logs tvx`)
+- **Persistent Files**: All logs saved to `/config/tvx.log` with structured JSON data
+- **Dual Output**: Both console and file logging for maximum visibility
+
+### Log Levels
+
+- `INFO`: Normal operations, successful loads, user actions
+- `WARN`: Validation warnings, deprecated features, recoverable errors
+- `ERROR`: Failures, exceptions, critical issues
+
+### Log Format
+
+```log
+[2025-10-15T03:27:20.257Z] INFO: CLIENT: Channel loaded successfully | {"channelId":"123","channelName":"Test Channel","loadTime":"150ms"}
+```
+
+### Viewing Logs
+
+```bash
+# Docker container logs (real-time)
+docker logs tvx
+
+# Persistent log file (if volume mounted)
+cat /path/to/config/tvx.log
+
+# Follow logs in real-time
+docker logs -f tvx
+
+# Health check
+curl http://localhost:8777/health
+```
+
+### Troubleshooting with Logs
+
+- **Channel Loading Issues**: Check for M3U/XMLTV parsing errors
+- **Settings Not Saving**: Look for API request/response logs
+- **Performance Problems**: Monitor load times and response durations
+- **Network Issues**: Check for connection timeouts and failed requests
 
 ## 🤝 Contributing
 
