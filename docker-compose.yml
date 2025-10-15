@@ -2,17 +2,19 @@ version: '3.8'
 
 services:
   tvx:
-    image: ghcr.io/dopeytree/tvx:latest
+    # image: ghcr.io/dopeytree/tvx:latest
     # Or build locally:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: tvx
     ports:
       - "8777:80"
     restart: unless-stopped
     environment:
       - TZ=UTC
+      - VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u
+      - VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml
     volumes:
       - ./config:/config
     healthcheck:

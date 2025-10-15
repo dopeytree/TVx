@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Channel, AppSettings } from "@/types/iptv";
 import { Card } from "@/components/ui/card";
 import Hls from 'hls.js';
+import { logger } from "@/utils/logger";
 
 interface VideoPlayerProps {
   channel: Channel | null;
@@ -594,19 +595,39 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       // render
+      let logOnce = false;
       const render = () => {
         let currentVideo = videoRef.current;
+        let videoSource = 'none';
 
         // Priority: main video when ready > loading video during channel change > fallback to loading video
         if (mainVideoReady && videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
           currentVideo = videoRef.current;
+          videoSource = 'main';
         } else if (settings.showLoadingVideo && isChannelChanging &&
             loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA) {
           currentVideo = loadingVideoRef.current;
+          videoSource = 'loading';
         } else if (videoRef.current && videoRef.current.readyState >= videoRef.current.HAVE_CURRENT_DATA) {
           currentVideo = videoRef.current;
+          videoSource = 'main-fallback';
         } else if (loadingVideoRef.current && loadingVideoRef.current.readyState >= loadingVideoRef.current.HAVE_CURRENT_DATA) {
           currentVideo = loadingVideoRef.current;
+          videoSource = 'loading-fallback';
+        }
+
+        // Log once per render cycle to avoid spam
+        if (!logOnce && isChannelChanging) {
+          console.log('WebGL Render:', {
+            videoSource,
+            showLoadingVideo: settings.showLoadingVideo,
+            isChannelChanging,
+            mainVideoReady,
+            loadingVideoReady: loadingVideoRef.current?.readyState || 0,
+            mainVideoState: videoRef.current?.readyState || 0
+          });
+          logOnce = true;
+          setTimeout(() => { logOnce = false; }, 1000); // Log at most once per second
         }
 
         if (currentVideo) {
@@ -634,10 +655,34 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
 
     // Setup loading video
     if (loadingVideoRef.current) {
+      console.log('VideoPlayer: Setting up loading video');
       loadingVideoRef.current.src = '/loading-VHS.mp4';
       loadingVideoRef.current.loop = true;
       loadingVideoRef.current.muted = true; // Start muted, unmute only during channel changes
-      loadingVideoRef.current.play().catch(err => console.error('Loading video play error:', err));
+      
+      loadingVideoRef.current.addEventListener('loadeddata', () => {
+        console.log('VideoPlayer: Loading video LOADED - readyState:', loadingVideoRef.current?.readyState);
+        logger.log('Loading video loaded successfully');
+      });
+      
+      loadingVideoRef.current.addEventListener('error', (e) => {
+        console.error('VideoPlayer: Loading video ERROR:', e);
+        logger.error(`Loading video failed to load: ${e}`);
+      });
+      
+      loadingVideoRef.current.addEventListener('canplay', () => {
+        console.log('VideoPlayer: Loading video CAN PLAY');
+      });
+      
+      loadingVideoRef.current.play()
+        .then(() => {
+          console.log('VideoPlayer: Loading video PLAYING successfully');
+          logger.log('Loading video started playing');
+        })
+        .catch(err => {
+          console.error('Loading video play error:', err);
+          logger.error(`Loading video play error: ${err}`);
+        });
     }
 
     if (settings.vintageTV) {
@@ -657,6 +702,15 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
       setMainVideoReady(false); // Reset main video ready state
       setIsLoading(true);
       setIsBuffering(true);
+      
+      console.log('VideoPlayer: CHANNEL CHANGE STARTED', {
+        showLoadingVideo: settings.showLoadingVideo,
+        vintageTV: settings.vintageTV,
+        loadingVideoReadyState: loadingVideoRef.current?.readyState,
+        loadingVideoCurrentTime: loadingVideoRef.current?.currentTime,
+        loadingVideoPaused: loadingVideoRef.current?.paused
+      });
+      logger.log(`Channel changed to: ${channel.name}`);
 
       // IMPORTANT: Do NOT teardown audio or clear sourceNodeRef on channel changes!
       // The MediaElementAudioSourceNode must persist for the lifetime of the video element
@@ -665,8 +719,14 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
 
       // Unmute loading video during channel changes
       if (loadingVideoRef.current) {
+        console.log('VideoPlayer: Unmuting and restarting loading video');
         loadingVideoRef.current.muted = false;
-        loadingVideoRef.current.play().catch(err => console.error('Loading video restart error:', err));
+        loadingVideoRef.current.play()
+          .then(() => console.log('VideoPlayer: Loading video restart SUCCESS'))
+          .catch(err => {
+            console.error('Loading video restart error:', err);
+            logger.error(`Loading video restart error: ${err}`);
+          });
       }
 
       // Clear any existing timeout
@@ -691,6 +751,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
         if (Hls.isSupported()) {
           const hls = new Hls();
           hlsRef.current = hls;
+          logger.log(`Loaded stream URL for ${channel.name}: ${channel.url}`);
           hls.loadSource(channel.url);
           hls.attachMedia(video);
 
@@ -771,6 +832,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
           });
 
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          logger.log(`Loaded stream URL for ${channel.name}: ${channel.url}`);
           video.src = channel.url;
 
           // Add canplaythrough listener immediately after setting src
@@ -816,6 +878,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
           });
           // For channel changes, buffering is managed by the timeout
         } else {
+          logger.log(`Loaded stream URL for ${channel.name}: ${channel.url.replace('.m3u8', '.mp4')}`);
           video.src = channel.url.replace('.m3u8', '.mp4');
 
           // Add canplaythrough listener immediately after setting src
@@ -1002,7 +1065,7 @@ export const VideoPlayer = ({ channel, settings, muted, isFullGuide, isFullGuide
           </video>
           <video
             ref={loadingVideoRef}
-            style={{ display: 'none' }}
+            style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none' }}
             autoPlay
             muted
             loop

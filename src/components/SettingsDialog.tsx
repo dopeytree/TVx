@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 import {
   Dialog,
   DialogContent,
@@ -74,6 +75,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
     if (now - lastNotificationTime >= 1000) {
       setLastNotificationTime(now);
       toast.info(message);
+      logger.info(message);
     }
   };
 
@@ -214,6 +216,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
               const newSettings = { ...localSettings, audioFilterEnabled: checked };
               updateSetting(newSettings);
               toast.info(checked ? 'Audio filter enabled' : 'Audio filter disabled');
+              logger.info(checked ? 'Audio filter enabled' : 'Audio filter disabled');
             }}
           />
         </div> */}
