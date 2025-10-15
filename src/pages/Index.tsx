@@ -1373,7 +1373,11 @@ const Index = () => {
           {fullGuideOpen && (
             <Button
               variant="outline"
-              onClick={() => { setActiveTab('guide'); setFullGuideOpen(false); }}
+              onClick={() => { 
+                setActiveTab('guide'); 
+                setFullGuideOpen(false);
+                toast.info('Opened: Channel Guide');
+              }}
               className={`w-full ${settings.panelStyle === 'shadow' ? 'border-none shadow-md hover:shadow-lg' : ''}`}
             >
               Channel Guide
