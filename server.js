@@ -13,6 +13,13 @@ if (!fs.existsSync(LOG_DIR)) {
   fs.mkdirSync(LOG_DIR, { recursive: true });
 }
 
+// Helper function to sanitize user-controlled log input
+function sanitizeForLog(input) {
+  if (typeof input !== 'string') return '';
+  // Remove line breaks and non-printable ASCII (except tab, optionally)
+  return input.replace(/[\r\n\x00-\x09\x0B-\x1F\x7F]/g, ' ');
+}
+
 // Helper function to write logs to both console and file
 function writeLog(message) {
   const logEntry = `${message}\n`;
@@ -40,10 +47,10 @@ const server = http.createServer((req, res) => {
         const logData = JSON.parse(body);
         const timestamp = new Date().toISOString();
         const level = logData.level || 'info';
-        const message = logData.message || body;
+        const message = sanitizeForLog(logData.message || body);
         writeLog(`[${timestamp}] ${level.toUpperCase()}: ${message}`);
       } catch (e) {
-        writeLog(`[${new Date().toISOString()}] LOG: ${body}`);
+        writeLog(`[${new Date().toISOString()}] LOG: ${sanitizeForLog(body)}`);
       }
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('OK');
