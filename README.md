@@ -241,6 +241,7 @@ TVx provides comprehensive logging of all user interactions directly to your Doc
 **Docker Container Logs:**
 ```bash
 docker logs tvx
+docker logs -f tvx  # Follow/tail logs
 ```
 
 **Docker Compose Logs:**
@@ -248,8 +249,19 @@ docker logs tvx
 docker-compose logs -f tvx
 ```
 
+**Persistent Log File:**
+```bash
+# View the persistent log file (survives container restarts)
+cat ./config/tvx.log
+tail -f ./config/tvx.log  # Follow/tail logs
+```
+
 **Unraid Logs:**
-- Go to Docker tab → TVx container → Logs
+- **Container Logs**: Docker tab → TVx container → Logs button
+- **Persistent Log File**: Navigate to `/mnt/user/appdata/tvx/tvx.log` in Unraid's file browser or use terminal:
+  ```bash
+  tail -f /mnt/user/appdata/tvx/tvx.log
+  ```
 
 ### Sample Log Output
 
@@ -261,6 +273,10 @@ docker-compose logs -f tvx
 2025-01-15 10:30:45 INFO: Closed: Program Popup
 ```
 
+### Log Rotation
+
+Docker automatically rotates container logs (max 10MB per file, keeps 3 files). The persistent log file (`config/tvx.log`) grows continuously - you may want to rotate it manually or set up logrotate.
+
 ### Benefits
 
 This logging system helps you:
@@ -268,6 +284,8 @@ This logging system helps you:
 - Monitor viewing patterns and popular channels
 - Debug user interaction issues
 - Track application usage in multi-user environments
+- Persistent logs survive container restarts and rebuilds
+- Easy to backup, analyze, or monitor with external tools
 - Verify that features are working correctly
 
 ## 🛠️ Tech Stack

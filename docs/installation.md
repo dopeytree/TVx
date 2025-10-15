@@ -92,10 +92,18 @@ docker run -d \
    - `VITE_XMLTV_URL` = `http://your-tunarr-ip:8000/api/xmltv.xml`
    - `TZ` = `America/New_York` (your timezone)
 
-5. Click **Apply**
-6. Access at: `http://YOUR-UNRAID-IP:8777`
+5. Add path mapping (optional but recommended):
+   - Container Path: `/config`
+   - Host Path: `/mnt/user/appdata/tvx`
+   - Access Mode: `Read/Write`
 
-**Persistent Configuration**: Mount `/config` and place `settings.json` there.
+6. Click **Apply**
+7. Access at: `http://YOUR-UNRAID-IP:8777`
+
+**Persistent Storage**: The `/config` path stores:
+- Settings and configuration (`settings.json`)
+- Application logs (`tvx.log`) - automatically rotated
+- Access logs at: `/mnt/user/appdata/tvx/tvx.log`
 
 ## Tech Stack
 

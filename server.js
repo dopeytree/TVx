@@ -5,6 +5,26 @@ const url = require('url');
 
 const PORT = 80;
 const STATIC_DIR = '/usr/share/nginx/html';
+const LOG_DIR = '/config';
+const LOG_FILE = path.join(LOG_DIR, 'tvx.log');
+
+// Ensure log directory exists
+if (!fs.existsSync(LOG_DIR)) {
+  fs.mkdirSync(LOG_DIR, { recursive: true });
+}
+
+// Helper function to write logs to both console and file
+function writeLog(message) {
+  const logEntry = `${message}\n`;
+  console.log(message);
+  
+  // Append to log file
+  fs.appendFile(LOG_FILE, logEntry, (err) => {
+    if (err) {
+      console.error('Failed to write to log file:', err);
+    }
+  });
+}
 
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
@@ -21,9 +41,9 @@ const server = http.createServer((req, res) => {
         const timestamp = new Date().toISOString();
         const level = logData.level || 'info';
         const message = logData.message || body;
-        console.log(`[${timestamp}] ${level.toUpperCase()}: ${message}`);
+        writeLog(`[${timestamp}] ${level.toUpperCase()}: ${message}`);
       } catch (e) {
-        console.log(`[${new Date().toISOString()}] LOG: ${body}`);
+        writeLog(`[${new Date().toISOString()}] LOG: ${body}`);
       }
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('OK');
@@ -110,5 +130,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  writeLog(`Server running on port ${PORT}`);
 });

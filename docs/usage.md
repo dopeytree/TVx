@@ -147,8 +147,19 @@ docker logs tvx
 docker-compose logs -f tvx
 ```
 
+**Persistent Log File:**
+```bash
+# View the persistent log file (survives container restarts)
+cat ./config/tvx.log
+tail -f ./config/tvx.log  # Follow/tail logs
+```
+
 **Unraid Logs:**
-- Go to Docker tab → TVx container → Logs
+- **Container Logs**: Docker tab → TVx container → Logs button
+- **Persistent Log File**: Navigate to `/mnt/user/appdata/tvx/tvx.log` or use terminal:
+  ```bash
+  tail -f /mnt/user/appdata/tvx/tvx.log
+  ```
 
 ### Sample Log Output
 
