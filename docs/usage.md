@@ -63,31 +63,31 @@ When a stream loads, TVx displays a vintage VHS loading animation while disks sp
 
 ### Main View
 
-![Main View](https://private-user-images.githubusercontent.com/103341262/501486769-1f3ef27b-91b0-4713-b0ef-2bf33785d7fc.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNDg2NzY5LTFmM2VmMjd...)
+![Main View](Screenshots/Main View.png)
 
 ### Theatre Mode
 
-![Theatre Mode](https://private-user-images.githubusercontent.com/103341262/501490640-123a68d4-8626-4a55-a524-56f1a5405a6c.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNDkwNjQwLTEyM2E2OGQ0...)
+![Theatre Mode](Screenshots/Theatre View.png)
 
 ### Full TV Guide
 
-![Full TV Guide](https://private-user-images.githubusercontent.com/103341262/501491216-96e346fa-8ae6-4db4-b195-c371fe5b714c.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNDkxMjE2LTk2ZTM0NmZhLT...)
+![Full TV Guide](Screenshots/Full TV Guide.png)
 
 ### Keyboard Shortcuts Display
 
-![Keyboard Shortcuts](https://private-user-images.githubusercontent.com/103341262/501506708-e7bb293a-4021-4a12-b7fa-078e8502fb68.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNTA2NzA4LWU3YmIyOT...)
+![Keyboard Shortcuts](Screenshots/Key shortcuts.png)
 
 ### Vintage TV Filter = On
 
-![Vintage TV Filter On](https://private-user-images.githubusercontent.com/103341262/501507497-8bbd0cec-645f-4789-bb4b-268ef1f0a329.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNTA3NDk3LThiYmQw...)
+![Vintage TV Filter On](Screenshots/Vintage TV Filter = On.png)
 
 ### Vintage TV Filter = OFF
 
-![Vintage TV Filter Off](https://private-user-images.githubusercontent.com/103341262/501507446-94cd0844-ce80-4ef4-abc5-55c6ae687b8e.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNTA3NDQ2LTk0Y2QwOD...)
+![Vintage TV Filter Off](Screenshots/Vintage TV Filter = Off.png)
 
 ### VHS Buffering Video
 
-![VHS Buffering](https://private-user-images.githubusercontent.com/103341262/501509229-6cc65d37-008c-4bfb-8417-de53738b9e91.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNTA5MjI5LTZj...)
+![VHS Buffering](Screenshots/VHS Buffering Video.png)
 
 ## Browser Support
 

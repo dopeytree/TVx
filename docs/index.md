@@ -37,23 +37,15 @@ An IPTV + EPG viewer for **Tunarr** (Plex/Jellyfin) playlists and XMLTV guides. 
 
 ### Main View
 
-![Main View](https://private-user-images.githubusercontent.com/103341262/501486769-1f3ef27b-91b0-4713-b0ef-2bf33785d7fc.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNDg2NzY5LTFmM2VmMjd...)
+![TVx Screenshot 1](https://github.com/dopeytree/TVx/blob/main/public/screenshot-1.png?raw=true)
 
-### Theatre Mode
+### Full TV Guide View
 
-![Theatre Mode](https://private-user-images.githubusercontent.com/103341262/501490640-123a68d4-8626-4a55-a524-56f1a5405a6c.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNDkwNjQwLTEyM2E2OGQ0...)
+![TVx Screenshot 2](https://github.com/dopeytree/TVx/blob/main/public/screenshot-2.png?raw=true)
 
-### Full TV Guide
+### Full screen View
 
-![Full TV Guide](https://private-user-images.githubusercontent.com/103341262/501491216-96e346fa-8ae6-4db4-b195-c371fe5b714c.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNDkxMjE2LTk2ZTM0NmZhLT...)
-
-### Vintage Effects On
-
-![Vintage TV Filter On](https://private-user-images.githubusercontent.com/103341262/501507497-8bbd0cec-645f-4789-bb4b-268ef1f0a329.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNTA3NDk3LThiYmQw...)
-
-### Modern View
-
-![Vintage TV Filter Off](https://private-user-images.githubusercontent.com/103341262/501507446-94cd0844-ce80-4ef4-abc5-55c6ae687b8e.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA1NDUzMzcsIm5iZiI6MTc2MDU0NTAzNywicGF0aCI6Ii8xMDMzNDEyNjIvNTAxNTA3NDQ2LTk0Y2QwOD...)
+![TVx Screenshot 3](https://github.com/dopeytree/TVx/blob/main/public/screenshot-3.png?raw=true)
 
 ## Buy me a coffee
 
