@@ -52,7 +52,23 @@ const server = http.createServer((req, res) => {
   }
 
   // Serve static files
-  let filePath = path.join(STATIC_DIR, pathname === '/' ? 'index.html' : pathname);
+  // Safely resolve requested file within static directory
+  let requestedPath = pathname === '/' ? 'index.html' : pathname;
+  // Prevent null bytes (extra precaution)
+  if (requestedPath.includes('\0')) {
+    res.writeHead(400);
+    res.end('Bad Request');
+    return;
+  }
+  // Remove leading slash to prevent absolute path issues with resolve
+  if (requestedPath.startsWith('/')) requestedPath = requestedPath.slice(1);
+  // Resolve the final file path and ensure it's inside STATIC_DIR
+  let filePath = path.resolve(STATIC_DIR, requestedPath);
+  if (!filePath.startsWith(STATIC_DIR + path.sep)) {
+    res.writeHead(403);
+    res.end('Forbidden');
+    return;
+  }
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
