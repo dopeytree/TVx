@@ -1,0 +1,1017 @@
+{"0": {
+    "doc": "Bug Fix System",
+    "title": "Bug Fix Documentation System",
+    "content": " ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#bug-fix-documentation-system",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#bug-fix-documentation-system"
+  },"1": {
+    "doc": "Bug Fix System",
+    "title": "Overview",
+    "content": "A standardized system for documenting significant bug fixes in TVx. This ensures knowledge is preserved and future developers can learn from past issues. ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#overview",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#overview"
+  },"2": {
+    "doc": "Bug Fix System",
+    "title": "Structure Created",
+    "content": "| 1 2 3 4 5 6 7 8 9 10 11 . | docs/ ├── bugfix/ │ ├── README.md # Complete documentation guidelines │ ├── 2025-10/ │ │ └── vhs-video-not-playing.md # Example bug fix documentation │ └── YYYY-MM/ # Future bug fixes organized by month │ └── descriptive-name.md └── development.md # Updated with bug fix documentation section .github/ └── BUG_FIX_DOCUMENTATION_PROMPT.md # Template for prompting documentation . | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#structure-created",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#structure-created"
+  },"3": {
+    "doc": "Bug Fix System",
+    "title": "Files Created/Modified",
+    "content": "1. docs/bugfix/README.md . | Complete guidelines for bug fix documentation | Template structure for all bug fixes | When to document and when not to | Example patterns and common issues | Purpose: Central reference for all bug fix documentation | . 2. docs/bugfix/2025-10/vhs-video-not-playing.md . | Moved from root BUGFIX_VHS_VIDEO.md | Complete example of bug fix documentation | Includes investigation process, fix, testing commands | Purpose: Reference example showing best practices | . 3. docs/development.md (Updated) . | Added “Bug Fix Documentation” section | Explains when and how to document bugs | Links to template and examples | Includes prompt text for after fixes | Purpose: Main developer guide integration | . 4.github/BUG_FIX_DOCUMENTATION_PROMPT.md . | Template for prompting bug fix documentation | Questions to ask to gather information | Docker command templates | Commit message format | Purpose: Guide for AI/reviewers to ensure documentation | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#files-createdmodified",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#files-createdmodified"
+  },"4": {
+    "doc": "Bug Fix System",
+    "title": "The Process",
+    "content": "After Fixing a Bug . | Evaluate if documentation is needed: . | Took &gt; 2 hours to debug? | Non-obvious root cause? | Architectural understanding required? | Could help others? | . | If yes, user is prompted: | 1 2 3 4 . | 🐛 Bug Fix Complete! Would you like to create bug fix documentation? (Recommended for significant fixes) . | . | If user agrees: . | Create file in docs/bugfix/YYYY-MM/descriptive-name.md | Use template from docs/bugfix/README.md | Include all required sections | . | Required sections: . | Problem Description | Root Cause Analysis | The Fix | Testing Commands (with Docker/env vars) | Verification | Files Modified | Technical Notes | Lessons Learned | . | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#the-process",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#the-process"
+  },"5": {
+    "doc": "Bug Fix System",
+    "title": "Documentation Guidelines",
+    "content": "DO Document: . ✅ Non-obvious bugs that took significant debugging ✅ Issues revealing architectural insights ✅ Problems that could recur ✅ Fixes requiring special testing procedures ✅ Bugs involving complex system interactions . DON’T Document: . ❌ Simple typos or cosmetic fixes ❌ One-line obvious changes ❌ Trivial configuration updates ❌ Minor formatting issues . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#documentation-guidelines",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#documentation-guidelines"
+  },"6": {
+    "doc": "Bug Fix System",
+    "title": "Testing Commands",
+    "content": "Always include full commands with environment variables: . | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 . | # Build docker build -t tvx:latest . # Remove old container docker rm -f tvx # Run with environment variables docker run -d --name tvx -p 8777:80 \\ -e VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u \\ -e VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml \\ tvx:latest # Test curl -I http://localhost:8777/ # View logs docker logs -f tvx . | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#testing-commands",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#testing-commands"
+  },"7": {
+    "doc": "Bug Fix System",
+    "title": "Commit Message Format",
+    "content": "| 1 2 3 4 5 6 7 8 . | fix: [brief description] [Detailed explanation] Bug fix documentation: docs/bugfix/YYYY-MM/descriptive-name.md Root cause: [one sentence] Impact: [who/what was affected] . | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#commit-message-format",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#commit-message-format"
+  },"8": {
+    "doc": "Bug Fix System",
+    "title": "Benefits",
+    "content": ". | Knowledge Preservation: Future developers understand past issues | Faster Debugging: Similar issues solved quicker | Better Architecture: Patterns emerge from documented bugs | Team Learning: Developers learn from each other’s investigations | Quality Improvement: Understanding bugs prevents future issues | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#benefits",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#benefits"
+  },"9": {
+    "doc": "Bug Fix System",
+    "title": "Example",
+    "content": "See docs/bugfix/2025-10/vhs-video-not-playing.md for a complete example showing: . | Thorough investigation process | Failed attempts before finding solution | Complete testing commands with environment variables | Technical explanation of HTTP Range Requests | Lessons learned about nginx vs Node.js | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#example",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#example"
+  },"10": {
+    "doc": "Bug Fix System",
+    "title": "Monthly Organization",
+    "content": "Bug fixes are organized by year-month for easy navigation: . | 2025-10/ - October 2025 | 2025-11/ - November 2025 | etc. | . This keeps documentation organized and easy to find by date. ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#monthly-organization",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#monthly-organization"
+  },"11": {
+    "doc": "Bug Fix System",
+    "title": "Common Patterns",
+    "content": "As bugs are documented, common patterns will be added to docs/bugfix/README.md: . Example Pattern: Server Feature Parity . | Symptom: Feature worked with nginx, broke with Node.js | Root Cause: Missing standard server features | Prevention: Test all functionality when changing servers | Reference: 2025-10/vhs-video-not-playing.md | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#common-patterns",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#common-patterns"
+  },"12": {
+    "doc": "Bug Fix System",
+    "title": "Future Enhancements",
+    "content": "Potential improvements to this system: . | Automated prompts in CI/CD for significant changes | Bug fix index/search functionality | Integration with issue tracking | Automated testing checklist generation | Pattern detection across bug fixes | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#future-enhancements",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#future-enhancements"
+  },"13": {
+    "doc": "Bug Fix System",
+    "title": "Quick Reference",
+    "content": ". | Template: docs/bugfix/README.md | Example: docs/bugfix/2025-10/vhs-video-not-playing.md | Guidelines: docs/development.md (Bug Fix Documentation section) | Prompt Template: .github/BUG_FIX_DOCUMENTATION_PROMPT.md | . ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#quick-reference",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#quick-reference"
+  },"14": {
+    "doc": "Bug Fix System",
+    "title": "Questions?",
+    "content": "If unsure whether to document a bug fix, ask: . | Would I want this information in 6 months? | Did this teach me something important? | Could someone else hit this issue? | . When in doubt, document it! It’s better to over-document than lose valuable knowledge. ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html#questions",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html#questions"
+  },"15": {
+    "doc": "Bug Fix System",
+    "title": "Bug Fix System",
+    "content": " ",
+    "url": "/TVx/BUG_FIX_SYSTEM.html",
+    
+    "relUrl": "/BUG_FIX_SYSTEM.html"
+  },"16": {
+    "doc": "Update Summary",
+    "title": "Documentation Update Summary",
+    "content": "Date: October 15, 2025 Branch: logging . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#documentation-update-summary",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#documentation-update-summary"
+  },"17": {
+    "doc": "Update Summary",
+    "title": "New Documentation Created",
+    "content": "1. Bug Fix Documentation System . Location: docs/bugfix/ . Created a comprehensive system for documenting significant bug fixes: . | docs/bugfix/README.md - Complete guidelines and template for bug fix documentation | docs/bugfix/2025-10/vhs-video-not-playing.md - Documented VHS loading video bug fix | .github/BUG_FIX_DOCUMENTATION_PROMPT.md - Template for prompting documentation after fixes | docs/BUG_FIX_SYSTEM.md - Overview of the entire bug fix documentation system | . Purpose: Preserve knowledge from debugging significant issues, help future developers, prevent regressions. 2. Server Implementation Documentation . Location: docs/server-implementation.md . Comprehensive documentation of the Node.js server: . | Why we switched from nginx to Node.js (pros/cons) | Complete code explanations (logging endpoint, range requests, MIME types) | Environment configuration with envsubst | Logging system architecture (browser → server → Docker logs) | Testing commands and troubleshooting | Performance considerations and future improvements | . Purpose: Explain the server.js architecture, HTTP Range Request support, and logging implementation. 3. Troubleshooting Guide . Location: docs/troubleshooting.md . Complete troubleshooting guide covering: . | Channels not loading (environment variables, CORS, network) | Video not playing (HLS streams, browser compatibility) | Loading VHS video issues (with reference to bug fix) | EPG not showing (XMLTV parsing) | Docker issues (ports, rebuilds, logs) | Performance problems | Browser console errors with explanations | Quick diagnostic checklist | . Purpose: Help users quickly resolve common issues. 4. Updated Existing Documentation . Files Updated: . | docs/index.md - Reorganized with sections for Getting Started, Technical Documentation, and Resources | docs/development.md - Added comprehensive bug fix documentation section with template and process | docs/usage.md - Updated sample log output with actual Docker log entries | README.md - Reorganized documentation links with better categorization | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#new-documentation-created",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#new-documentation-created"
+  },"18": {
+    "doc": "Update Summary",
+    "title": "Documentation Structure",
+    "content": "| 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 . | docs/ ├── index.md # Documentation hub with organized links ├── installation.md # Existing installation guide ├── usage.md # Updated with real log samples ├── development.md # Updated with bug fix documentation process ├── troubleshooting.md # NEW - Comprehensive troubleshooting ├── server-implementation.md # NEW - Server.js architecture ├── BUG_FIX_SYSTEM.md # NEW - Bug fix system overview ├── bugfix/ # NEW - Bug fix documentation directory │ ├── README.md # Bug fix guidelines and template │ └── 2025-10/ # Monthly organization │ └── vhs-video-not-playing.md # Example bug fix documentation └── Screenshots/ # Existing screenshots .github/ └── BUG_FIX_DOCUMENTATION_PROMPT.md # NEW - Prompt template for bug fixes README.md # Updated with better doc organization . | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#documentation-structure",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#documentation-structure"
+  },"19": {
+    "doc": "Update Summary",
+    "title": "Key Features of Bug Fix Documentation System",
+    "content": "1. Monthly Organization . Bug fixes organized by YYYY-MM/ folders for easy chronological navigation. 2. Comprehensive Template . Each bug fix document includes: . | Problem Description | Root Cause Analysis (step-by-step) | The Fix (code with reasoning) | Testing Commands (Docker builds with env vars) | Verification steps | Files Modified | Technical Notes (why it occurred) | Lessons Learned | Future Improvements | . 3. Pattern Tracking . Common bug patterns documented in docs/bugfix/README.md: . | Server Feature Parity (nginx → Node.js issues) | Future patterns will be added as they emerge | . 4. Process Integration . Added to docs/development.md: . | When to document bug fixes | How to create documentation | Complete template reference | Example bug fix link | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#key-features-of-bug-fix-documentation-system",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#key-features-of-bug-fix-documentation-system"
+  },"20": {
+    "doc": "Update Summary",
+    "title": "Usage Examples",
+    "content": "Viewing Bug Fix Documentation . | 1 2 3 4 5 6 7 8 . | # View all bug fixes ls docs/bugfix/ # View specific bug fix cat docs/bugfix/2025-10/vhs-video-not-playing.md # View guidelines cat docs/bugfix/README.md . | . Creating New Bug Fix Documentation . | Create month directory if needed: docs/bugfix/YYYY-MM/ | Create new file: docs/bugfix/YYYY-MM/descriptive-name.md | Use template from docs/bugfix/README.md | Include all testing commands with environment variables | Document lessons learned | . Accessing Documentation . GitHub: . | Main README links to all documentation | docs/index.md serves as documentation hub | Can be hosted on GitHub Pages | . Local: . | 1 2 3 4 5 6 7 8 . | # View documentation index cat docs/index.md # View server implementation cat docs/server-implementation.md # View troubleshooting cat docs/troubleshooting.md . | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#usage-examples",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#usage-examples"
+  },"21": {
+    "doc": "Update Summary",
+    "title": "Benefits",
+    "content": "1. Knowledge Preservation . | Debugging insights preserved for future reference | Understanding why bugs occurred prevents recurrence | New developers learn from past issues | . 2. Faster Debugging . | Similar issues resolved quicker with documented solutions | Testing commands readily available | Common patterns identified | . 3. Better Code Quality . | Understanding root causes improves architecture | Lessons learned inform future development | Prevention strategies documented | . 4. Team Communication . | Documented investigations help async collaboration | Clear explanations of technical decisions | Shared learning across team members | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#benefits",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#benefits"
+  },"22": {
+    "doc": "Update Summary",
+    "title": "Real-World Example",
+    "content": "VHS Video Not Playing Bug Fix . File: docs/bugfix/2025-10/vhs-video-not-playing.md . Problem: Loading VHS video stopped playing after switching from nginx to Node.js server . Root Cause: Missing HTTP Range Request support (RFC 7233) . Documentation Includes: . | Complete investigation process | Why nginx worked but Node.js didn’t | Code changes to implement range requests | Testing commands with Docker and environment variables | Technical explanation of range requests | Lessons about server feature parity | . Impact: Future developers will immediately know to implement range request support when building custom servers. ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#real-world-example",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#real-world-example"
+  },"23": {
+    "doc": "Update Summary",
+    "title": "Future Enhancements",
+    "content": "Potential Additions . | Automated bug fix index generation | Search functionality across bug fixes | Integration with CI/CD for prompting documentation | Pattern detection and alerts | Metrics on common bug types | . Process Improvements . | Template refinement based on usage | Additional example bug fixes | Video tutorials for creating documentation | Automated testing checklist generation | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#future-enhancements",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#future-enhancements"
+  },"24": {
+    "doc": "Update Summary",
+    "title": "Documentation Standards",
+    "content": "All Documentation Should: . | ✅ Be clear and concise | ✅ Include code examples | ✅ Provide testing commands | ✅ Reference related files | ✅ Explain the “why” not just “what” | . Bug Fix Documentation Must: . | ✅ Include complete testing commands with environment variables | ✅ Show step-by-step investigation | ✅ Document lessons learned | ✅ Reference related commits | ✅ Explain technical background | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#documentation-standards",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#documentation-standards"
+  },"25": {
+    "doc": "Update Summary",
+    "title": "Maintenance",
+    "content": "Regular Tasks . | Review and update troubleshooting guide as issues arise | Add new bug patterns to docs/bugfix/README.md | Update server implementation docs when features change | Keep documentation index up to date | . Monthly Review . | Check bug fix documentation for common patterns | Update templates based on feedback | Consolidate similar issues | Archive outdated documentation | . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#maintenance",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#maintenance"
+  },"26": {
+    "doc": "Update Summary",
+    "title": "Questions or Improvements?",
+    "content": "If you have suggestions for improving the documentation system: . | Open an issue describing the improvement | Submit a PR with proposed changes | Discuss in team meetings | . Documentation is a living system - keep it updated! . ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html#questions-or-improvements",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html#questions-or-improvements"
+  },"27": {
+    "doc": "Update Summary",
+    "title": "Update Summary",
+    "content": " ",
+    "url": "/TVx/DOCUMENTATION_UPDATE_SUMMARY.html",
+    
+    "relUrl": "/DOCUMENTATION_UPDATE_SUMMARY.html"
+  },"28": {
+    "doc": "Bug Fixes",
+    "title": "Bug Fix Documentation",
+    "content": "This directory contains detailed documentation for major bug fixes in TVx. ",
+    "url": "/TVx/bugfix/README.html#bug-fix-documentation",
+    
+    "relUrl": "/bugfix/README.html#bug-fix-documentation"
+  },"29": {
+    "doc": "Bug Fixes",
+    "title": "Purpose",
+    "content": "Bug fix documentation helps: . | Future debugging: Understand what went wrong and why | Knowledge sharing: Help other developers learn from issues | Project history: Track significant problems and solutions | Prevent regressions: Know what to test when making similar changes | . ",
+    "url": "/TVx/bugfix/README.html#purpose",
+    
+    "relUrl": "/bugfix/README.html#purpose"
+  },"30": {
+    "doc": "Bug Fixes",
+    "title": "Directory Structure",
+    "content": "Bug fixes are organized by year-month: . | 1 2 3 4 5 6 7 8 . | docs/bugfix/ ├── README.md (this file) ├── 2025-10/ │ └── vhs-video-not-playing.md ├── 2025-11/ │ └── example-bug-fix.md └── YYYY-MM/ └── descriptive-name.md . | . ",
+    "url": "/TVx/bugfix/README.html#directory-structure",
+    
+    "relUrl": "/bugfix/README.html#directory-structure"
+  },"31": {
+    "doc": "Bug Fixes",
+    "title": "When to Create Bug Fix Documentation",
+    "content": "Create a bug fix document when: . | ✅ The bug significantly impacted functionality | ✅ The root cause was non-obvious or took significant time to find | ✅ The fix required understanding of architecture or system behavior | ✅ Other developers might encounter similar issues | ✅ The debugging process revealed important insights | . Do NOT document: . | Minor typos or cosmetic fixes | Simple one-line changes | Obvious bugs with obvious fixes | . ",
+    "url": "/TVx/bugfix/README.html#when-to-create-bug-fix-documentation",
+    
+    "relUrl": "/bugfix/README.html#when-to-create-bug-fix-documentation"
+  },"32": {
+    "doc": "Bug Fixes",
+    "title": "Bug Fix Documentation Template",
+    "content": "Each bug fix document should include: . 1. Header Information . | 1 2 3 4 5 . | # Bug Fix: [Brief Description] **Date:** YYYY-MM-DD **Branch:** branch-name **Issue:** One-sentence summary . | . 2. Problem Description . | What wasn’t working? | How did users experience the bug? | What was the expected behavior? | . 3. Root Cause Analysis . | Step-by-step investigation process | What you tried that didn’t work | How you found the actual cause | Relevant log outputs or error messages | . 4. The Fix . | Code changes made (with snippets) | Why this approach was chosen | Alternative solutions considered | . 5. Testing Commands . | Exact commands to reproduce the bug | Commands to build and deploy the fix | Commands to verify the fix works | Include any necessary environment variables or configuration | . 6. Verification . | How to confirm the fix works | What to look for in logs | Expected vs actual behavior after fix | . 7. Files Modified . | List of all changed files | Brief description of changes to each | . 8. Technical Notes . | Deeper explanation of concepts involved | Why the bug occurred in the first place | Related system behaviors or constraints | . 9. Related Commits . | Git commit hashes and messages | Links to related issues or PRs | . 10. Lessons Learned . | Key takeaways from debugging | What to check in the future | Prevention strategies | . 11. Future Improvements (Optional) . | Better ways to solve this problem | Related technical debt | Monitoring or alerts to add | . ",
+    "url": "/TVx/bugfix/README.html#bug-fix-documentation-template",
+    
+    "relUrl": "/bugfix/README.html#bug-fix-documentation-template"
+  },"33": {
+    "doc": "Bug Fixes",
+    "title": "Process After Fixing a Bug",
+    "content": "After completing a bug fix: . | Document immediately while details are fresh | Include all commands used during debugging and testing | Add code snippets showing before/after changes | Explain the “why” not just the “what” | Update related documentation if needed | Add to this README if the bug reveals a common pattern | . ",
+    "url": "/TVx/bugfix/README.html#process-after-fixing-a-bug",
+    
+    "relUrl": "/bugfix/README.html#process-after-fixing-a-bug"
+  },"34": {
+    "doc": "Bug Fixes",
+    "title": "Example: Full Bug Fix Document",
+    "content": "See 2025-10/vhs-video-not-playing.md for a complete example showing: . | Thorough root cause analysis | All testing commands with environment variables | Technical explanation of HTTP Range Requests | Lessons learned about server implementations | . ",
+    "url": "/TVx/bugfix/README.html#example-full-bug-fix-document",
+    
+    "relUrl": "/bugfix/README.html#example-full-bug-fix-document"
+  },"35": {
+    "doc": "Bug Fixes",
+    "title": "Common Bug Patterns",
+    "content": "As we document bugs, common patterns will be added here: . Pattern: Server Feature Parity . Example: VHS video not playing (2025-10) . | Problem: Replacing nginx with custom Node.js server | Root Cause: Missing HTTP Range Request support | Lesson: Nginx provides many features “for free” that must be reimplemented | Prevention: Test all media types when switching servers | . Pattern: [Future patterns will be added here] . ",
+    "url": "/TVx/bugfix/README.html#common-bug-patterns",
+    
+    "relUrl": "/bugfix/README.html#common-bug-patterns"
+  },"36": {
+    "doc": "Bug Fixes",
+    "title": "Contributing",
+    "content": "When you fix a significant bug: . | Create a new directory: docs/bugfix/YYYY-MM/ (if it doesn’t exist) | Create a new file: descriptive-name.md | Use the template above | Add your bug pattern to this README if it’s a common issue | . ",
+    "url": "/TVx/bugfix/README.html#contributing",
+    
+    "relUrl": "/bugfix/README.html#contributing"
+  },"37": {
+    "doc": "Bug Fixes",
+    "title": "Questions?",
+    "content": "If you’re unsure whether a bug fix deserves documentation, ask yourself: . | Would I want this information if I encountered this bug again in 6 months? | Did this take me more than 2 hours to debug? | Did I learn something important about the system? | . If yes to any of these, document it! . ",
+    "url": "/TVx/bugfix/README.html#questions",
+    
+    "relUrl": "/bugfix/README.html#questions"
+  },"38": {
+    "doc": "Bug Fixes",
+    "title": "Bug Fixes",
+    "content": " ",
+    "url": "/TVx/bugfix/README.html",
+    
+    "relUrl": "/bugfix/README.html"
+  },"39": {
+    "doc": "Theme & Search",
+    "title": "Just the Docs Theme &amp; Search Setup",
+    "content": " ",
+    "url": "/TVx/THEME_SETUP.html#just-the-docs-theme--search-setup",
+    
+    "relUrl": "/THEME_SETUP.html#just-the-docs-theme--search-setup"
+  },"40": {
+    "doc": "Theme & Search",
+    "title": "Table of contents",
+    "content": ". | Theme Overview . | Why Just the Docs? | . | Search Functionality . | Built-in Search (Default) | Search Configuration | Alternative Search Options . | 1. Algolia DocSearch (Recommended for Popular Projects) | 2. Lunr.js (Just the Docs Default) | 3. Custom Google Search | . | . | Navigation Structure . | Current Navigation Order: | . | Customization Options . | Color Schemes | Custom Color Scheme | Logo | Aux Links (Top Right) | . | Page Layout Options . | Home Layout | Default Layout | No Nav Pages | . | Advanced Features . | Callouts | Code Blocks with Line Numbers | Table of Contents | Buttons | . | Local Development . | Start Server | Live Reload | Build Site | . | Deployment . | GitHub Pages | Custom Domain | . | Troubleshooting . | Search not working | Sidebar not showing | Theme not loading | . | Resources | . ",
+    "url": "/TVx/THEME_SETUP.html#table-of-contents",
+    
+    "relUrl": "/THEME_SETUP.html#table-of-contents"
+  },"41": {
+    "doc": "Theme & Search",
+    "title": "Theme Overview",
+    "content": "TVx documentation now uses Just the Docs, a modern, highly customizable Jekyll theme with powerful built-in search functionality. Why Just the Docs? . | 🔍 Built-in Search - Fast, client-side search with previews | 🎨 Dark Mode - Beautiful dark color scheme by default | 📱 Responsive - Works perfectly on all devices | 🚀 Fast - Optimized for performance | 🎯 Navigation - Auto-generated sidebar from front matter | 🔗 Anchor Links - Every heading gets an anchor | 📝 Clean Typography - Excellent readability | . ",
+    "url": "/TVx/THEME_SETUP.html#theme-overview",
+    
+    "relUrl": "/THEME_SETUP.html#theme-overview"
+  },"42": {
+    "doc": "Theme & Search",
+    "title": "Search Functionality",
+    "content": "Built-in Search (Default) . Just the Docs includes a powerful search feature that’s: . | Client-side - No server required, works on GitHub Pages | Fast - Instant results as you type | Smart - Searches headings, content, and page titles | Preview - Shows context around matches | Configurable - Customize behavior in _config.yml | . Search Configuration . Current settings in _config.yml: . | 1 2 3 4 5 6 7 8 9 . | search_enabled: true search: heading_level: 2 # Include h2 headings in search previews: 3 # Show 3 preview snippets per result preview_words_before: 5 # Words before match in preview preview_words_after: 10 # Words after match in preview tokenizer_separator: /[\\s/]+/ rel_url: true button: true . | . Alternative Search Options . If you need more advanced search, here are three excellent options: . 1. Algolia DocSearch (Recommended for Popular Projects) . Pros: . | 🚀 Ultra-fast, hosted search | 🎨 Beautiful UI with keyboard shortcuts | 🔄 Auto-indexes your site | 💰 Free for open-source documentation | . Setup: . | 1 2 3 4 5 6 7 8 . | # _config.yml plugins: - jekyll-algolia algolia: application_id: YOUR_APP_ID index_name: YOUR_INDEX_NAME search_only_api_key: YOUR_SEARCH_KEY . | . Apply: https://docsearch.algolia.com/apply/ . 2. Lunr.js (Just the Docs Default) . Pros: . | ✅ Already integrated in Just the Docs | 📦 No external dependencies | 🔒 Privacy-friendly (no tracking) | 💻 Works offline | . Cons: . | Limited to smaller sites (&lt; 500 pages) | Basic relevance ranking | . This is what we’re currently using! No additional setup needed. 3. Custom Google Search . Pros: . | 🔍 Leverages Google’s powerful search | 📊 Search analytics | 🎨 Customizable appearance | . Setup: . | Create a Custom Search Engine at cse.google.com | Add this to your layout: | . | 1 2 . | &lt;script async src=\"https://cse.google.com/cse.js?cx=YOUR_CX_ID\"&gt;&lt;/script&gt; &lt;div class=\"gcse-search\"&gt;&lt;/div&gt; . | . ",
+    "url": "/TVx/THEME_SETUP.html#search-functionality",
+    
+    "relUrl": "/THEME_SETUP.html#search-functionality"
+  },"43": {
+    "doc": "Theme & Search",
+    "title": "Navigation Structure",
+    "content": "Pages are ordered using nav_order in front matter: . | 1 2 3 4 5 . | --- layout: default title: Page Title nav_order: 1 # Lower numbers appear first --- . | . Current Navigation Order: . | Home (Landing Page) | Installation | Usage | Troubleshooting | Development | Server Implementation | Bug Fix System | Bug Fix Documentation | . ",
+    "url": "/TVx/THEME_SETUP.html#navigation-structure",
+    
+    "relUrl": "/THEME_SETUP.html#navigation-structure"
+  },"44": {
+    "doc": "Theme & Search",
+    "title": "Customization Options",
+    "content": "Color Schemes . Available built-in schemes: . | dark (current) | light | custom (define your own) | . Change in _config.yml: . | 1 . | color_scheme: dark . | . Custom Color Scheme . Create _sass/color_schemes/tvx.scss: . | 1 2 3 4 5 . | $body-background-color: #1a1a1a; $sidebar-color: #2d2d2d; $link-color: #b5e853; $btn-primary-color: #b5e853; $base-button-color: #f3f3f3; . | . Then use it: . | 1 . | color_scheme: tvx . | . Logo . Add your logo to _config.yml: . | 1 . | logo: \"/assets/images/tvx-logo.png\" . | . Aux Links (Top Right) . Currently configured: . | 1 2 3 4 5 . | aux_links: \"GitHub\": - \"//github.com/dopeytree/TVx\" \"Sponsor ❤️\": - \"//github.com/sponsors/dopeytree\" . | . ",
+    "url": "/TVx/THEME_SETUP.html#customization-options",
+    
+    "relUrl": "/THEME_SETUP.html#customization-options"
+  },"45": {
+    "doc": "Theme & Search",
+    "title": "Page Layout Options",
+    "content": "Home Layout . Landing pages use layout: home: . | 1 2 3 4 5 6 7 . | --- layout: default title: Home nav_order: 1 description: \"Your description\" permalink: / --- . | . Default Layout . Standard documentation pages: . | 1 2 3 4 5 . | --- layout: default title: Page Title nav_order: 2 --- . | . No Nav Pages . Exclude from navigation: . | 1 2 3 4 5 . | --- layout: default title: Hidden Page nav_exclude: true --- . | . ",
+    "url": "/TVx/THEME_SETUP.html#page-layout-options",
+    
+    "relUrl": "/THEME_SETUP.html#page-layout-options"
+  },"46": {
+    "doc": "Theme & Search",
+    "title": "Advanced Features",
+    "content": "Callouts . Create attention-grabbing blocks: . | 1 2 3 4 5 6 7 8 . | {: .note } &gt; This is a note callout {: .warning } &gt; This is a warning callout {: .important } &gt; This is an important callout . | . Code Blocks with Line Numbers . | 1 2 3 4 . | kramdown: syntax_highlighter_opts: block: line_numbers: true . | . Table of Contents . Auto-generate TOC for any page: . | 1 2 3 4 5 . | ## {: .no_toc .text-delta } 1. TOC {:toc} . | . Buttons . | 1 2 . | [Get Started](/TVx/installation.html){: .btn .btn-primary } [View on GitHub](https://github.com){: .btn } . | . ",
+    "url": "/TVx/THEME_SETUP.html#advanced-features",
+    
+    "relUrl": "/THEME_SETUP.html#advanced-features"
+  },"47": {
+    "doc": "Theme & Search",
+    "title": "Local Development",
+    "content": "Start Server . | 1 2 3 . | cd docs bundle install jekyll serve --host 0.0.0.0 --port 4000 --baseurl /TVx . | . Visit: http://localhost:4000/TVx/ . Live Reload . Changes to markdown files auto-reload. Restart for _config.yml changes. Build Site . | 1 . | bundle exec jekyll build . | . Output in _site/ directory. ",
+    "url": "/TVx/THEME_SETUP.html#local-development",
+    
+    "relUrl": "/THEME_SETUP.html#local-development"
+  },"48": {
+    "doc": "Theme & Search",
+    "title": "Deployment",
+    "content": "GitHub Pages . | Push changes to your branch | GitHub Actions automatically builds with Just the Docs | Site live at: https://dopeytree.github.io/TVx/ | . Custom Domain . Add CNAME file to /docs: . | 1 . | docs.tvx.example.com . | . Then configure DNS: . | 1 . | CNAME docs -&gt; dopeytree.github.io . | . ",
+    "url": "/TVx/THEME_SETUP.html#deployment",
+    
+    "relUrl": "/THEME_SETUP.html#deployment"
+  },"49": {
+    "doc": "Theme & Search",
+    "title": "Troubleshooting",
+    "content": "Search not working . | Check search_enabled: true in _config.yml | Rebuild site: bundle exec jekyll build | Clear browser cache | . Sidebar not showing . | Verify nav_order in front matter | Check layout is default or home | Ensure page is not nav_exclude: true | . Theme not loading . | Verify remote_theme: just-the-docs/just-the-docs | Run bundle install | Check GitHub Pages build status | . ",
+    "url": "/TVx/THEME_SETUP.html#troubleshooting",
+    
+    "relUrl": "/THEME_SETUP.html#troubleshooting"
+  },"50": {
+    "doc": "Theme & Search",
+    "title": "Resources",
+    "content": ". | Just the Docs Documentation | Customization Guide | Navigation Structure | Search Configuration | Algolia DocSearch | . ",
+    "url": "/TVx/THEME_SETUP.html#resources",
+    
+    "relUrl": "/THEME_SETUP.html#resources"
+  },"51": {
+    "doc": "Theme & Search",
+    "title": "Theme & Search",
+    "content": " ",
+    "url": "/TVx/THEME_SETUP.html",
+    
+    "relUrl": "/THEME_SETUP.html"
+  },"52": {
+    "doc": "Theme Colors",
+    "title": "TVx Custom Theme",
+    "content": " ",
+    "url": "/TVx/TVX_THEME.html#tvx-custom-theme",
+    
+    "relUrl": "/TVX_THEME.html#tvx-custom-theme"
+  },"53": {
+    "doc": "Theme Colors",
+    "title": "Overview",
+    "content": "The TVx documentation now uses a custom color scheme inspired by the TeXt Jekyll Theme, featuring: . | Modern, Clean Design - Light background with vibrant blue accents | Excellent Readability - High contrast, comfortable typography | Professional Look - Polished UI elements and smooth interactions | Warm Blues - Primary color #3498db (vibrant blue) | . ",
+    "url": "/TVx/TVX_THEME.html#overview",
+    
+    "relUrl": "/TVX_THEME.html#overview"
+  },"54": {
+    "doc": "Theme Colors",
+    "title": "Color Palette",
+    "content": "Primary Colors . | Color | Hex | Usage | . | Accent Blue | #3498db | Links, buttons, active states | . | Accent Blue (Hover) | #2980b9 | Hover effects | . | Heading Gray | #2c3e50 | Headings, important text | . | Body Text | #333333 | Main content text | . | Background | #ffffff | Page background | . | Sidebar | #f8f9fa | Sidebar background | . Accent Colors . | Color | Hex | Usage | . | Light Blue | #e3f2fd | Highlights, info boxes, table hover | . | Blue 100 | #bbdefb | Subtle backgrounds | . | Blue 200 | #90caf9 | Medium highlights | . | Border Gray | #e1e4e8 | Borders, separators | . Feedback Colors . | Color | Hex | Usage | . | Success Green | #66bb6a | Success messages | . | Warning Yellow | #ffd54f | Warning callouts | . | Error Red | #e57373 | Error messages | . ",
+    "url": "/TVx/TVX_THEME.html#color-palette",
+    
+    "relUrl": "/TVX_THEME.html#color-palette"
+  },"55": {
+    "doc": "Theme Colors",
+    "title": "Features",
+    "content": "1. Modern Navigation . | Clean sidebar with hover effects | Active page highlighting with blue border | Smooth transitions | . 2. Beautiful Code Blocks . | Rounded corners (6px border-radius) | Light gray background #f6f8fa | Subtle border | Line numbers enabled | . 3. Enhanced Tables . | Light blue header background | Blue accent border on header | Hover effects on rows | Clean borders | . 4. Callout Boxes . Three types of callouts with colored left borders: . Note (Blue) . | 1 2 . | {: .note } &gt; This is an informational note . | . Warning (Yellow) . | 1 2 . | {: .warning } &gt; This is a warning message . | . Important (Red) . | 1 2 . | {: .important } &gt; This is critical information . | . 5. Modern Buttons . | Vibrant blue primary button | Smooth hover effects with shadow | Clean, rounded appearance | . 6. Improved Typography . | Consistent heading hierarchy | H1 and H2 with bottom borders | Comfortable line spacing | Professional font stack | . ",
+    "url": "/TVx/TVX_THEME.html#features",
+    
+    "relUrl": "/TVX_THEME.html#features"
+  },"56": {
+    "doc": "Theme Colors",
+    "title": "Customization",
+    "content": "Change Primary Color . Edit /docs/_sass/color_schemes/tvx.scss: . | 1 2 3 . | $accent-color: #3498db; // Change this to your preferred color $link-color: #3498db; // Keep consistent $btn-primary-color: #3498db; . | . Adjust Sidebar . Edit /docs/_sass/custom/custom.scss: . | 1 2 3 4 . | .side-bar { background-color: #f8f9fa; // Change sidebar background border-right: 1px solid #e1e4e8; } . | . Modify Code Blocks . | 1 2 3 4 5 6 7 8 . | pre { border-radius: 6px; // Adjust corner roundness border: 1px solid #e1e4e8; code { background-color: #f6f8fa; // Change code background } } . | . ",
+    "url": "/TVx/TVX_THEME.html#customization",
+    
+    "relUrl": "/TVX_THEME.html#customization"
+  },"57": {
+    "doc": "Theme Colors",
+    "title": "File Structure",
+    "content": "| 1 2 3 4 5 6 7 . | docs/ ├── _sass/ │ ├── color_schemes/ │ │ └── tvx.scss # Color variable definitions │ └── custom/ │ └── custom.scss # Custom styling overrides └── _config.yml # Theme configuration . | . ",
+    "url": "/TVx/TVX_THEME.html#file-structure",
+    
+    "relUrl": "/TVX_THEME.html#file-structure"
+  },"58": {
+    "doc": "Theme Colors",
+    "title": "Switching Back to Dark Mode",
+    "content": "If you prefer the dark theme: . Edit _config.yml: . | 1 . | color_scheme: dark . | . Then restart Jekyll. ",
+    "url": "/TVx/TVX_THEME.html#switching-back-to-dark-mode",
+    
+    "relUrl": "/TVX_THEME.html#switching-back-to-dark-mode"
+  },"59": {
+    "doc": "Theme Colors",
+    "title": "Creating Additional Color Schemes",
+    "content": ". | Create new file: _sass/color_schemes/myscheme.scss | Define your colors using Just the Docs variables | Update _config.yml: color_scheme: myscheme | Restart Jekyll | . ",
+    "url": "/TVx/TVX_THEME.html#creating-additional-color-schemes",
+    
+    "relUrl": "/TVX_THEME.html#creating-additional-color-schemes"
+  },"60": {
+    "doc": "Theme Colors",
+    "title": "Comparison with TeXt Theme",
+    "content": "| Feature | TeXt Theme | TVx Theme | . | Primary Color | Blue | Vibrant Blue #3498db | . | Layout | Multi-layout | Documentation-focused | . | Navigation | Top nav + sidebar | Sidebar only | . | Search | Algolia optional | Built-in Lunr.js | . | Code Blocks | Syntax highlighting | + Line numbers | . | Callouts | Native support | Custom CSS classes | . ",
+    "url": "/TVx/TVX_THEME.html#comparison-with-text-theme",
+    
+    "relUrl": "/TVX_THEME.html#comparison-with-text-theme"
+  },"61": {
+    "doc": "Theme Colors",
+    "title": "Performance",
+    "content": ". | Load Time: Fast (static site) | Search: Instant (client-side) | Responsiveness: Full mobile support | Accessibility: WCAG compliant | . ",
+    "url": "/TVx/TVX_THEME.html#performance",
+    
+    "relUrl": "/TVX_THEME.html#performance"
+  },"62": {
+    "doc": "Theme Colors",
+    "title": "Browser Support",
+    "content": ". | ✅ Chrome/Edge (latest) | ✅ Firefox (latest) | ✅ Safari (latest) | ✅ Mobile browsers | . ",
+    "url": "/TVx/TVX_THEME.html#browser-support",
+    
+    "relUrl": "/TVX_THEME.html#browser-support"
+  },"63": {
+    "doc": "Theme Colors",
+    "title": "Resources",
+    "content": ". | Just the Docs Documentation | TeXt Theme | Color Customization Guide | . ",
+    "url": "/TVx/TVX_THEME.html#resources",
+    
+    "relUrl": "/TVX_THEME.html#resources"
+  },"64": {
+    "doc": "Theme Colors",
+    "title": "Theme Colors",
+    "content": " ",
+    "url": "/TVx/TVX_THEME.html",
+    
+    "relUrl": "/TVX_THEME.html"
+  },"65": {
+    "doc": "Browser Support",
+    "title": "Browser Support",
+    "content": "Works best in modern browsers with WebGL support: . | ✅ Chrome/Edge 90+ | ⚠️ Firefox 88+ | ✅ Safari 14+ | . ",
+    "url": "/TVx/browser-support.html",
+    
+    "relUrl": "/browser-support.html"
+  },"66": {
+    "doc": "Browser Support",
+    "title": "Troubleshooting",
+    "content": "Channels not loading . | Check that your M3U and XMLTV URLs are correct | Ensure Tunarr is running and accessible | Clear browser cache (Ctrl+Shift+R) | . Video not playing . | Verify HLS streams are working in Tunarr | Check browser console for errors | Try a different browser | . EPG not showing . | Confirm XMLTV URL is valid | Check that XMLTV file contains program data | Refresh the page | . ",
+    "url": "/TVx/browser-support.html#troubleshooting",
+    
+    "relUrl": "/browser-support.html#troubleshooting"
+  },"67": {
+    "doc": "Development",
+    "title": "Development",
+    "content": "Technical documentation for developers working on TVx. This section covers development setup, server architecture, and contributing guidelines. ",
+    "url": "/TVx/development-guide.html",
+    
+    "relUrl": "/development-guide.html"
+  },"68": {
+    "doc": "Contributing",
+    "title": "Development",
+    "content": " ",
+    "url": "/TVx/development.html#development",
+    
+    "relUrl": "/development.html#development"
+  },"69": {
+    "doc": "Contributing",
+    "title": "Prerequisites",
+    "content": ". | Node.js 18+ | npm or yarn | Git | . ",
+    "url": "/TVx/development.html#prerequisites",
+    
+    "relUrl": "/development.html#prerequisites"
+  },"70": {
+    "doc": "Contributing",
+    "title": "Setup",
+    "content": ". | Clone the repository: . | 1 2 . | git clone https://github.com/dopeytree/TVx.git cd TVx . | . | Install dependencies: . | 1 . | npm install . | . | Set environment variables (create .env file): . | 1 2 . | VITE_M3U_URL=http://your-tunarr-ip:8000/api/channels.m3u VITE_XMLTV_URL=http://your-tunarr-ip:8000/api/xmltv.xml . | . | Start development server: . | 1 . | npm run dev . | . | . Open http://localhost:5173 . ",
+    "url": "/TVx/development.html#setup",
+    
+    "relUrl": "/development.html#setup"
+  },"71": {
+    "doc": "Contributing",
+    "title": "Build",
+    "content": "| 1 . | npm run build . | . ",
+    "url": "/TVx/development.html#build",
+    
+    "relUrl": "/development.html#build"
+  },"72": {
+    "doc": "Contributing",
+    "title": "Tech Stack",
+    "content": ". | React 18 with TypeScript | Vite for build tooling | Tailwind CSS for styling | Radix UI for accessible components | HLS.js for video streaming | WebGL shaders for CRT effects | . ",
+    "url": "/TVx/development.html#tech-stack",
+    
+    "relUrl": "/development.html#tech-stack"
+  },"73": {
+    "doc": "Contributing",
+    "title": "Project Structure",
+    "content": "| 1 2 3 4 5 6 7 8 9 10 11 12 . | src/ ├── components/ # React components │ ├── ui/ # Reusable UI components │ ├── ChannelList.tsx # Channel list component │ ├── EPGView.tsx # Electronic Program Guide │ ├── VideoPlayer.tsx # Main video player │ └── ... ├── hooks/ # Custom React hooks ├── lib/ # Utilities ├── pages/ # Page components ├── types/ # TypeScript type definitions └── utils/ # Helper functions . | . ",
+    "url": "/TVx/development.html#project-structure",
+    
+    "relUrl": "/development.html#project-structure"
+  },"74": {
+    "doc": "Contributing",
+    "title": "Key Components",
+    "content": "VideoPlayer . Handles HLS video streaming with custom WebGL effects for CRT simulation. EPGView . Displays the electronic program guide with timeline and channel grid. ChannelList . Manages channel navigation and metadata display. ",
+    "url": "/TVx/development.html#key-components",
+    
+    "relUrl": "/development.html#key-components"
+  },"75": {
+    "doc": "Contributing",
+    "title": "Contributing",
+    "content": ". | Fork the repository | Create a feature branch: git checkout -b feature/your-feature | Make your changes | Test thoroughly | Submit a pull request | . ",
+    "url": "/TVx/development.html",
+    
+    "relUrl": "/development.html"
+  },"76": {
+    "doc": "Contributing",
+    "title": "Bug Fix Documentation",
+    "content": "When you fix a significant bug, create documentation following these guidelines: . When to Document a Bug Fix . Document bug fixes that are: . | ✅ Non-obvious - Took significant time to debug | ✅ Architectural - Reveals system behavior or design issues | ✅ Impactful - Significantly affected functionality | ✅ Educational - Other developers can learn from it | . Bug Fix Documentation Process . After fixing a major bug, you will be prompted to create documentation: . | 1 . | 🐛 Bug fixed! Would you like to create bug fix documentation? (Recommended for significant fixes) . | . If yes: . | Create a new file in docs/bugfix/YYYY-MM/descriptive-name.md | Use the template from docs/bugfix/README.md | Include all of the following: . | Problem Description: What wasn’t working? | Root Cause Analysis: Step-by-step investigation | The Fix: Code changes and reasoning | Testing Commands: Exact commands including Docker builds with environment variables | Verification: How to confirm the fix works | Files Modified: List of changed files | Technical Notes: Deep explanation of why the bug occurred | Lessons Learned: Key takeaways and prevention strategies | . | . Example Documentation Structure . | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 . | # Bug Fix: Loading VHS Video Not Playing **Date:** 2025-10-15 **Branch:** logging **Issue:** Loading video not playing after switching to Node.js server ## Problem Description [What wasn't working...] ## Root Cause Analysis [Step-by-step investigation...] ## The Fix [Code changes...] ## Testing Commands ```bash # Build with environment variables docker build -t tvx:latest . docker run -d --name tvx -p 8777:80 \\ -e VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u \\ -e VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml \\ tvx:latest . | . ",
+    "url": "/TVx/development.html#bug-fix-documentation",
+    
+    "relUrl": "/development.html#bug-fix-documentation"
+  },"77": {
+    "doc": "Contributing",
+    "title": "Verification",
+    "content": "[How to confirm the fix…] . ",
+    "url": "/TVx/development.html#verification",
+    
+    "relUrl": "/development.html#verification"
+  },"78": {
+    "doc": "Contributing",
+    "title": "Lessons Learned",
+    "content": "[Key takeaways…] ``` . Complete Template . See docs/bugfix/README.md for the complete template and examples. Example Bug Fix Documentation . See docs/bugfix/2025-10/vhs-video-not-playing.md for a full example showing: . | Thorough investigation process | All testing commands with environment variables | Technical explanation of HTTP Range Requests | Lessons learned about server implementations | . ",
+    "url": "/TVx/development.html#lessons-learned",
+    
+    "relUrl": "/development.html#lessons-learned"
+  },"79": {
+    "doc": "Contributing",
+    "title": "Code Style",
+    "content": ". | Use TypeScript for all new code | Follow React best practices | Use Tailwind CSS classes for styling | Run npm run lint before committing | . ",
+    "url": "/TVx/development.html#code-style",
+    
+    "relUrl": "/development.html#code-style"
+  },"80": {
+    "doc": "Contributing",
+    "title": "Testing",
+    "content": "Currently no automated tests are set up. Manual testing is required for all changes. ",
+    "url": "/TVx/development.html#testing",
+    
+    "relUrl": "/development.html#testing"
+  },"81": {
+    "doc": "Contributing",
+    "title": "Deployment",
+    "content": "The app is containerized using Docker. See the main README for deployment instructions. ",
+    "url": "/TVx/development.html#deployment",
+    
+    "relUrl": "/development.html#deployment"
+  },"82": {
+    "doc": "Contributing",
+    "title": "License",
+    "content": "PolyForm Noncommercial 1.0.0 - See LICENSE file for details. ",
+    "url": "/TVx/development.html#license",
+    
+    "relUrl": "/development.html#license"
+  },"83": {
+    "doc": "Documentation",
+    "title": "Documentation",
+    "content": "Information about the TVx documentation system. This section covers the documentation structure, theme customization, and recent updates. ",
+    "url": "/TVx/documentation-info.html",
+    
+    "relUrl": "/documentation-info.html"
+  },"84": {
+    "doc": "Features",
+    "title": "Features",
+    "content": "Instant Channel Surfing . ⚡ Instant channel surfing — tap ↑/↓ to skim through channels quickly. Hold the keys to rapidly browse, release when you find something interesting. TV Guide . | Press G to open the full TV guide | Shows a 12-hour timeline across all channels | Displays poster artwork for programs | Click on any program to jump to that channel and time | . Theater Modes . | Click on the video player to cycle through views: . | Guide View: Shows channel list and current program info | Normal View: Standard player with controls | Immersive View: Full screen player with minimal UI | . | . Smart Channel Names . 🏷️ Smarter Tunarr channel names — TVx automatically cleans up channel names and adds relevant icons: . | Pulp Fiction Movies → Pulp Fiction [🎬] | The Hitchhiker’s Guide to the Galaxy Shows → The Hitchhiker’s Guide to the Galaxy [📺] | Extreme Ironing Sports → Extreme Ironing [🏆] | The Tesla Files History → The Tesla Files [📜] | Cosmos Documentaries → Cosmos [📜] | . Vintage TV Effects . TVx includes authentic CRT television effects: . | Curved glass and scanlines | Chromatic aberration and vignette | Toggle vintage filter on/off for different aesthetics | . VHS Buffering . When a stream loads, TVx displays a vintage VHS loading animation while disks spin up and content buffers. ",
+    "url": "/TVx/features.html",
+    
+    "relUrl": "/features.html"
+  },"85": {
+    "doc": "Getting Started",
+    "title": "Welcome to TVx",
+    "content": "TVx brings the warmth of modern nostalgia to your streaming experience. This section will help you get up and running quickly. Quick Start Guide . | Install TVx - Follow the installation instructions | Configure - Set up your M3U and XMLTV URLs | Learn the Interface - Check out the GUI screenshots | Master the Features - Explore keyboard shortcuts and features | Troubleshoot - Find solutions to common issues | . ",
+    "url": "/TVx/getting-started.html#welcome-to-tvx",
+    
+    "relUrl": "/getting-started.html#welcome-to-tvx"
+  },"86": {
+    "doc": "Getting Started",
+    "title": "Getting Started",
+    "content": " ",
+    "url": "/TVx/getting-started.html",
+    
+    "relUrl": "/getting-started.html"
+  },"87": {
+    "doc": "GUI",
+    "title": "Main View",
+    "content": ". ",
+    "url": "/TVx/gui.html#main-view",
+    
+    "relUrl": "/gui.html#main-view"
+  },"88": {
+    "doc": "GUI",
+    "title": "Theatre Mode",
+    "content": ". ",
+    "url": "/TVx/gui.html#theatre-mode",
+    
+    "relUrl": "/gui.html#theatre-mode"
+  },"89": {
+    "doc": "GUI",
+    "title": "Full TV Guide",
+    "content": ". ",
+    "url": "/TVx/gui.html#full-tv-guide",
+    
+    "relUrl": "/gui.html#full-tv-guide"
+  },"90": {
+    "doc": "GUI",
+    "title": "Keyboard Shortcuts Display",
+    "content": ". ",
+    "url": "/TVx/gui.html#keyboard-shortcuts-display",
+    
+    "relUrl": "/gui.html#keyboard-shortcuts-display"
+  },"91": {
+    "doc": "GUI",
+    "title": "Vintage TV Filter = On",
+    "content": ". ",
+    "url": "/TVx/gui.html#vintage-tv-filter--on",
+    
+    "relUrl": "/gui.html#vintage-tv-filter--on"
+  },"92": {
+    "doc": "GUI",
+    "title": "Vintage TV Filter = OFF",
+    "content": ". ",
+    "url": "/TVx/gui.html#vintage-tv-filter--off",
+    
+    "relUrl": "/gui.html#vintage-tv-filter--off"
+  },"93": {
+    "doc": "GUI",
+    "title": "VHS Buffering Video",
+    "content": ". ",
+    "url": "/TVx/gui.html#vhs-buffering-video",
+    
+    "relUrl": "/gui.html#vhs-buffering-video"
+  },"94": {
+    "doc": "GUI",
+    "title": "GUI",
+    "content": " ",
+    "url": "/TVx/gui.html",
+    
+    "relUrl": "/gui.html"
+  },"95": {
+    "doc": "Home",
+    "title": "📺 TVx",
+    "content": "The warmth of modern nostalgia — television you remember feeling . Get Started View on GitHub . ",
+    "url": "/TVx/#-tvx",
+    
+    "relUrl": "/#-tvx"
+  },"96": {
+    "doc": "Home",
+    "title": "Demo Video",
+    "content": "Replace YOUR_VIDEO_ID with your actual YouTube video ID or add a different video embed code . An IPTV + EPG viewer for Tunarr (Plex/Jellyfin) that brings back the ritual of watching—not scrolling, not seeking, just being with what’s on. Like the grain of 35mm film 🎞️ or the crackle before a record drops 💿, TVx trades sterile perfection for something alive. Curved glass 📟. Gentle flicker ✨. Scanlines that breathe. Architecture . TVx is a client-side web frontend that interfaces with your Tunarr backend alongside your Plex library. It consumes M3U playlists and XMLTV EPG data generated by Tunarr, while displaying rich metadata and artwork from your Plex media server. ",
+    "url": "/TVx/#demo-video",
+    
+    "relUrl": "/#demo-video"
+  },"97": {
+    "doc": "Home",
+    "title": "✨ Key Features",
+    "content": "⚡ Instant Channel Surfing Hold ↑/↓ to skim through channels; land when something catches your eye 📟 CRT Warmth Authentic curvature, chromatic aberration, scanlines, and vignette effects 📅 Full TV Guide Press G for a 12-hour timeline across all channels with poster artwork 🎬 Theater Modes Click the player to cycle views (guide → normal → immersive) 🏷️ Smart Channel Names Automatically strips filler words and adds icons . ",
+    "url": "/TVx/#-key-features",
+    
+    "relUrl": "/#-key-features"
+  },"98": {
+    "doc": "Home",
+    "title": "🖼️ Screenshots",
+    "content": ". ",
+    "url": "/TVx/#%EF%B8%8F-screenshots",
+    
+    "relUrl": "/#️-screenshots"
+  },"99": {
+    "doc": "Home",
+    "title": "🚀 Quick Start",
+    "content": "Get TVx up and running in minutes: . | Install TVx - Docker, Unraid, or local setup | Configure Your Setup - Connect to Tunarr | Start Watching - Learn the shortcuts | . ",
+    "url": "/TVx/#-quick-start",
+    
+    "relUrl": "/#-quick-start"
+  },"100": {
+    "doc": "Home",
+    "title": "💚 Support the Project",
+    "content": "If TVx brings back the warmth of television for you, consider supporting its development: . ",
+    "url": "/TVx/#-support-the-project",
+    
+    "relUrl": "/#-support-the-project"
+  },"101": {
+    "doc": "Home",
+    "title": "Why it feels different",
+    "content": ". | ⚡ Instant channel surfing — hold ↑/↓ to skim; land when something catches your eye | 📟 CRT warmth — curvature, chromatic aberration, scanlines, vignette | 📅 Full TV guide — press G for a 12‑hour timeline across all channels with poster artwork | 🎬 Theater modes — click the player to cycle views (guide → normal → immersive) | 🏷️ Smart channel names — strips filler words, adds icons | . ",
+    "url": "/TVx/#why-it-feels-different",
+    
+    "relUrl": "/#why-it-feels-different"
+  },"102": {
+    "doc": "Home",
+    "title": "Documentation",
+    "content": "Getting Started . | Installation - Setup guide for Docker, Unraid, and local development | Usage - Keyboard shortcuts, features, and logging | Troubleshooting - Common issues and solutions | . Technical Documentation . | Development - Contributing, code style, and bug fix documentation | Server Implementation - Node.js server details, logging, and architecture | Bug Fixes - Documented bug fixes and lessons learned | . Resources . | GitHub Repository | Bug Fix System - How we document significant bug fixes | . ",
+    "url": "/TVx/#documentation",
+    
+    "relUrl": "/#documentation"
+  },"103": {
+    "doc": "Home",
+    "title": "Screenshots",
+    "content": "Main View . Full TV Guide View . Full screen View . ",
+    "url": "/TVx/#screenshots",
+    
+    "relUrl": "/#screenshots"
+  },"104": {
+    "doc": "Home",
+    "title": "Buy me a coffee",
+    "content": ". ",
+    "url": "/TVx/#buy-me-a-coffee",
+    
+    "relUrl": "/#buy-me-a-coffee"
+  },"105": {
+    "doc": "Home",
+    "title": "Home",
+    "content": " ",
+    "url": "/TVx/",
+    
+    "relUrl": "/"
+  },"106": {
+    "doc": "Installation",
+    "title": "Installation",
+    "content": " ",
+    "url": "/TVx/installation.html",
+    
+    "relUrl": "/installation.html"
+  },"107": {
+    "doc": "Installation",
+    "title": "Prerequisites",
+    "content": "Before running TVx, you need: . | Plex or Jellyfin media server set up | Tunarr (or Dizquetv) for channel streaming | Your M3U playlist and XMLTV EPG URLs from Tunarr | . ",
+    "url": "/TVx/installation.html#prerequisites",
+    
+    "relUrl": "/installation.html#prerequisites"
+  },"108": {
+    "doc": "Installation",
+    "title": "Required Configuration",
+    "content": "You MUST set your IPTV sources using environment variables: . | VITE_M3U_URL - Your IPTV M3U playlist URL (e.g., http://your-tunarr-ip:8000/api/channels.m3u) | VITE_XMLTV_URL - Your XMLTV EPG guide URL (e.g., http://your-tunarr-ip:8000/api/xmltv.xml) | . Note: If you change URLs later, clear your browser cache (Ctrl+Shift+R) to see updates. ",
+    "url": "/TVx/installation.html#required-configuration",
+    
+    "relUrl": "/installation.html#required-configuration"
+  },"109": {
+    "doc": "Installation",
+    "title": "Docker Installation",
+    "content": "Quick Docker Run . | 1 2 3 4 5 6 7 . | docker run -d \\ --name tvx \\ -p 8777:80 \\ --restart unless-stopped \\ -e VITE_M3U_URL=\"http://your-tunarr-ip:8000/api/channels.m3u\" \\ -e VITE_XMLTV_URL=\"http://your-tunarr-ip:8000/api/xmltv.xml\" \\ ghcr.io/dopeytree/tvx:latest . | . Then open http://localhost:8777 . Docker Compose . | 1 2 3 4 5 6 7 8 9 10 11 12 . | services: tvx: image: ghcr.io/dopeytree/tvx:latest ports: - \"8777:80\" restart: unless-stopped environment: - TZ=UTC - VITE_M3U_URL=http://your-tunarr-ip:8000/api/channels.m3u - VITE_XMLTV_URL=http://your-tunarr-ip:8000/api/xmltv.xml volumes: - ./config:/config . | . Save as docker-compose.yml and run: . | 1 . | docker-compose up -d . | . Build Locally . | 1 2 3 4 5 6 7 8 9 10 . | # Build the image docker build -t tvx . # Run it docker run -d \\ -p 8777:80 \\ --name tvx \\ -e VITE_M3U_URL=\"http://your-tunarr-ip:8000/api/channels.m3u\" \\ -e VITE_XMLTV_URL=\"http://your-tunarr-ip:8000/api/xmltv.xml\" \\ tvx . | . ",
+    "url": "/TVx/installation.html#docker-installation",
+    
+    "relUrl": "/installation.html#docker-installation"
+  },"110": {
+    "doc": "Installation",
+    "title": "Unraid Installation",
+    "content": ". | Open Docker tab in Unraid | Click Add Container | Configure the following fields: | . | Field | Value | . | Name | tvx | . | Repository | ghcr.io/dopeytree/tvx:latest | . | Registry URL | https://github.com/dopeytree/TVx/pkgs/container/tvx | . | Icon URL | https://raw.githubusercontent.com/dopeytree/TVx/main/public/logo.png | . | WebUI | http://[IP]:[PORT:8777] | . | Port | Container: 80, Host: 8777 | . | Network Type | Bridge | . | Add environment variables: . | VITE_M3U_URL = http://your-tunarr-ip:8000/api/channels.m3u | VITE_XMLTV_URL = http://your-tunarr-ip:8000/api/xmltv.xml | TZ = America/New_York (your timezone) | . | Add path mapping (optional but recommended): . | Container Path: /config | Host Path: /mnt/user/appdata/tvx | Access Mode: Read/Write | . | Click Apply | Access at: http://YOUR-UNRAID-IP:8777 | . Persistent Storage: The /config path stores: . | Settings and configuration (settings.json) | Application logs (tvx.log) - automatically rotated | Access logs at: /mnt/user/appdata/tvx/tvx.log | . ",
+    "url": "/TVx/installation.html#unraid-installation",
+    
+    "relUrl": "/installation.html#unraid-installation"
+  },"111": {
+    "doc": "Installation",
+    "title": "Tech Stack",
+    "content": ". | Frontend: React 18 + TypeScript | Build: Vite | Styling: Tailwind CSS + Radix UI | Video: HLS.js for streaming | Effects: WebGL shaders for CRT effects | Container: Alpine Linux + Nginx | . ",
+    "url": "/TVx/installation.html#tech-stack",
+    
+    "relUrl": "/installation.html#tech-stack"
+  },"112": {
+    "doc": "Keyboard Shortcuts",
+    "title": "Keyboard Shortcuts",
+    "content": "| Key | Action | . | ↑ ↓ | Channel surf (hold to skim) | . | G | Toggle full TV guide | . | F | Fullscreen | . | M | Mute/Unmute | . | Esc | Close modals/Exit theater | . Tips . | Hold arrow keys to rapidly browse through channels | Release when you find something interesting | Use Esc to quickly exit any modal or theater mode | . ",
+    "url": "/TVx/keyboard-shortcuts.html",
+    
+    "relUrl": "/keyboard-shortcuts.html"
+  },"113": {
+    "doc": "Logging & Monitoring",
+    "title": "Logging &amp; Monitoring",
+    "content": "TVx provides comprehensive logging of all user interactions directly to your Docker container logs, making it easy to monitor usage and troubleshoot issues. What Gets Logged . | Channel Selection: When channels are selected (including channel names and source) | Program Interactions: Opening/closing program popups with show details and episode info | Poster Views: Opening/closing program posters | Google Searches: When “More Info” links are clicked (with show name and year) | Guide Navigation: Opening/closing full TV guide and channel guide | Settings Changes: All settings operations and modifications | File Operations: M3U/XMLTV file uploads and parsing results | Video Controls: Play/pause, mute/unmute, fullscreen toggles | UI Interactions: Stats panel, favorites management, keyboard shortcuts | Errors: All application errors and parsing failures | . Viewing Logs . Docker Container Logs: . | 1 . | docker logs tvx . | . Docker Compose Logs: . | 1 . | docker-compose logs -f tvx . | . Persistent Log File: . | 1 2 3 . | # View the persistent log file (survives container restarts) cat ./config/tvx.log tail -f ./config/tvx.log # Follow/tail logs . | . Unraid Logs: . | Container Logs: Docker tab → TVx container → Logs button | Persistent Log File: Navigate to /mnt/user/appdata/tvx/tvx.log or use terminal: | . | 1 . | tail -f /mnt/user/appdata/tvx/tvx.log . | . Sample Log Output . [2025-10-15T20:18:28.467Z] INFO: Loaded 20 channels [2025-10-15T20:18:28.481Z] INFO: Channel changed to: Favourite TV Shows [2025-10-15T20:18:28.498Z] INFO: Loaded stream URL for Favourite TV Shows: http://192.168.22.2:8000/stream/channels/0136ef47-9ddc-468f-8f81-3b9bbe9e09ba?streamMode=hls [2025-10-15T20:18:28.529Z] INFO: Loaded EPG data for 467 programmes [2025-10-15T20:18:28.675Z] INFO: Loading video loaded successfully [2025-10-15T20:18:28.680Z] INFO: Loading video started playing [2025-10-15T20:18:31.008Z] INFO: Channel changed to: Gerry Anderson Shows [2025-10-15T20:18:31.014Z] INFO: Loaded stream URL for Gerry Anderson Shows: http://192.168.22.2:8000/stream/channels/b460e1c6-d129-4146-ba60-ffd7a7d0f2ef?streamMode=hls [2025-10-15T20:18:50.406Z] INFO: Channel changed to: Gerry Anderson Shows [2025-10-15T20:18:50.484Z] INFO: Loading video started playing . Benefits . This logging system helps you: . | Monitor viewing patterns and popular channels/programs | Debug user interaction issues | Track application usage in multi-user environments | Verify that features are working correctly | Analyze user behavior and preferences | . ",
+    "url": "/TVx/logging.html#logging--monitoring",
+    
+    "relUrl": "/logging.html#logging--monitoring"
+  },"114": {
+    "doc": "Logging & Monitoring",
+    "title": "Logging & Monitoring",
+    "content": " ",
+    "url": "/TVx/logging.html",
+    
+    "relUrl": "/logging.html"
+  },"115": {
+    "doc": "Server Implementation",
+    "title": "Server Implementation",
+    "content": " ",
+    "url": "/TVx/server-implementation.html",
+    
+    "relUrl": "/server-implementation.html"
+  },"116": {
+    "doc": "Server Implementation",
+    "title": "Overview",
+    "content": "TVx uses a custom Node.js server (server.js) instead of nginx to serve the application and handle logging. This document explains the implementation details, rationale, and key features. ",
+    "url": "/TVx/server-implementation.html#overview",
+    
+    "relUrl": "/server-implementation.html#overview"
+  },"117": {
+    "doc": "Server Implementation",
+    "title": "Architecture",
+    "content": "| 1 2 3 4 5 6 7 8 9 . | Docker Container ├── Node.js (Alpine) ├── /usr/share/nginx/html/ (static files) │ ├── index.html │ ├── assets/ │ ├── loading-VHS.mp4 │ ├── env.js (generated at runtime) │ └── server.js └── Port 80 . | . ",
+    "url": "/TVx/server-implementation.html#architecture",
+    
+    "relUrl": "/server-implementation.html#architecture"
+  },"118": {
+    "doc": "Server Implementation",
+    "title": "Why Node.js Instead of Nginx?",
+    "content": "The switch from nginx to Node.js was made to support: . | Server-side logging: Capture client-side logs in Docker container logs | Dynamic configuration: Generate env.js at runtime using environment variables | Custom endpoints: Add /log endpoint for centralized logging | Simpler deployment: Single runtime (Node.js) instead of nginx + separate tools | . Trade-offs . Advantages: . | ✅ Custom logging endpoint | ✅ Dynamic environment configuration | ✅ Simpler Docker image (single runtime) | ✅ Easy to extend with custom routes | . Disadvantages: . | ⚠️ Less battle-tested than nginx for static file serving | ⚠️ Requires implementing features nginx provides for free (range requests, compression, caching) | ⚠️ Potentially lower performance under high load | . ",
+    "url": "/TVx/server-implementation.html#why-nodejs-instead-of-nginx",
+    
+    "relUrl": "/server-implementation.html#why-nodejs-instead-of-nginx"
+  },"119": {
+    "doc": "Server Implementation",
+    "title": "Server.js Implementation",
+    "content": "Core Functionality . The server handles three main responsibilities: . | Static file serving - Serves React build artifacts | Logging endpoint - Receives logs from browser | SPA routing - Falls back to index.html for React Router | . Code Structure . | 1 2 3 4 5 6 7 . | const http = require('http'); const fs = require('fs'); const path = require('path'); const url = require('url'); const PORT = 80; const STATIC_DIR = '/usr/share/nginx/html'; . | . Key Features . 1. Logging Endpoint . Route: POST /log . Receives logs from the browser and outputs them to Docker logs: . | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 . | if (req.method === 'POST' &amp;&amp; pathname === '/log') { let body = ''; req.on('data', chunk =&gt; { body += chunk.toString(); }); req.on('end', () =&gt; { try { const logData = JSON.parse(body); const timestamp = new Date().toISOString(); const level = logData.level || 'info'; const message = logData.message || body; console.log(`[${timestamp}] ${level.toUpperCase()}: ${message}`); } catch (e) { console.log(`[${new Date().toISOString()}] LOG: ${body}`); } res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('OK'); }); return; } . | . Usage from client: . | 1 2 3 4 5 6 7 8 . | // src/utils/logger.ts const sendLog = async (level: string, message: string) =&gt; { await fetch('/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ level, message }), }); }; . | . 2. HTTP Range Request Support . Critical for video playback! Browsers require range request support for video elements. | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 . | // Handle range requests for video files if (ext === '.mp4' &amp;&amp; req.headers.range) { const range = req.headers.range; const parts = range.replace(/bytes=/, '').split('-'); const start = parseInt(parts[0], 10); const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1; const chunksize = (end - start) + 1; const head = { 'Content-Range': `bytes ${start}-${end}/${stats.size}`, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': contentType, }; res.writeHead(206, head); fs.createReadStream(filePath, { start, end }).pipe(res); } . | . Why this is essential: . | Browsers use range requests to seek in videos | Without this, video elements fail with NotSupportedError | Nginx supports this automatically | See bug fix: docs/bugfix/2025-10/vhs-video-not-playing.md | . 3. MIME Type Handling . | 1 2 3 4 5 6 7 8 9 10 11 . | const contentType = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.mp4': 'video/mp4', '.webmanifest': 'application/manifest+json' }[ext] || 'text/plain'; . | . 4. SPA Fallback . Falls back to index.html for React Router routes: . | 1 2 3 4 5 6 . | fs.stat(filePath, (err, stats) =&gt; { if (err || !stats.isFile()) { filePath = path.join(STATIC_DIR, 'index.html'); } // ... serve file }); . | . ",
+    "url": "/TVx/server-implementation.html#serverjs-implementation",
+    
+    "relUrl": "/server-implementation.html#serverjs-implementation"
+  },"120": {
+    "doc": "Server Implementation",
+    "title": "Environment Configuration",
+    "content": "Runtime Generation . Environment variables are injected at container startup: . | 1 . | CMD sh -c \"envsubst &lt; /usr/share/nginx/html/env.js.template &gt; /usr/share/nginx/html/env.js &amp;&amp; node /usr/share/nginx/html/server.js\" . | . Template (env.js.template) . | 1 2 3 4 . | window.ENV = { VITE_M3U_URL: \"$VITE_M3U_URL\", VITE_XMLTV_URL: \"$VITE_XMLTV_URL\" }; . | . Generated (env.js) . | 1 2 3 4 . | window.ENV = { VITE_M3U_URL: \"http://192.168.22.2:8000/api/channels.m3u\", VITE_XMLTV_URL: \"http://192.168.22.2:8000/api/xmltv.xml\" }; . | . Loading in Browser . index.html includes: . | 1 . | &lt;script src=\"/env.js\"&gt;&lt;/script&gt; . | . Client code accesses via: . | 1 . | const m3uUrl = (window as any).ENV?.VITE_M3U_URL || 'default-url'; . | . ",
+    "url": "/TVx/server-implementation.html#environment-configuration",
+    
+    "relUrl": "/server-implementation.html#environment-configuration"
+  },"121": {
+    "doc": "Server Implementation",
+    "title": "Logging System",
+    "content": "Architecture . | 1 2 3 4 5 6 7 . | Browser (React App) ↓ fetch('/log', ...) Node.js Server (/log endpoint) ↓ console.log(...) Docker Container Logs ↓ docker logs tvx User/Admin . | . Client-Side Logger . Location: src/utils/logger.ts . | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 . | export const logger = { log: (message: string) =&gt; { console.log(message); sendLog('info', message); }, error: (message: string) =&gt; { console.error(message); sendLog('error', message); }, warn: (message: string) =&gt; { console.warn(message); sendLog('warn', message); }, info: (message: string) =&gt; { console.info(message); sendLog('info', message); }, }; . | . Usage Examples . | 1 2 3 4 5 6 7 8 9 10 11 . | // Channel loading logger.log(`Loaded ${channels.length} channels`); // Channel switching logger.info(`Channel changed to: ${channel.name}`); // Errors logger.error(`Failed to parse XMLTV: ${error}`); // Stream URLs logger.log(`Loaded stream URL for ${channel.name}: ${channel.url}`); . | . Log Format . | 1 . | [ISO-8601-TIMESTAMP] LEVEL: MESSAGE . | . Example: . | 1 2 3 . | [2025-10-15T20:18:28.467Z] INFO: Loaded 20 channels [2025-10-15T20:18:28.481Z] INFO: Channel changed to: Favourite TV Shows [2025-10-15T20:18:28.529Z] INFO: Loaded EPG data for 467 programmes . | . ",
+    "url": "/TVx/server-implementation.html#logging-system",
+    
+    "relUrl": "/server-implementation.html#logging-system"
+  },"122": {
+    "doc": "Server Implementation",
+    "title": "Performance Considerations",
+    "content": "Current Implementation . | ✅ Simple and easy to understand | ✅ Sufficient for typical TVx usage (personal/family use) | ⚠️ Not optimized for high traffic | . Missing Features (vs Nginx) . | No gzip compression - Nginx compresses responses automatically | No caching headers - Nginx sets cache headers for static assets | No connection pooling - Nginx handles this efficiently | No rate limiting - Nginx can limit request rates | No HTTPS - Typically handled by reverse proxy | . Recommended Production Setup . For production deployments, consider: . | Use nginx as reverse proxy: | 1 2 3 4 5 6 7 8 . | server { listen 443 ssl; location / { proxy_pass http://localhost:8777; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; } } . | . | Or add compression to server.js: | 1 2 . | const zlib = require('zlib'); // Compress responses . | . | Or switch back to nginx + separate logging service | . ",
+    "url": "/TVx/server-implementation.html#performance-considerations",
+    
+    "relUrl": "/server-implementation.html#performance-considerations"
+  },"123": {
+    "doc": "Server Implementation",
+    "title": "Testing",
+    "content": "Test Static File Serving . | 1 . | curl http://localhost:8777/ . | . Should return the React app HTML. Test Logging Endpoint . | 1 2 3 . | curl -X POST http://localhost:8777/log \\ -H \"Content-Type: application/json\" \\ -d '{\"level\":\"info\",\"message\":\"Test log\"}' . | . Should return OK and appear in Docker logs. Test Range Requests . | 1 . | curl -I -H \"Range: bytes=0-1023\" http://localhost:8777/loading-VHS.mp4 . | . Should return: . | 1 2 3 . | HTTP/1.1 206 Partial Content Content-Range: bytes 0-1023/9518187 Accept-Ranges: bytes . | . View Logs . | 1 . | docker logs -f tvx . | . ",
+    "url": "/TVx/server-implementation.html#testing",
+    
+    "relUrl": "/server-implementation.html#testing"
+  },"124": {
+    "doc": "Server Implementation",
+    "title": "Troubleshooting",
+    "content": "Video Not Playing . Symptom: Video elements show NotSupportedError . Solution: Ensure range request support is implemented (see above) . Debug: . | 1 . | curl -I -H \"Range: bytes=0-1023\" http://localhost:8777/loading-VHS.mp4 . | . Should return 206 Partial Content, not 200 OK. Logs Not Appearing . Symptom: Browser logs don’t appear in Docker logs . Debug: . | 1 2 3 4 5 . | # Test logging endpoint curl -X POST http://localhost:8777/log -d '{\"level\":\"test\",\"message\":\"test\"}' # Check if it appears docker logs tvx | tail -1 . | . Environment Variables Not Loading . Symptom: App uses default URLs instead of environment variables . Debug: . | 1 2 3 4 . | # Check if env.js was generated docker exec tvx cat /usr/share/nginx/html/env.js # Should show your URLs, not $VITE_M3U_URL . | . ",
+    "url": "/TVx/server-implementation.html#troubleshooting",
+    
+    "relUrl": "/server-implementation.html#troubleshooting"
+  },"125": {
+    "doc": "Server Implementation",
+    "title": "Future Improvements",
+    "content": "Potential Enhancements . | Add gzip compression for better performance | Implement caching headers for static assets | Add health check endpoint (/health) | Add metrics endpoint for monitoring | Implement log levels (debug, info, warn, error) | Add log rotation to prevent disk fill | WebSocket support for real-time updates | API endpoints for settings management | . Alternative Approaches . | Keep nginx, add logging service: . | Use nginx for static files (faster, more features) | Add separate Node.js service for logging | More complex architecture but better performance | . | Use Express.js: . | More mature server framework | Built-in middleware for compression, caching, etc. | Easier to extend | . | Use existing static server packages: . | serve-static | http-server | Battle-tested, includes range requests, etc. | . | . ",
+    "url": "/TVx/server-implementation.html#future-improvements",
+    
+    "relUrl": "/server-implementation.html#future-improvements"
+  },"126": {
+    "doc": "Server Implementation",
+    "title": "References",
+    "content": ". | Bug Fix: Range Request Support - docs/bugfix/2025-10/vhs-video-not-playing.md | HTTP Range Requests (RFC 7233): https://tools.ietf.org/html/rfc7233 | Node.js HTTP Server: https://nodejs.org/api/http.html | Docker Environment Variables: https://docs.docker.com/engine/reference/run/#env-environment-variables | . ",
+    "url": "/TVx/server-implementation.html#references",
+    
+    "relUrl": "/server-implementation.html#references"
+  },"127": {
+    "doc": "Server Implementation",
+    "title": "Related Files",
+    "content": ". | server.js - The server implementation | env.js.template - Environment variable template | Dockerfile - Container build configuration | src/utils/logger.ts - Client-side logger | docs/bugfix/2025-10/vhs-video-not-playing.md - Range request bug fix | . ",
+    "url": "/TVx/server-implementation.html#related-files",
+    
+    "relUrl": "/server-implementation.html#related-files"
+  },"128": {
+    "doc": "Troubleshooting",
+    "title": "Troubleshooting",
+    "content": "Common issues and solutions for TVx. ",
+    "url": "/TVx/troubleshooting.html",
+    
+    "relUrl": "/troubleshooting.html"
+  },"129": {
+    "doc": "Troubleshooting",
+    "title": "Channels Not Loading",
+    "content": "Issue: No channels appear after starting TVx . Symptoms: . | Empty channel list | No error messages | Blank screen | . Solutions: . | Check environment variables: | 1 2 . | # Verify URLs are set correctly docker exec tvx env | grep VITE . | . Should show: . | 1 2 . | VITE_M3U_URL=http://your-server:8000/api/channels.m3u VITE_XMLTV_URL=http://your-server:8000/api/xmltv.xml . | . | Verify Tunarr is accessible: | 1 . | curl -I http://your-tunarr-ip:8000/api/channels.m3u . | . Should return 200 OK . | Check browser console (F12): . | Look for CORS errors | Check network tab for failed requests | Verify env.js is loaded | . | Hard refresh browser: . | Chrome/Edge: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac) | Firefox: Ctrl+F5 (Windows) or Cmd+Shift+R (Mac) | . | . ",
+    "url": "/TVx/troubleshooting.html#channels-not-loading",
+    
+    "relUrl": "/troubleshooting.html#channels-not-loading"
+  },"130": {
+    "doc": "Troubleshooting",
+    "title": "Video Not Playing",
+    "content": "Issue: Video player shows black screen . Symptoms: . | Channel list loads fine | Video area is black | No playback controls | . Solutions: . | Check HLS stream URL: | 1 2 . | # View Docker logs docker logs tvx | grep \"stream URL\" . | . | Verify stream is accessible: | 1 . | curl -I http://your-tunarr-ip:8000/stream/channels/CHANNEL_ID?streamMode=hls . | . | Check browser compatibility: . | Chrome/Edge: Full support | Firefox: May need native HLS | Safari: Native HLS support | . | Test with different channel: . | Try selecting another channel | Check if specific channels fail | . | . ",
+    "url": "/TVx/troubleshooting.html#video-not-playing",
+    
+    "relUrl": "/troubleshooting.html#video-not-playing"
+  },"131": {
+    "doc": "Troubleshooting",
+    "title": "Loading VHS Video Not Playing",
+    "content": "Issue: Black screen during channel changes instead of VHS loading animation . Symptoms: . | No loading animation when switching channels | Black screen during buffering | Docker logs show video errors | . Root Cause: Server doesn’t support HTTP Range Requests (required for video elements) . Solution: See bug fix documentation: docs/bugfix/2025-10/vhs-video-not-playing.md . Quick Check: . | 1 2 . | # Test range request support curl -I -H \"Range: bytes=0-1023\" http://localhost:8777/loading-VHS.mp4 . | . Should return 206 Partial Content, not 200 OK . ",
+    "url": "/TVx/troubleshooting.html#loading-vhs-video-not-playing",
+    
+    "relUrl": "/troubleshooting.html#loading-vhs-video-not-playing"
+  },"132": {
+    "doc": "Troubleshooting",
+    "title": "EPG Not Showing",
+    "content": "Issue: Electronic Program Guide is empty . Symptoms: . | Channels load but no program information | Timeline is blank | No show titles or descriptions | . Solutions: . | Verify XMLTV URL: | 1 . | curl http://your-tunarr-ip:8000/api/xmltv.xml | head -20 . | . Should show XML data . | Check XMLTV parsing: . | Open browser console (F12) | Look for parsing errors | Check network tab for XMLTV request | . | Verify channel IDs match: . | XMLTV channel IDs must match M3U tvg-id values | Check Tunarr channel configuration | . | . ",
+    "url": "/TVx/troubleshooting.html#epg-not-showing",
+    
+    "relUrl": "/troubleshooting.html#epg-not-showing"
+  },"133": {
+    "doc": "Troubleshooting",
+    "title": "Docker Issues",
+    "content": "Issue: Container won’t start . Symptoms: . | docker ps doesn’t show tvx | Container exits immediately | Port already in use | . Solutions: . | Check port availability: | 1 . | lsof -i :8777 . | . If occupied, stop the process or use different port . | Check container logs: | 1 . | docker logs tvx . | . | Remove and recreate: | 1 2 3 4 5 . | docker rm -f tvx docker run -d --name tvx -p 8777:80 \\ -e VITE_M3U_URL=http://your-server:8000/api/channels.m3u \\ -e VITE_XMLTV_URL=http://your-server:8000/api/xmltv.xml \\ tvx:latest . | . | . Issue: Changes not reflected after rebuild . Symptoms: . | Code changes don’t appear | Old version still running | Build shows cached layers | . Solutions: . | Force rebuild without cache: | 1 . | docker build --no-cache -t tvx:latest . | . | Remove old container and images: | 1 2 3 . | docker rm -f tvx docker rmi tvx:latest docker build -t tvx:latest . | . | . ",
+    "url": "/TVx/troubleshooting.html#docker-issues",
+    
+    "relUrl": "/troubleshooting.html#docker-issues"
+  },"134": {
+    "doc": "Troubleshooting",
+    "title": "Performance Issues",
+    "content": "Issue: Video stuttering or buffering . Solutions: . | Check network connection: . | Ping Tunarr server | Check bandwidth usage | Verify network stability | . | Reduce video quality: . | Open Settings (gear icon) | Lower video quality setting | Restart playback | . | Check Tunarr server load: . | Monitor Tunarr CPU/memory usage | Check if transcoding is required | Verify disk I/O isn’t bottlenecked | . | . Issue: Slow channel switching . Solutions: . | Check drive spin-up time: . | Loading video should play during spin-up | Verify loading video is working (see above) | . | Optimize Tunarr: . | Pre-generate channel streams | Use faster storage for media | Enable stream caching | . | . ",
+    "url": "/TVx/troubleshooting.html#performance-issues",
+    
+    "relUrl": "/troubleshooting.html#performance-issues"
+  },"135": {
+    "doc": "Troubleshooting",
+    "title": "Browser Console Errors",
+    "content": "Common errors and solutions: . “CORS policy: No ‘Access-Control-Allow-Origin’ header” . | Tunarr needs CORS enabled | Check Tunarr settings/configuration | May need reverse proxy configuration | . “NotSupportedError: The operation is not supported” . | Usually video-related | Check HTTP Range Request support | See docs/bugfix/2025-10/vhs-video-not-playing.md | . “Failed to fetch” . | Network connectivity issue | Check Tunarr URL is correct | Verify Tunarr is running | . ",
+    "url": "/TVx/troubleshooting.html#browser-console-errors",
+    
+    "relUrl": "/troubleshooting.html#browser-console-errors"
+  },"136": {
+    "doc": "Troubleshooting",
+    "title": "Vintage TV Effects Issues",
+    "content": "Issue: CRT effects not working . Symptoms: . | Video plays but looks modern/flat | No scanlines or curvature | No chromatic aberration | . Solutions: . | Check vintage TV setting: . | Open Settings (gear icon) | Verify “Vintage TV” is enabled | . | Check WebGL support: . | Open browser console | Type: !!document.createElement('canvas').getContext('webgl') | Should return true | . | Try different browser: . | Chrome/Edge: Best WebGL support | Firefox: Good support | Safari: May have limitations | . | . ",
+    "url": "/TVx/troubleshooting.html#vintage-tv-effects-issues",
+    
+    "relUrl": "/troubleshooting.html#vintage-tv-effects-issues"
+  },"137": {
+    "doc": "Troubleshooting",
+    "title": "Logging Issues",
+    "content": "Issue: No logs in Docker container . Solutions: . | Check if logger is working: | 1 . | docker logs tvx | tail -20 . | . | Verify server.js logging endpoint: | 1 2 3 . | curl -X POST http://localhost:8777/log \\ -H \"Content-Type: application/json\" \\ -d '{\"level\":\"info\",\"message\":\"test\"}' . | . | Check browser console: . | Logs should appear in both browser and Docker | If only in browser, server.js may have issues | . | . ",
+    "url": "/TVx/troubleshooting.html#logging-issues",
+    
+    "relUrl": "/troubleshooting.html#logging-issues"
+  },"138": {
+    "doc": "Troubleshooting",
+    "title": "Getting Help",
+    "content": "If none of these solutions work: . | Check Docker logs: | 1 . | docker logs -f tvx . | . | Check browser console: . | Press F12 | Look at Console and Network tabs | Screenshot any errors | . | Check documentation: . | Installation Guide | Usage Guide | Development Guide | Bug Fix Documentation | . | Report an issue: . | Include Docker logs | Include browser console errors | Include steps to reproduce | Include environment details (OS, browser, Docker version) | . | . ",
+    "url": "/TVx/troubleshooting.html#getting-help",
+    
+    "relUrl": "/troubleshooting.html#getting-help"
+  },"139": {
+    "doc": "Troubleshooting",
+    "title": "Debug Mode",
+    "content": "Enable verbose logging: . | 1 2 3 4 5 6 7 8 9 . | # Run container with debug output docker run -d --name tvx -p 8777:80 \\ -e VITE_M3U_URL=http://your-server:8000/api/channels.m3u \\ -e VITE_XMLTV_URL=http://your-server:8000/api/xmltv.xml \\ -e DEBUG=true \\ tvx:latest # Follow logs docker logs -f tvx . | . ",
+    "url": "/TVx/troubleshooting.html#debug-mode",
+    
+    "relUrl": "/troubleshooting.html#debug-mode"
+  },"140": {
+    "doc": "Troubleshooting",
+    "title": "Quick Diagnostic Checklist",
+    "content": "Run these commands to gather diagnostic information: . | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 . | # 1. Check container status docker ps | grep tvx # 2. Check environment variables docker exec tvx env | grep VITE # 3. Check if env.js is generated docker exec tvx cat /usr/share/nginx/html/env.js # 4. Check if video file exists docker exec tvx ls -lh /usr/share/nginx/html/loading-VHS.mp4 # 5. Test video range requests curl -I -H \"Range: bytes=0-1023\" http://localhost:8777/loading-VHS.mp4 # 6. Test Tunarr connectivity curl -I http://your-tunarr-ip:8000/api/channels.m3u # 7. View recent logs docker logs tvx --tail 50 . | . Save output from these commands when reporting issues. ",
+    "url": "/TVx/troubleshooting.html#quick-diagnostic-checklist",
+    
+    "relUrl": "/troubleshooting.html#quick-diagnostic-checklist"
+  },"141": {
+    "doc": "Usage",
+    "title": "Getting Started",
+    "content": ". | Ensure your Tunarr server is running and accessible | Set the VITE_M3U_URL and VITE_XMLTV_URL environment variables | Start TVx and open http://localhost:8777 | Use arrow keys to browse channels | . ",
+    "url": "/TVx/usage-overview.html#getting-started",
+    
+    "relUrl": "/usage-overview.html#getting-started"
+  },"142": {
+    "doc": "Usage",
+    "title": "Quick Tips",
+    "content": ". | Use ↑ ↓ arrow keys to surf channels | Press G to open the full TV guide | Press F for fullscreen | Click the video player to cycle through theater modes | . ",
+    "url": "/TVx/usage-overview.html#quick-tips",
+    
+    "relUrl": "/usage-overview.html#quick-tips"
+  },"143": {
+    "doc": "Usage",
+    "title": "Usage",
+    "content": " ",
+    "url": "/TVx/usage-overview.html",
+    
+    "relUrl": "/usage-overview.html"
+  },"144": {
+    "doc": "Bug Fix: Loading VHS Video Not Playing After Node.js Server Implementation",
+    "title": "Bug Fix: Loading VHS Video Not Playing After Node.js Server Implementation",
+    "content": "# Bug Fix: Loading VHS Video Not Playing After Node.js Server Implementation **Date:** October 15, 2025 **Branch:** logging **Issue:** Loading-VHS.mp4 video not playing during channel changes after switching from nginx to Node.js server --- ## Problem Description After implementing `server.js` to replace nginx (commit 7834b72), the loading-VHS.mp4 video stopped playing when: - Channels were selected - Up/down arrow keys were pressed to change channels - Before the main stream was ready/buffering The vintage TV effect (WebGL canvas) would show a black screen instead of the VHS loading animation that previously worked with nginx. --- ## Root Cause Analysis ### Step 1: Initial Investigation - Video Element Visibility Initially suspected the video element rendering was the issue. The loading video element had been changed to use conditional visibility: ```tsx // SUSPECTED ISSUE (but wasn't the actual problem): {% raw %} {% endraw %} ``` Changed to: ```tsx {% raw %} {% endraw %} ``` This change allowed the browser to technically \"see\" the video element, but **the video still didn't play**. ### Step 2: Log Analysis - The Real Culprit Docker logs revealed the actual error: ```log [2025-10-15T20:14:09.886Z] ERROR: Loading video play error: NotSupportedError: The operation is not supported. [2025-10-15T20:14:09.887Z] ERROR: Loading video restart error: NotSupportedError: The operation is not supported. [2025-10-15T20:14:09.888Z] ERROR: Loading video failed to load: [object Event] ``` The `NotSupportedError` indicated the browser was rejecting the video file entirely. ### Step 3: HTTP Range Request Testing Tested the Node.js server's HTTP response for video files: ```bash curl -I -H \"Range: bytes=0-1023\" http://localhost:8777/loading-VHS.mp4 ``` **Result from Node.js server (BROKEN):** ``` HTTP/1.1 200 OK Content-Type: video/mp4 ``` **Result from nginx (WORKING):** ``` HTTP/1.1 206 Partial Content Content-Range: bytes 0-1023/9518187 Accept-Ranges: bytes Content-Length: 1024 Content-Type: video/mp4 ``` ### The Issue **Video elements in browsers REQUIRE HTTP Range Request support (RFC 7233)** to: - Load video metadata - Seek within the video - Play the video properly (especially for larger files) Without range request support, browsers reject the video with `NotSupportedError`. Nginx supports range requests automatically, but the simple Node.js server implementation didn't. --- ## The Fix ### Modified `server.js` to Support HTTP Range Requests Added range request handling for MP4 files: ```javascript // Handle range requests for video files if (ext === '.mp4' && req.headers.range) { const range = req.headers.range; const parts = range.replace(/bytes=/, '').split('-'); const start = parseInt(parts[0], 10); const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1; const chunksize = (end - start) + 1; const head = { 'Content-Range': `bytes ${start}-${end}/${stats.size}`, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': contentType, }; res.writeHead(206, head); fs.createReadStream(filePath, { start, end }).pipe(res); } else { // Normal file serving fs.readFile(filePath, (err, data) => { if (err) { res.writeHead(404); res.end('Not Found'); return; } const headers = { 'Content-Type': contentType }; // Add Accept-Ranges header for video files if (ext === '.mp4') { headers['Accept-Ranges'] = 'bytes'; } res.writeHead(200, headers); res.end(data); }); } ``` --- ## Testing Commands ### 1. Build Docker Image ```bash cd /Users/ed/TVx docker build -t tvx:latest . ``` ### 2. Remove Old Container ```bash docker rm -f tvx ``` ### 3. Run Container with Environment Variables ```bash docker run -d \\ --name tvx \\ -p 8777:80 \\ -e VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u \\ -e VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml \\ tvx:latest ``` ### 4. Test Range Request Support ```bash curl -I -H \"Range: bytes=0-1023\" http://localhost:8777/loading-VHS.mp4 ``` **Expected output (FIXED):** ``` HTTP/1.1 206 Partial Content Content-Range: bytes 0-1023/9518187 Accept-Ranges: bytes Content-Length: 1024 Content-Type: video/mp4 ``` ### 5. View Logs ```bash docker logs -f tvx ``` ### 6. Combined Build & Run Command ```bash cd /Users/ed/TVx && \\ docker build -t tvx:latest . && \\ docker rm -f tvx && \\ docker run -d \\ --name tvx \\ -p 8777:80 \\ -e VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u \\ -e VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml \\ tvx:latest ``` --- ## Verification After the fix: 1. Open `http://localhost:8777` in browser 2. Wait for channels to load (check that URLs are correct in browser Network tab) 3. Select a channel or press up/down arrow keys 4. **The loading-VHS.mp4 video now plays** with vintage TV effects during the 2-second channel change buffer period 5. Docker logs show successful video loading: ``` [2025-10-15T20:18:45.123Z] INFO: Loading video loaded successfully [2025-10-15T20:18:45.124Z] INFO: Loading video started playing ``` --- ## Files Modified - `/Users/ed/TVx/server.js` - Added HTTP Range Request support for MP4 files - `/Users/ed/TVx/src/components/VideoPlayer.tsx` - Changed loading video element from `display: 'none'` to invisible but playable style --- ## Technical Notes ### HTTP Range Requests (RFC 7233) Range requests allow clients to request specific byte ranges of a file. This is essential for: - **Video/Audio streaming**: Browsers need to load metadata first, then stream chunks - **Seeking**: Jumping to different parts of the video - **Resuming downloads**: Continuing interrupted downloads - **Bandwidth optimization**: Only loading what's needed ### Key Headers - **Request**: `Range: bytes=0-1023` (client requests bytes 0-1023) - **Response**: `206 Partial Content` (server returns partial content) - **Response**: `Content-Range: bytes 0-1023/9518187` (what's being sent / total size) - **Response**: `Accept-Ranges: bytes` (server supports range requests) ### Why Nginx Worked Nginx has built-in support for range requests. It automatically: - Parses `Range` headers - Returns `206` responses with proper headers - Streams file chunks efficiently ### Why Simple Node.js Didn't Work The basic `fs.readFile()` implementation: - Always reads the entire file - Always returns `200 OK` - Ignores `Range` headers - Causes browsers to reject video files --- ## Related Commits - **7834b72** - \"include server.js persistent storage\" (introduced the bug) - **8fe4559** - \"Revert 'include server.js persistent storage'\" (nginx still worked) - **Current** - Fixed by adding range request support to server.js --- ## Lessons Learned 1. **Video files require HTTP Range Request support** - This is not optional for modern browsers 2. **Test all media types when switching servers** - Different file types have different requirements 3. **Nginx provides many features \"for free\"** - When replacing it, all those features must be reimplemented 4. **Browser console errors can be misleading** - \"NotSupportedError\" didn't clearly indicate missing range support 5. **Use curl to test HTTP headers** - Essential for debugging server-level issues --- ## Future Improvements Consider using a proper Node.js static file server library like: - **express** with **express-static** middleware - **serve-static** package - **koa-static** for Koa framework These libraries handle: - Range requests - ETag caching - Compression - MIME types - Error handling Or keep using nginx for production deployments (it's battle-tested for a reason). ",
+    "url": "/TVx/bugfix/2025-10/vhs-video-not-playing.html",
+    
+    "relUrl": "/bugfix/2025-10/vhs-video-not-playing.html"
+  }
+}

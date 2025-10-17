@@ -1,6 +1,8 @@
 ---
 layout: default
-title: Bug Fix Documentation System
+title: Bug Fix System
+parent: Development
+nav_order: 3
 ---
 
 # Bug Fix Documentation System

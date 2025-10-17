@@ -1,0 +1,890 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+  <link rel="stylesheet" href="/TVx/assets/css/just-the-docs-default.css">
+
+  <link rel="stylesheet" href="/TVx/assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
+
+  <style id="jtd-nav-activation">
+  
+
+    .site-nav > ul.nav-list:first-child > li > a,
+    
+    .site-nav > ul.nav-list:first-child > li > ul > li:not(:nth-child(4)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li > ul > li a {
+      background-image: none;
+    }
+
+    .site-nav > ul.nav-list:not(:first-child) a,
+    .site-nav li.external a {
+      background-image: none;
+    }
+
+    .site-nav > ul.nav-list:first-child > li:nth-child(2) > ul > li:nth-child(4) > a {
+      font-weight: 600;
+      text-decoration: none;
+    }.site-nav > ul.nav-list:first-child > li:nth-child(2) > button svg,
+    .site-nav > ul.nav-list:first-child > li:nth-child(2) > ul > li:nth-child(4) > button svg {
+      transform: rotate(-90deg);
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(2) > ul.nav-list,
+    .site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(2) > ul.nav-list > li.nav-list-item:nth-child(4) > ul.nav-list {
+      display: block;
+    }
+  </style>
+
+  
+
+  
+    <script src="/TVx/assets/js/vendor/lunr.min.js"></script>
+  
+
+  <script src="/TVx/assets/js/just-the-docs.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Troubleshooting | TVx</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="Troubleshooting" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
+<meta property="og:description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
+<link rel="canonical" href="http://0.0.0.0:4000/TVx/troubleshooting.html" />
+<meta property="og:url" content="http://0.0.0.0:4000/TVx/troubleshooting.html" />
+<meta property="og:site_name" content="TVx" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Troubleshooting" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr","headline":"Troubleshooting","url":"http://0.0.0.0:4000/TVx/troubleshooting.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+</head>
+
+<body>
+  <a class="skip-to-main" href="#main-content">Skip to main content</a>
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="svg-link" viewBox="0 0 24 24">
+  <title>Link</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+  </svg>
+</symbol>
+
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+  <title>Menu</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu">
+    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</symbol>
+
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+  <title>Expand</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</symbol>
+
+  <!-- Feather. MIT License: https://github.com/feathericons/feather/blob/master/LICENSE -->
+<symbol id="svg-external-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link">
+  <title id="svg-external-link-title">(external link)</title>
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+</symbol>
+
+  
+    <symbol id="svg-doc" viewBox="0 0 24 24">
+  <title>Document</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file">
+    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+  </svg>
+</symbol>
+
+    <symbol id="svg-search" viewBox="0 0 24 24">
+  <title>Search</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</symbol>
+
+  
+  
+    <!-- Bootstrap Icons. MIT License: https://github.com/twbs/icons/blob/main/LICENSE.md -->
+<symbol id="svg-copy" viewBox="0 0 16 16">
+  <title>Copy</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+  </svg>
+</symbol>
+<symbol id="svg-copied" viewBox="0 0 16 16">
+  <title>Copied</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check-fill" viewBox="0 0 16 16">
+    <path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z"/>
+    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm6.854 7.354-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708Z"/>
+  </svg>
+</symbol>
+
+  
+</svg>
+
+  
+    <div class="side-bar">
+  <div class="site-header" role="banner">
+    <a href="/TVx/" class="site-title lh-tight">
+  TVx
+
+</a>
+    <button id="menu-button" class="site-button btn-reset" aria-label="Toggle menu" aria-pressed="false">
+      <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-menu"></use></svg>
+    </button>
+  </div>
+
+  <nav aria-label="Main" id="site-nav" class="site-nav">
+  
+  
+    <ul class="nav-list"><li class="nav-list-item"><a href="/TVx/" class="nav-list-link">Home</a></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Getting Started category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/getting-started.html" class="nav-list-link">Getting Started</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/installation.html" class="nav-list-link">Installation</a></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Usage category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/usage-overview.html" class="nav-list-link">Usage</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/keyboard-shortcuts.html" class="nav-list-link">Keyboard Shortcuts</a></li><li class="nav-list-item"><a href="/TVx/features.html" class="nav-list-link">Features</a></li><li class="nav-list-item"><a href="/TVx/browser-support.html" class="nav-list-link">Browser Support</a></li><li class="nav-list-item"><a href="/TVx/logging.html" class="nav-list-link">Logging & Monitoring</a></li></ul></li><li class="nav-list-item"><a href="/TVx/gui.html" class="nav-list-link">GUI</a></li><li class="nav-list-item"><a href="/TVx/troubleshooting.html" class="nav-list-link">Troubleshooting</a></li></ul></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Development category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/development-guide.html" class="nav-list-link">Development</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/development.html" class="nav-list-link">Contributing</a></li><li class="nav-list-item"><a href="/TVx/server-implementation.html" class="nav-list-link">Server Implementation</a></li><li class="nav-list-item"><a href="/TVx/BUG_FIX_SYSTEM.html" class="nav-list-link">Bug Fix System</a></li><li class="nav-list-item"><a href="/TVx/bugfix/README.html" class="nav-list-link">Bug Fixes</a></li></ul></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Documentation category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/documentation-info.html" class="nav-list-link">Documentation</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/DOCUMENTATION_UPDATE_SUMMARY.html" class="nav-list-link">Update Summary</a></li><li class="nav-list-item"><a href="/TVx/THEME_SETUP.html" class="nav-list-link">Theme & Search</a></li><li class="nav-list-item"><a href="/TVx/TVX_THEME.html" class="nav-list-link">Theme Colors</a></li></ul></li><li class="nav-list-item"><a href="/TVx/bugfix/2025-10/vhs-video-not-playing.html" class="nav-list-link">Bug Fix: Loading VHS Video Not Playing After Node.js Server Implementation</a></li></ul>
+  
+</nav>
+
+
+
+
+  
+  
+    <footer class="site-footer">
+      This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+    </footer>
+  
+</div>
+
+  
+  <div class="main" id="top">
+    <div id="main-header" class="main-header">
+  
+    
+
+<div class="search" role="search">
+  <div class="search-input-wrap">
+    <input type="text" id="search-input" class="search-input" tabindex="0" placeholder="Search TVx" aria-label="Search TVx" autocomplete="off">
+    <label for="search-input" class="search-label"><svg viewBox="0 0 24 24" class="search-icon"><use xlink:href="#svg-search"></use></svg></label>
+  </div>
+  <div id="search-results" class="search-results"></div>
+</div>
+
+  
+  
+  
+    <nav aria-label="Auxiliary" class="aux-nav">
+  <ul class="aux-nav-list">
+    
+      <li class="aux-nav-list-item">
+        <a href="//github.com/dopeytree/TVx" class="site-button"
+          
+        >
+          GitHub
+        </a>
+      </li>
+    
+      <li class="aux-nav-list-item">
+        <a href="//github.com/sponsors/dopeytree" class="site-button"
+          
+        >
+          Sponsor ❤️
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  
+</div>
+
+    <div class="main-content-wrap">
+      <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+  <ol class="breadcrumb-nav-list">
+    <li class="breadcrumb-nav-list-item"><a href="/TVx/getting-started.html">Getting Started</a></li>
+    <li class="breadcrumb-nav-list-item"><span>Troubleshooting</span></li>
+  </ol>
+</nav>
+
+
+      <div id="main-content" class="main-content">
+        <main>
+          
+            <h1 id="troubleshooting">
+  
+  
+    <a href="#troubleshooting" class="anchor-heading" aria-labelledby="troubleshooting"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Troubleshooting
+  
+  
+</h1>
+    
+
+<p>Common issues and solutions for TVx.</p>
+<h2 id="channels-not-loading">
+  
+  
+    <a href="#channels-not-loading" class="anchor-heading" aria-labelledby="channels-not-loading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Channels Not Loading
+  
+  
+</h2>
+    
+<h3 id="issue-no-channels-appear-after-starting-tvx">
+  
+  
+    <a href="#issue-no-channels-appear-after-starting-tvx" class="anchor-heading" aria-labelledby="issue-no-channels-appear-after-starting-tvx"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: No channels appear after starting TVx
+  
+  
+</h3>
+    
+
+<p><strong>Symptoms:</strong></p>
+<ul>
+  <li>Empty channel list</li>
+  <li>No error messages</li>
+  <li>Blank screen</li>
+</ul>
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check environment variables:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># Verify URLs are set correctly</span>
+docker <span class="nb">exec </span>tvx <span class="nb">env</span> | <span class="nb">grep </span>VITE
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+
+    <p>Should show:</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>VITE_M3U_URL=http://your-server:8000/api/channels.m3u
+VITE_XMLTV_URL=http://your-server:8000/api/xmltv.xml
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Verify Tunarr is accessible:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>curl <span class="nt">-I</span> http://your-tunarr-ip:8000/api/channels.m3u
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+
+    <p>Should return <code class="language-plaintext highlighter-rouge">200 OK</code></p>
+  </li>
+  <li><strong>Check browser console (F12):</strong>
+    <ul>
+      <li>Look for CORS errors</li>
+      <li>Check network tab for failed requests</li>
+      <li>Verify env.js is loaded</li>
+    </ul>
+  </li>
+  <li><strong>Hard refresh browser:</strong>
+    <ul>
+      <li>Chrome/Edge: <code class="language-plaintext highlighter-rouge">Ctrl+Shift+R</code> (Windows) or <code class="language-plaintext highlighter-rouge">Cmd+Shift+R</code> (Mac)</li>
+      <li>Firefox: <code class="language-plaintext highlighter-rouge">Ctrl+F5</code> (Windows) or <code class="language-plaintext highlighter-rouge">Cmd+Shift+R</code> (Mac)</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="video-not-playing">
+  
+  
+    <a href="#video-not-playing" class="anchor-heading" aria-labelledby="video-not-playing"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Video Not Playing
+  
+  
+</h2>
+    
+<h3 id="issue-video-player-shows-black-screen">
+  
+  
+    <a href="#issue-video-player-shows-black-screen" class="anchor-heading" aria-labelledby="issue-video-player-shows-black-screen"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Video player shows black screen
+  
+  
+</h3>
+    
+
+<p><strong>Symptoms:</strong></p>
+<ul>
+  <li>Channel list loads fine</li>
+  <li>Video area is black</li>
+  <li>No playback controls</li>
+</ul>
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check HLS stream URL:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># View Docker logs</span>
+docker logs tvx | <span class="nb">grep</span> <span class="s2">"stream URL"</span>
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Verify stream is accessible:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>curl <span class="nt">-I</span> http://your-tunarr-ip:8000/stream/channels/CHANNEL_ID?streamMode<span class="o">=</span>hls
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Check browser compatibility:</strong>
+    <ul>
+      <li>Chrome/Edge: Full support</li>
+      <li>Firefox: May need native HLS</li>
+      <li>Safari: Native HLS support</li>
+    </ul>
+  </li>
+  <li><strong>Test with different channel:</strong>
+    <ul>
+      <li>Try selecting another channel</li>
+      <li>Check if specific channels fail</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="loading-vhs-video-not-playing">
+  
+  
+    <a href="#loading-vhs-video-not-playing" class="anchor-heading" aria-labelledby="loading-vhs-video-not-playing"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Loading VHS Video Not Playing
+  
+  
+</h2>
+    
+<h3 id="issue-black-screen-during-channel-changes-instead-of-vhs-loading-animation">
+  
+  
+    <a href="#issue-black-screen-during-channel-changes-instead-of-vhs-loading-animation" class="anchor-heading" aria-labelledby="issue-black-screen-during-channel-changes-instead-of-vhs-loading-animation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Black screen during channel changes instead of VHS loading animation
+  
+  
+</h3>
+    
+
+<p><strong>Symptoms:</strong></p>
+<ul>
+  <li>No loading animation when switching channels</li>
+  <li>Black screen during buffering</li>
+  <li>Docker logs show video errors</li>
+</ul>
+
+<p><strong>Root Cause:</strong>
+Server doesn’t support HTTP Range Requests (required for video elements)</p>
+
+<p><strong>Solution:</strong>
+See bug fix documentation: <code class="language-plaintext highlighter-rouge">docs/bugfix/2025-10/vhs-video-not-playing.md</code></p>
+
+<p><strong>Quick Check:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># Test range request support</span>
+curl <span class="nt">-I</span> <span class="nt">-H</span> <span class="s2">"Range: bytes=0-1023"</span> http://localhost:8777/loading-VHS.mp4
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+
+<p>Should return <code class="language-plaintext highlighter-rouge">206 Partial Content</code>, not <code class="language-plaintext highlighter-rouge">200 OK</code></p>
+<h2 id="epg-not-showing">
+  
+  
+    <a href="#epg-not-showing" class="anchor-heading" aria-labelledby="epg-not-showing"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> EPG Not Showing
+  
+  
+</h2>
+    
+<h3 id="issue-electronic-program-guide-is-empty">
+  
+  
+    <a href="#issue-electronic-program-guide-is-empty" class="anchor-heading" aria-labelledby="issue-electronic-program-guide-is-empty"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Electronic Program Guide is empty
+  
+  
+</h3>
+    
+
+<p><strong>Symptoms:</strong></p>
+<ul>
+  <li>Channels load but no program information</li>
+  <li>Timeline is blank</li>
+  <li>No show titles or descriptions</li>
+</ul>
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Verify XMLTV URL:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>curl http://your-tunarr-ip:8000/api/xmltv.xml | <span class="nb">head</span> <span class="nt">-20</span>
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+
+    <p>Should show XML data</p>
+  </li>
+  <li><strong>Check XMLTV parsing:</strong>
+    <ul>
+      <li>Open browser console (F12)</li>
+      <li>Look for parsing errors</li>
+      <li>Check network tab for XMLTV request</li>
+    </ul>
+  </li>
+  <li><strong>Verify channel IDs match:</strong>
+    <ul>
+      <li>XMLTV channel IDs must match M3U tvg-id values</li>
+      <li>Check Tunarr channel configuration</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="docker-issues">
+  
+  
+    <a href="#docker-issues" class="anchor-heading" aria-labelledby="docker-issues"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Docker Issues
+  
+  
+</h2>
+    
+<h3 id="issue-container-wont-start">
+  
+  
+    <a href="#issue-container-wont-start" class="anchor-heading" aria-labelledby="issue-container-wont-start"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Container won’t start
+  
+  
+</h3>
+    
+
+<p><strong>Symptoms:</strong></p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">docker ps</code> doesn’t show tvx</li>
+  <li>Container exits immediately</li>
+  <li>Port already in use</li>
+</ul>
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check port availability:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>lsof <span class="nt">-i</span> :8777
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+
+    <p>If occupied, stop the process or use different port</p>
+  </li>
+  <li><strong>Check container logs:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>docker logs tvx
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Remove and recreate:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>docker <span class="nb">rm</span> <span class="nt">-f</span> tvx
+docker run <span class="nt">-d</span> <span class="nt">--name</span> tvx <span class="nt">-p</span> 8777:80 <span class="se">\</span>
+  <span class="nt">-e</span> <span class="nv">VITE_M3U_URL</span><span class="o">=</span>http://your-server:8000/api/channels.m3u <span class="se">\</span>
+  <span class="nt">-e</span> <span class="nv">VITE_XMLTV_URL</span><span class="o">=</span>http://your-server:8000/api/xmltv.xml <span class="se">\</span>
+  tvx:latest
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+</ol>
+<h3 id="issue-changes-not-reflected-after-rebuild">
+  
+  
+    <a href="#issue-changes-not-reflected-after-rebuild" class="anchor-heading" aria-labelledby="issue-changes-not-reflected-after-rebuild"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Changes not reflected after rebuild
+  
+  
+</h3>
+    
+
+<p><strong>Symptoms:</strong></p>
+<ul>
+  <li>Code changes don’t appear</li>
+  <li>Old version still running</li>
+  <li>Build shows cached layers</li>
+</ul>
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Force rebuild without cache:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>docker build <span class="nt">--no-cache</span> <span class="nt">-t</span> tvx:latest <span class="nb">.</span>
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Remove old container and images:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>docker <span class="nb">rm</span> <span class="nt">-f</span> tvx
+docker rmi tvx:latest
+docker build <span class="nt">-t</span> tvx:latest <span class="nb">.</span>
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+</ol>
+<h2 id="performance-issues">
+  
+  
+    <a href="#performance-issues" class="anchor-heading" aria-labelledby="performance-issues"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Performance Issues
+  
+  
+</h2>
+    
+<h3 id="issue-video-stuttering-or-buffering">
+  
+  
+    <a href="#issue-video-stuttering-or-buffering" class="anchor-heading" aria-labelledby="issue-video-stuttering-or-buffering"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Video stuttering or buffering
+  
+  
+</h3>
+    
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check network connection:</strong>
+    <ul>
+      <li>Ping Tunarr server</li>
+      <li>Check bandwidth usage</li>
+      <li>Verify network stability</li>
+    </ul>
+  </li>
+  <li><strong>Reduce video quality:</strong>
+    <ul>
+      <li>Open Settings (gear icon)</li>
+      <li>Lower video quality setting</li>
+      <li>Restart playback</li>
+    </ul>
+  </li>
+  <li><strong>Check Tunarr server load:</strong>
+    <ul>
+      <li>Monitor Tunarr CPU/memory usage</li>
+      <li>Check if transcoding is required</li>
+      <li>Verify disk I/O isn’t bottlenecked</li>
+    </ul>
+  </li>
+</ol>
+<h3 id="issue-slow-channel-switching">
+  
+  
+    <a href="#issue-slow-channel-switching" class="anchor-heading" aria-labelledby="issue-slow-channel-switching"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Slow channel switching
+  
+  
+</h3>
+    
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check drive spin-up time:</strong>
+    <ul>
+      <li>Loading video should play during spin-up</li>
+      <li>Verify loading video is working (see above)</li>
+    </ul>
+  </li>
+  <li><strong>Optimize Tunarr:</strong>
+    <ul>
+      <li>Pre-generate channel streams</li>
+      <li>Use faster storage for media</li>
+      <li>Enable stream caching</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="browser-console-errors">
+  
+  
+    <a href="#browser-console-errors" class="anchor-heading" aria-labelledby="browser-console-errors"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Browser Console Errors
+  
+  
+</h2>
+    
+<h3 id="common-errors-and-solutions">
+  
+  
+    <a href="#common-errors-and-solutions" class="anchor-heading" aria-labelledby="common-errors-and-solutions"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Common errors and solutions:
+  
+  
+</h3>
+    
+
+<p><strong>“CORS policy: No ‘Access-Control-Allow-Origin’ header”</strong></p>
+<ul>
+  <li>Tunarr needs CORS enabled</li>
+  <li>Check Tunarr settings/configuration</li>
+  <li>May need reverse proxy configuration</li>
+</ul>
+
+<p><strong>“NotSupportedError: The operation is not supported”</strong></p>
+<ul>
+  <li>Usually video-related</li>
+  <li>Check HTTP Range Request support</li>
+  <li>See <code class="language-plaintext highlighter-rouge">docs/bugfix/2025-10/vhs-video-not-playing.md</code></li>
+</ul>
+
+<p><strong>“Failed to fetch”</strong></p>
+<ul>
+  <li>Network connectivity issue</li>
+  <li>Check Tunarr URL is correct</li>
+  <li>Verify Tunarr is running</li>
+</ul>
+<h2 id="vintage-tv-effects-issues">
+  
+  
+    <a href="#vintage-tv-effects-issues" class="anchor-heading" aria-labelledby="vintage-tv-effects-issues"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Vintage TV Effects Issues
+  
+  
+</h2>
+    
+<h3 id="issue-crt-effects-not-working">
+  
+  
+    <a href="#issue-crt-effects-not-working" class="anchor-heading" aria-labelledby="issue-crt-effects-not-working"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: CRT effects not working
+  
+  
+</h3>
+    
+
+<p><strong>Symptoms:</strong></p>
+<ul>
+  <li>Video plays but looks modern/flat</li>
+  <li>No scanlines or curvature</li>
+  <li>No chromatic aberration</li>
+</ul>
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check vintage TV setting:</strong>
+    <ul>
+      <li>Open Settings (gear icon)</li>
+      <li>Verify “Vintage TV” is enabled</li>
+    </ul>
+  </li>
+  <li><strong>Check WebGL support:</strong>
+    <ul>
+      <li>Open browser console</li>
+      <li>Type: <code class="language-plaintext highlighter-rouge">!!document.createElement('canvas').getContext('webgl')</code></li>
+      <li>Should return <code class="language-plaintext highlighter-rouge">true</code></li>
+    </ul>
+  </li>
+  <li><strong>Try different browser:</strong>
+    <ul>
+      <li>Chrome/Edge: Best WebGL support</li>
+      <li>Firefox: Good support</li>
+      <li>Safari: May have limitations</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="logging-issues">
+  
+  
+    <a href="#logging-issues" class="anchor-heading" aria-labelledby="logging-issues"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Logging Issues
+  
+  
+</h2>
+    
+<h3 id="issue-no-logs-in-docker-container">
+  
+  
+    <a href="#issue-no-logs-in-docker-container" class="anchor-heading" aria-labelledby="issue-no-logs-in-docker-container"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: No logs in Docker container
+  
+  
+</h3>
+    
+
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check if logger is working:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>docker logs tvx | <span class="nb">tail</span> <span class="nt">-20</span>
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Verify server.js logging endpoint:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>curl <span class="nt">-X</span> POST http://localhost:8777/log <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-d</span> <span class="s1">'{"level":"info","message":"test"}'</span>
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Check browser console:</strong>
+    <ul>
+      <li>Logs should appear in both browser and Docker</li>
+      <li>If only in browser, server.js may have issues</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="getting-help">
+  
+  
+    <a href="#getting-help" class="anchor-heading" aria-labelledby="getting-help"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Getting Help
+  
+  
+</h2>
+    
+
+<p>If none of these solutions work:</p>
+
+<ol>
+  <li><strong>Check Docker logs:</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>docker logs <span class="nt">-f</span> tvx
+</pre></td></tr></tbody></table></div></code></pre></div>    </div>
+  </li>
+  <li><strong>Check browser console:</strong>
+    <ul>
+      <li>Press F12</li>
+      <li>Look at Console and Network tabs</li>
+      <li>Screenshot any errors</li>
+    </ul>
+  </li>
+  <li><strong>Check documentation:</strong>
+    <ul>
+      <li><a href="/TVx/installation.html">Installation Guide</a></li>
+      <li><a href="usage.md">Usage Guide</a></li>
+      <li><a href="/TVx/development.html">Development Guide</a></li>
+      <li><a href="/TVx/bugfix/README.html">Bug Fix Documentation</a></li>
+    </ul>
+  </li>
+  <li><strong>Report an issue:</strong>
+    <ul>
+      <li>Include Docker logs</li>
+      <li>Include browser console errors</li>
+      <li>Include steps to reproduce</li>
+      <li>Include environment details (OS, browser, Docker version)</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="debug-mode">
+  
+  
+    <a href="#debug-mode" class="anchor-heading" aria-labelledby="debug-mode"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Debug Mode
+  
+  
+</h2>
+    
+
+<p>Enable verbose logging:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="c"># Run container with debug output</span>
+docker run <span class="nt">-d</span> <span class="nt">--name</span> tvx <span class="nt">-p</span> 8777:80 <span class="se">\</span>
+  <span class="nt">-e</span> <span class="nv">VITE_M3U_URL</span><span class="o">=</span>http://your-server:8000/api/channels.m3u <span class="se">\</span>
+  <span class="nt">-e</span> <span class="nv">VITE_XMLTV_URL</span><span class="o">=</span>http://your-server:8000/api/xmltv.xml <span class="se">\</span>
+  <span class="nt">-e</span> <span class="nv">DEBUG</span><span class="o">=</span><span class="nb">true</span> <span class="se">\</span>
+  tvx:latest
+
+<span class="c"># Follow logs</span>
+docker logs <span class="nt">-f</span> tvx
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+<h2 id="quick-diagnostic-checklist">
+  
+  
+    <a href="#quick-diagnostic-checklist" class="anchor-heading" aria-labelledby="quick-diagnostic-checklist"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Quick Diagnostic Checklist
+  
+  
+</h2>
+    
+
+<p>Run these commands to gather diagnostic information:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="c"># 1. Check container status</span>
+docker ps | <span class="nb">grep </span>tvx
+
+<span class="c"># 2. Check environment variables</span>
+docker <span class="nb">exec </span>tvx <span class="nb">env</span> | <span class="nb">grep </span>VITE
+
+<span class="c"># 3. Check if env.js is generated</span>
+docker <span class="nb">exec </span>tvx <span class="nb">cat</span> /usr/share/nginx/html/env.js
+
+<span class="c"># 4. Check if video file exists</span>
+docker <span class="nb">exec </span>tvx <span class="nb">ls</span> <span class="nt">-lh</span> /usr/share/nginx/html/loading-VHS.mp4
+
+<span class="c"># 5. Test video range requests</span>
+curl <span class="nt">-I</span> <span class="nt">-H</span> <span class="s2">"Range: bytes=0-1023"</span> http://localhost:8777/loading-VHS.mp4
+
+<span class="c"># 6. Test Tunarr connectivity</span>
+curl <span class="nt">-I</span> http://your-tunarr-ip:8000/api/channels.m3u
+
+<span class="c"># 7. View recent logs</span>
+docker logs tvx <span class="nt">--tail</span> 50
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+
+<p>Save output from these commands when reporting issues.</p>
+
+          
+
+          
+            
+          
+        </main>
+        
+
+  <hr>
+  <footer>
+    
+      <p><a href="#top" id="back-to-top">Back to top</a></p>
+    
+
+    <p class="text-small text-grey-dk-100 mb-0">Copyright &copy; 2025 dopeytree. Distributed by an <a href="https://github.com/dopeytree/TVx/blob/main/LICENSE">MIT license.</a></p>
+
+    
+  </footer>
+
+
+      </div>
+    </div>
+    
+      
+<button id="search-button" class="search-button btn-reset" aria-label="Focus on search">
+  <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-search"></use></svg>
+</button>
+
+
+<div class="search-overlay"></div>
+
+    
+  </div>
+
+  
+</body>
+</html>
+
