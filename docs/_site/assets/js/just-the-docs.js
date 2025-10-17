@@ -130,7 +130,6 @@ function searchLoaded(index, docs) {
   var docs = docs;
   var searchInput = document.getElementById('search-input');
   var searchResults = document.getElementById('search-results');
-  var mainHeader = document.getElementById('main-header');
   var currentInput;
   var currentSearchIndex = 0;
 
