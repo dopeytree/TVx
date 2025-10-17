@@ -1,6 +1,8 @@
 ---
 layout: default
 title: Server Implementation
+parent: Development
+nav_order: 2
 ---
 
 # Server Implementation

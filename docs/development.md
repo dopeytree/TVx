@@ -1,6 +1,8 @@
 ---
 layout: default
-title: Development
+title: Contributing
+parent: Development
+nav_order: 1
 ---
 
 # Development

@@ -7,7 +7,7 @@
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/dopeytree/TVx/issues</Support>
+  <Support>https://forums.unraid.net/topic/194221-support-dopeytree-docker-templates/</Support>
   <Project>https://github.com/dopeytree/TVx</Project>
   <Overview>📺 TVx — the warmth of modern nostalgia&#xD;
 &#xD;
@@ -36,7 +36,16 @@ The glow of a neon clock 🕰️ counting Saturday mornings long past&#xD;
 2. Configure your Tunarr M3U and XMLTV URLs via the environment variables below&#xD;
 3. Start channel surfing!&#xD;
 &#xD;
-📺 The warmth returns.</Overview>
+� DOCUMENTATION:&#xD;
+• Full Documentation: https://dopeytree.github.io/TVx/&#xD;
+• Installation Guide: https://dopeytree.github.io/TVx/installation&#xD;
+• Troubleshooting: https://dopeytree.github.io/TVx/troubleshooting&#xD;
+&#xD;
+�💬 SUPPORT:&#xD;
+• Unraid Forums: https://forums.unraid.net/topic/194221-support-dopeytree-docker-templates/&#xD;
+• GitHub Issues: https://github.com/dopeytree/TVx/issues&#xD;
+&#xD;
+</Overview>
   <Category>MediaApp:Video Status:Stable</Category>
   <WebUI>http://[IP]:[PORT:8777]</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/dopeytree/TVx/main/tvx-unraid-template.xml</TemplateURL>
@@ -59,7 +68,9 @@ The glow of a neon clock 🕰️ counting Saturday mornings long past&#xD;
       </Port>
     </Publish>
   </Networking>
-  <ReadMe>https://github.com/dopeytree/TVx/blob/main/README.md</ReadMe>
+  <ReadMe>https://dopeytree.github.io/TVx/</ReadMe>
+  <License>PolyForm Noncommercial 1.0.0</License>
+  <ExtraSearchTerms>iptv television tunarr dizquetv crt vintage retro tv streaming epg m3u xmltv channels plex jellyfin nostalgic analog vhs vignette scanlines</ExtraSearchTerms>
   <Changes>
 ### v1.0.0 (2025-10-13)
 - Initial Unraid Community Applications release

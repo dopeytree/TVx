@@ -1,3 +1,10 @@
+---
+layout: default
+title: Update Summary
+parent: Documentation
+nav_order: 1
+---
+
 # Documentation Update Summary
 
 **Date:** October 15, 2025  

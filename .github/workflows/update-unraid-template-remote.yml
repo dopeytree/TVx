@@ -1,0 +1,213 @@
+name: Update Unraid Template (Separate Repo)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  update-and-push-template:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout TVx repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: tvx
+      
+      - name: Checkout unraid-templates repository
+        uses: actions/checkout@v4
+        with:
+          repository: dopeytree/unraid-templates
+          token: ${{ secrets.PAT_UNRAID_TEMPLATES }}
+          path: unraid-templates
+      
+      - name: Get release information
+        id: release
+        working-directory: tvx
+        run: |
+          # Get the latest release tag and body
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            BODY="${{ github.event.release.body }}"
+          else
+            # For manual trigger, get the latest release
+            TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
+            BODY=$(gh release view "$TAG" --json body -q .body 2>/dev/null || echo "Manual update")
+          fi
+          
+          # Clean version (remove 'v' prefix if present)
+          VERSION=${TAG#v}
+          
+          # Get current date
+          DATE=$(date +%Y-%m-%d)
+          
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+          
+          # Save release body to file for processing
+          echo "$BODY" > /tmp/release_body.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Copy template to unraid-templates repo
+        run: |
+          # Copy the template from TVx repo to unraid-templates repo
+          cp tvx/tvx-unraid-template.xml unraid-templates/tvx.xml
+          echo "✅ Copied template to unraid-templates/tvx.xml"
+      
+      - name: Update template XML
+        working-directory: unraid-templates
+        run: |
+          # Update Date tag
+          sed -i 's|<Date>.*</Date>|<Date>${{ steps.release.outputs.date }}</Date>|' tvx.xml
+          
+          # If Date tag doesn't exist, add it after Changes
+          if ! grep -q "<Date>" tvx.xml; then
+            sed -i 's|</Changes>|</Changes>\n  <Date>${{ steps.release.outputs.date }}</Date>|' tvx.xml
+          fi
+          
+          echo "Updated Date to: ${{ steps.release.outputs.date }}"
+      
+      - name: Update changelog in template
+        working-directory: unraid-templates
+        run: |
+          python3 << 'PYTHON_SCRIPT'
+          import re
+          import os
+          from datetime import datetime
+          
+          # Read the template
+          with open('tvx.xml', 'r') as f:
+              content = f.read()
+          
+          # Read release notes
+          with open('/tmp/release_body.txt', 'r') as f:
+              release_body = f.read().strip()
+          
+          # Get release info
+          tag = os.environ.get('RELEASE_TAG', 'v1.0.0')
+          date = os.environ.get('RELEASE_DATE', datetime.now().strftime('%Y-%m-%d'))
+          version = tag.lstrip('v')
+          
+          # Format release notes for XML (indent and clean up)
+          if release_body:
+              # Convert markdown to simple text for XML
+              release_lines = release_body.split('\n')
+              formatted_lines = []
+              for line in release_lines:
+                  # Skip empty lines at start
+                  if not formatted_lines and not line.strip():
+                      continue
+                  # Clean up markdown
+                  line = re.sub(r'^#+\s*', '', line)  # Remove markdown headers
+                  line = re.sub(r'\*\*([^*]+)\*\*', r'\1', line)  # Remove bold
+                  line = re.sub(r'\*([^*]+)\*', r'\1', line)  # Remove italic
+                  if line.strip():
+                      formatted_lines.append(f"- {line.strip()}" if not line.startswith('-') else line.strip())
+              
+              release_notes = '\n'.join(formatted_lines[:10])  # Limit to 10 lines
+          else:
+              release_notes = "- Version update"
+          
+          # Create new changelog entry
+          new_entry = f"### v{version} ({date})\n{release_notes}"
+          
+          # Find and update Changes section
+          changes_pattern = r'(<Changes>\s*)(.*?)(\s*</Changes>)'
+          match = re.search(changes_pattern, content, re.DOTALL)
+          
+          if match:
+              existing_changes = match.group(2).strip()
+              # Keep only the last 3 versions to avoid bloat
+              existing_entries = re.findall(r'###[^#]*?(?=###|\Z)', existing_changes, re.DOTALL)
+              
+              # Combine new entry with up to 2 previous entries
+              previous_entries = '\n\n'.join([e.strip() for e in existing_entries[:2]])
+              
+              if previous_entries:
+                  updated_changes = f"\n{new_entry}\n\n{previous_entries}\n  "
+              else:
+                  updated_changes = f"\n{new_entry}\n  "
+              
+              content = re.sub(changes_pattern, r'\1' + updated_changes + r'\3', content, flags=re.DOTALL)
+          
+          # Write back
+          with open('tvx.xml', 'w') as f:
+              f.write(content)
+          
+          print(f"✅ Updated changelog with v{version}")
+          PYTHON_SCRIPT
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_DATE: ${{ steps.release.outputs.date }}
+      
+      - name: Validate XML
+        working-directory: unraid-templates
+        run: |
+          # Check if XML is valid
+          if xmllint --noout tvx.xml 2>/dev/null; then
+            echo "✅ XML is valid"
+          else
+            echo "⚠️ XML validation failed, but continuing..."
+          fi
+      
+      - name: Commit and push to unraid-templates repo
+        working-directory: unraid-templates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are changes
+          if git diff --quiet tvx.xml; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git add tvx.xml
+          git commit -m "🤖 Auto-update TVx template for ${{ steps.release.outputs.tag }}" \
+            -m "Updated from TVx release ${{ steps.release.outputs.tag }}" \
+            -m "- Updated date to ${{ steps.release.outputs.date }}" \
+            -m "- Updated changelog from release notes" \
+            -m "" \
+            -m "Source: https://github.com/dopeytree/TVx/releases/tag/${{ steps.release.outputs.tag }}"
+          
+          git push
+          
+          echo "✅ Template updated and pushed to unraid-templates repo"
+      
+      - name: Also update local template (optional)
+        working-directory: tvx
+        run: |
+          # Copy the updated template back to TVx repo
+          cp ../unraid-templates/tvx.xml tvx-unraid-template.xml
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if git diff --quiet tvx-unraid-template.xml; then
+            echo "No changes to local template"
+            exit 0
+          fi
+          
+          git add tvx-unraid-template.xml
+          git commit -m "🤖 Sync Unraid template from release ${{ steps.release.outputs.tag }}"
+          git push
+          
+          echo "✅ Local template also updated"
+      
+      - name: Summary
+        run: |
+          echo "## 🎉 Template Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ steps.release.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date:** ${{ steps.release.outputs.date }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **TVx Template:** tvx-unraid-template.xml" >> $GITHUB_STEP_SUMMARY
+          echo "- **Published To:** dopeytree/unraid-templates" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Unraid template has been automatically updated in both repositories!" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,795 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+  <link rel="stylesheet" href="/TVx/assets/css/just-the-docs-default.css">
+
+  <link rel="stylesheet" href="/TVx/assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
+
+  <style id="jtd-nav-activation">
+  
+
+    .site-nav > ul.nav-list:first-child > li > a,
+    
+    .site-nav > ul.nav-list:first-child > li > ul > li:not(:nth-child(1)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li > ul > li a {
+      background-image: none;
+    }
+
+    .site-nav > ul.nav-list:not(:first-child) a,
+    .site-nav li.external a {
+      background-image: none;
+    }
+
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > ul > li:nth-child(1) > a {
+      font-weight: 600;
+      text-decoration: none;
+    }.site-nav > ul.nav-list:first-child > li:nth-child(4) > button svg,
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > ul > li:nth-child(1) > button svg {
+      transform: rotate(-90deg);
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list,
+    .site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list > li.nav-list-item:nth-child(1) > ul.nav-list {
+      display: block;
+    }
+  </style>
+
+  
+
+  
+    <script src="/TVx/assets/js/vendor/lunr.min.js"></script>
+  
+
+  <script src="/TVx/assets/js/just-the-docs.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Update Summary | TVx</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="Update Summary" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
+<meta property="og:description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
+<link rel="canonical" href="http://0.0.0.0:4000/TVx/DOCUMENTATION_UPDATE_SUMMARY.html" />
+<meta property="og:url" content="http://0.0.0.0:4000/TVx/DOCUMENTATION_UPDATE_SUMMARY.html" />
+<meta property="og:site_name" content="TVx" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Update Summary" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr","headline":"Update Summary","url":"http://0.0.0.0:4000/TVx/DOCUMENTATION_UPDATE_SUMMARY.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+</head>
+
+<body>
+  <a class="skip-to-main" href="#main-content">Skip to main content</a>
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="svg-link" viewBox="0 0 24 24">
+  <title>Link</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+  </svg>
+</symbol>
+
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+  <title>Menu</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu">
+    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</symbol>
+
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+  <title>Expand</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</symbol>
+
+  <!-- Feather. MIT License: https://github.com/feathericons/feather/blob/master/LICENSE -->
+<symbol id="svg-external-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link">
+  <title id="svg-external-link-title">(external link)</title>
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+</symbol>
+
+  
+    <symbol id="svg-doc" viewBox="0 0 24 24">
+  <title>Document</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file">
+    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+  </svg>
+</symbol>
+
+    <symbol id="svg-search" viewBox="0 0 24 24">
+  <title>Search</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</symbol>
+
+  
+  
+    <!-- Bootstrap Icons. MIT License: https://github.com/twbs/icons/blob/main/LICENSE.md -->
+<symbol id="svg-copy" viewBox="0 0 16 16">
+  <title>Copy</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+  </svg>
+</symbol>
+<symbol id="svg-copied" viewBox="0 0 16 16">
+  <title>Copied</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check-fill" viewBox="0 0 16 16">
+    <path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z"/>
+    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm6.854 7.354-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708Z"/>
+  </svg>
+</symbol>
+
+  
+</svg>
+
+  
+    <div class="side-bar">
+  <div class="site-header" role="banner">
+    <a href="/TVx/" class="site-title lh-tight">
+  TVx
+
+</a>
+    <button id="menu-button" class="site-button btn-reset" aria-label="Toggle menu" aria-pressed="false">
+      <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-menu"></use></svg>
+    </button>
+  </div>
+
+  <nav aria-label="Main" id="site-nav" class="site-nav">
+  
+  
+    <ul class="nav-list"><li class="nav-list-item"><a href="/TVx/" class="nav-list-link">Home</a></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Getting Started category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/getting-started.html" class="nav-list-link">Getting Started</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/installation.html" class="nav-list-link">Installation</a></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Usage category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/usage-overview.html" class="nav-list-link">Usage</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/keyboard-shortcuts.html" class="nav-list-link">Keyboard Shortcuts</a></li><li class="nav-list-item"><a href="/TVx/features.html" class="nav-list-link">Features</a></li><li class="nav-list-item"><a href="/TVx/browser-support.html" class="nav-list-link">Browser Support</a></li><li class="nav-list-item"><a href="/TVx/logging.html" class="nav-list-link">Logging & Monitoring</a></li></ul></li><li class="nav-list-item"><a href="/TVx/gui.html" class="nav-list-link">GUI</a></li><li class="nav-list-item"><a href="/TVx/troubleshooting.html" class="nav-list-link">Troubleshooting</a></li></ul></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Development category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/development-guide.html" class="nav-list-link">Development</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/development.html" class="nav-list-link">Contributing</a></li><li class="nav-list-item"><a href="/TVx/server-implementation.html" class="nav-list-link">Server Implementation</a></li><li class="nav-list-item"><a href="/TVx/BUG_FIX_SYSTEM.html" class="nav-list-link">Bug Fix System</a></li><li class="nav-list-item"><a href="/TVx/bugfix/README.html" class="nav-list-link">Bug Fixes</a></li></ul></li><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Documentation category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/TVx/documentation-info.html" class="nav-list-link">Documentation</a><ul class="nav-list"><li class="nav-list-item"><a href="/TVx/DOCUMENTATION_UPDATE_SUMMARY.html" class="nav-list-link">Update Summary</a></li><li class="nav-list-item"><a href="/TVx/THEME_SETUP.html" class="nav-list-link">Theme & Search</a></li><li class="nav-list-item"><a href="/TVx/TVX_THEME.html" class="nav-list-link">Theme Colors</a></li></ul></li><li class="nav-list-item"><a href="/TVx/bugfix/2025-10/vhs-video-not-playing.html" class="nav-list-link">Bug Fix: Loading VHS Video Not Playing After Node.js Server Implementation</a></li></ul>
+  
+</nav>
+
+
+
+
+  
+  
+    <footer class="site-footer">
+      This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+    </footer>
+  
+</div>
+
+  
+  <div class="main" id="top">
+    <div id="main-header" class="main-header">
+  
+    
+
+<div class="search" role="search">
+  <div class="search-input-wrap">
+    <input type="text" id="search-input" class="search-input" tabindex="0" placeholder="Search TVx" aria-label="Search TVx" autocomplete="off">
+    <label for="search-input" class="search-label"><svg viewBox="0 0 24 24" class="search-icon"><use xlink:href="#svg-search"></use></svg></label>
+  </div>
+  <div id="search-results" class="search-results"></div>
+</div>
+
+  
+  
+  
+    <nav aria-label="Auxiliary" class="aux-nav">
+  <ul class="aux-nav-list">
+    
+      <li class="aux-nav-list-item">
+        <a href="//github.com/dopeytree/TVx" class="site-button"
+          
+        >
+          GitHub
+        </a>
+      </li>
+    
+      <li class="aux-nav-list-item">
+        <a href="//github.com/sponsors/dopeytree" class="site-button"
+          
+        >
+          Sponsor ❤️
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  
+</div>
+
+    <div class="main-content-wrap">
+      <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+  <ol class="breadcrumb-nav-list">
+    <li class="breadcrumb-nav-list-item"><a href="/TVx/documentation-info.html">Documentation</a></li>
+    <li class="breadcrumb-nav-list-item"><span>Update Summary</span></li>
+  </ol>
+</nav>
+
+
+      <div id="main-content" class="main-content">
+        <main>
+          
+            <h1 id="documentation-update-summary">
+  
+  
+    <a href="#documentation-update-summary" class="anchor-heading" aria-labelledby="documentation-update-summary"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Documentation Update Summary
+  
+  
+</h1>
+    
+
+<p><strong>Date:</strong> October 15, 2025<br />
+<strong>Branch:</strong> logging</p>
+<h2 id="new-documentation-created">
+  
+  
+    <a href="#new-documentation-created" class="anchor-heading" aria-labelledby="new-documentation-created"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> New Documentation Created
+  
+  
+</h2>
+    
+<h3 id="1-bug-fix-documentation-system">
+  
+  
+    <a href="#1-bug-fix-documentation-system" class="anchor-heading" aria-labelledby="1-bug-fix-documentation-system"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 1. Bug Fix Documentation System
+  
+  
+</h3>
+    
+
+<p><strong>Location:</strong> <code class="language-plaintext highlighter-rouge">docs/bugfix/</code></p>
+
+<p>Created a comprehensive system for documenting significant bug fixes:</p>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">docs/bugfix/README.md</code></strong> - Complete guidelines and template for bug fix documentation</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">docs/bugfix/2025-10/vhs-video-not-playing.md</code></strong> - Documented VHS loading video bug fix</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">.github/BUG_FIX_DOCUMENTATION_PROMPT.md</code></strong> - Template for prompting documentation after fixes</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">docs/BUG_FIX_SYSTEM.md</code></strong> - Overview of the entire bug fix documentation system</li>
+</ul>
+
+<p><strong>Purpose:</strong> Preserve knowledge from debugging significant issues, help future developers, prevent regressions.</p>
+<h3 id="2-server-implementation-documentation">
+  
+  
+    <a href="#2-server-implementation-documentation" class="anchor-heading" aria-labelledby="2-server-implementation-documentation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 2. Server Implementation Documentation
+  
+  
+</h3>
+    
+
+<p><strong>Location:</strong> <code class="language-plaintext highlighter-rouge">docs/server-implementation.md</code></p>
+
+<p>Comprehensive documentation of the Node.js server:</p>
+
+<ul>
+  <li>Why we switched from nginx to Node.js (pros/cons)</li>
+  <li>Complete code explanations (logging endpoint, range requests, MIME types)</li>
+  <li>Environment configuration with <code class="language-plaintext highlighter-rouge">envsubst</code></li>
+  <li>Logging system architecture (browser → server → Docker logs)</li>
+  <li>Testing commands and troubleshooting</li>
+  <li>Performance considerations and future improvements</li>
+</ul>
+
+<p><strong>Purpose:</strong> Explain the server.js architecture, HTTP Range Request support, and logging implementation.</p>
+<h3 id="3-troubleshooting-guide">
+  
+  
+    <a href="#3-troubleshooting-guide" class="anchor-heading" aria-labelledby="3-troubleshooting-guide"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 3. Troubleshooting Guide
+  
+  
+</h3>
+    
+
+<p><strong>Location:</strong> <code class="language-plaintext highlighter-rouge">docs/troubleshooting.md</code></p>
+
+<p>Complete troubleshooting guide covering:</p>
+
+<ul>
+  <li>Channels not loading (environment variables, CORS, network)</li>
+  <li>Video not playing (HLS streams, browser compatibility)</li>
+  <li>Loading VHS video issues (with reference to bug fix)</li>
+  <li>EPG not showing (XMLTV parsing)</li>
+  <li>Docker issues (ports, rebuilds, logs)</li>
+  <li>Performance problems</li>
+  <li>Browser console errors with explanations</li>
+  <li>Quick diagnostic checklist</li>
+</ul>
+
+<p><strong>Purpose:</strong> Help users quickly resolve common issues.</p>
+<h3 id="4-updated-existing-documentation">
+  
+  
+    <a href="#4-updated-existing-documentation" class="anchor-heading" aria-labelledby="4-updated-existing-documentation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 4. Updated Existing Documentation
+  
+  
+</h3>
+    
+
+<p><strong>Files Updated:</strong></p>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">docs/index.md</code></strong> - Reorganized with sections for Getting Started, Technical Documentation, and Resources</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">docs/development.md</code></strong> - Added comprehensive bug fix documentation section with template and process</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">docs/usage.md</code></strong> - Updated sample log output with actual Docker log entries</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">README.md</code></strong> - Reorganized documentation links with better categorization</li>
+</ul>
+<h2 id="documentation-structure">
+  
+  
+    <a href="#documentation-structure" class="anchor-heading" aria-labelledby="documentation-structure"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Documentation Structure
+  
+  
+</h2>
+    
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre>docs/
+├── index.md                       # Documentation hub with organized links
+├── installation.md                # Existing installation guide
+├── usage.md                       # Updated with real log samples
+├── development.md                 # Updated with bug fix documentation process
+├── troubleshooting.md             # NEW - Comprehensive troubleshooting
+├── server-implementation.md       # NEW - Server.js architecture
+├── BUG_FIX_SYSTEM.md             # NEW - Bug fix system overview
+├── bugfix/                        # NEW - Bug fix documentation directory
+│   ├── README.md                  # Bug fix guidelines and template
+│   └── 2025-10/                   # Monthly organization
+│       └── vhs-video-not-playing.md  # Example bug fix documentation
+└── Screenshots/                   # Existing screenshots
+
+.github/
+└── BUG_FIX_DOCUMENTATION_PROMPT.md  # NEW - Prompt template for bug fixes
+
+README.md                          # Updated with better doc organization
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+<h2 id="key-features-of-bug-fix-documentation-system">
+  
+  
+    <a href="#key-features-of-bug-fix-documentation-system" class="anchor-heading" aria-labelledby="key-features-of-bug-fix-documentation-system"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Key Features of Bug Fix Documentation System
+  
+  
+</h2>
+    
+<h3 id="1-monthly-organization">
+  
+  
+    <a href="#1-monthly-organization" class="anchor-heading" aria-labelledby="1-monthly-organization"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 1. Monthly Organization
+  
+  
+</h3>
+    
+<p>Bug fixes organized by <code class="language-plaintext highlighter-rouge">YYYY-MM/</code> folders for easy chronological navigation.</p>
+<h3 id="2-comprehensive-template">
+  
+  
+    <a href="#2-comprehensive-template" class="anchor-heading" aria-labelledby="2-comprehensive-template"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 2. Comprehensive Template
+  
+  
+</h3>
+    
+<p>Each bug fix document includes:</p>
+<ul>
+  <li>Problem Description</li>
+  <li>Root Cause Analysis (step-by-step)</li>
+  <li>The Fix (code with reasoning)</li>
+  <li>Testing Commands (Docker builds with env vars)</li>
+  <li>Verification steps</li>
+  <li>Files Modified</li>
+  <li>Technical Notes (why it occurred)</li>
+  <li>Lessons Learned</li>
+  <li>Future Improvements</li>
+</ul>
+<h3 id="3-pattern-tracking">
+  
+  
+    <a href="#3-pattern-tracking" class="anchor-heading" aria-labelledby="3-pattern-tracking"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 3. Pattern Tracking
+  
+  
+</h3>
+    
+<p>Common bug patterns documented in <code class="language-plaintext highlighter-rouge">docs/bugfix/README.md</code>:</p>
+<ul>
+  <li>Server Feature Parity (nginx → Node.js issues)</li>
+  <li>Future patterns will be added as they emerge</li>
+</ul>
+<h3 id="4-process-integration">
+  
+  
+    <a href="#4-process-integration" class="anchor-heading" aria-labelledby="4-process-integration"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 4. Process Integration
+  
+  
+</h3>
+    
+<p>Added to <code class="language-plaintext highlighter-rouge">docs/development.md</code>:</p>
+<ul>
+  <li>When to document bug fixes</li>
+  <li>How to create documentation</li>
+  <li>Complete template reference</li>
+  <li>Example bug fix link</li>
+</ul>
+<h2 id="usage-examples">
+  
+  
+    <a href="#usage-examples" class="anchor-heading" aria-labelledby="usage-examples"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Usage Examples
+  
+  
+</h2>
+    
+<h3 id="viewing-bug-fix-documentation">
+  
+  
+    <a href="#viewing-bug-fix-documentation" class="anchor-heading" aria-labelledby="viewing-bug-fix-documentation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Viewing Bug Fix Documentation
+  
+  
+</h3>
+    
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="c"># View all bug fixes</span>
+<span class="nb">ls </span>docs/bugfix/
+
+<span class="c"># View specific bug fix</span>
+<span class="nb">cat </span>docs/bugfix/2025-10/vhs-video-not-playing.md
+
+<span class="c"># View guidelines</span>
+<span class="nb">cat </span>docs/bugfix/README.md
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+<h3 id="creating-new-bug-fix-documentation">
+  
+  
+    <a href="#creating-new-bug-fix-documentation" class="anchor-heading" aria-labelledby="creating-new-bug-fix-documentation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Creating New Bug Fix Documentation
+  
+  
+</h3>
+    
+
+<ol>
+  <li>Create month directory if needed: <code class="language-plaintext highlighter-rouge">docs/bugfix/YYYY-MM/</code></li>
+  <li>Create new file: <code class="language-plaintext highlighter-rouge">docs/bugfix/YYYY-MM/descriptive-name.md</code></li>
+  <li>Use template from <code class="language-plaintext highlighter-rouge">docs/bugfix/README.md</code></li>
+  <li>Include all testing commands with environment variables</li>
+  <li>Document lessons learned</li>
+</ol>
+<h3 id="accessing-documentation">
+  
+  
+    <a href="#accessing-documentation" class="anchor-heading" aria-labelledby="accessing-documentation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Accessing Documentation
+  
+  
+</h3>
+    
+
+<p><strong>GitHub:</strong></p>
+<ul>
+  <li>Main README links to all documentation</li>
+  <li><code class="language-plaintext highlighter-rouge">docs/index.md</code> serves as documentation hub</li>
+  <li>Can be hosted on GitHub Pages</li>
+</ul>
+
+<p><strong>Local:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="c"># View documentation index</span>
+<span class="nb">cat </span>docs/index.md
+
+<span class="c"># View server implementation</span>
+<span class="nb">cat </span>docs/server-implementation.md
+
+<span class="c"># View troubleshooting</span>
+<span class="nb">cat </span>docs/troubleshooting.md
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+<h2 id="benefits">
+  
+  
+    <a href="#benefits" class="anchor-heading" aria-labelledby="benefits"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Benefits
+  
+  
+</h2>
+    
+<h3 id="1-knowledge-preservation">
+  
+  
+    <a href="#1-knowledge-preservation" class="anchor-heading" aria-labelledby="1-knowledge-preservation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 1. Knowledge Preservation
+  
+  
+</h3>
+    
+<ul>
+  <li>Debugging insights preserved for future reference</li>
+  <li>Understanding why bugs occurred prevents recurrence</li>
+  <li>New developers learn from past issues</li>
+</ul>
+<h3 id="2-faster-debugging">
+  
+  
+    <a href="#2-faster-debugging" class="anchor-heading" aria-labelledby="2-faster-debugging"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 2. Faster Debugging
+  
+  
+</h3>
+    
+<ul>
+  <li>Similar issues resolved quicker with documented solutions</li>
+  <li>Testing commands readily available</li>
+  <li>Common patterns identified</li>
+</ul>
+<h3 id="3-better-code-quality">
+  
+  
+    <a href="#3-better-code-quality" class="anchor-heading" aria-labelledby="3-better-code-quality"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 3. Better Code Quality
+  
+  
+</h3>
+    
+<ul>
+  <li>Understanding root causes improves architecture</li>
+  <li>Lessons learned inform future development</li>
+  <li>Prevention strategies documented</li>
+</ul>
+<h3 id="4-team-communication">
+  
+  
+    <a href="#4-team-communication" class="anchor-heading" aria-labelledby="4-team-communication"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 4. Team Communication
+  
+  
+</h3>
+    
+<ul>
+  <li>Documented investigations help async collaboration</li>
+  <li>Clear explanations of technical decisions</li>
+  <li>Shared learning across team members</li>
+</ul>
+<h2 id="real-world-example">
+  
+  
+    <a href="#real-world-example" class="anchor-heading" aria-labelledby="real-world-example"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Real-World Example
+  
+  
+</h2>
+    
+<h3 id="vhs-video-not-playing-bug-fix">
+  
+  
+    <a href="#vhs-video-not-playing-bug-fix" class="anchor-heading" aria-labelledby="vhs-video-not-playing-bug-fix"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> VHS Video Not Playing Bug Fix
+  
+  
+</h3>
+    
+
+<p><strong>File:</strong> <code class="language-plaintext highlighter-rouge">docs/bugfix/2025-10/vhs-video-not-playing.md</code></p>
+
+<p><strong>Problem:</strong> Loading VHS video stopped playing after switching from nginx to Node.js server</p>
+
+<p><strong>Root Cause:</strong> Missing HTTP Range Request support (RFC 7233)</p>
+
+<p><strong>Documentation Includes:</strong></p>
+<ul>
+  <li>Complete investigation process</li>
+  <li>Why nginx worked but Node.js didn’t</li>
+  <li>Code changes to implement range requests</li>
+  <li>Testing commands with Docker and environment variables</li>
+  <li>Technical explanation of range requests</li>
+  <li>Lessons about server feature parity</li>
+</ul>
+
+<p><strong>Impact:</strong> Future developers will immediately know to implement range request support when building custom servers.</p>
+<h2 id="future-enhancements">
+  
+  
+    <a href="#future-enhancements" class="anchor-heading" aria-labelledby="future-enhancements"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Future Enhancements
+  
+  
+</h2>
+    
+<h3 id="potential-additions">
+  
+  
+    <a href="#potential-additions" class="anchor-heading" aria-labelledby="potential-additions"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Potential Additions
+  
+  
+</h3>
+    
+<ol>
+  <li>Automated bug fix index generation</li>
+  <li>Search functionality across bug fixes</li>
+  <li>Integration with CI/CD for prompting documentation</li>
+  <li>Pattern detection and alerts</li>
+  <li>Metrics on common bug types</li>
+</ol>
+<h3 id="process-improvements">
+  
+  
+    <a href="#process-improvements" class="anchor-heading" aria-labelledby="process-improvements"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Process Improvements
+  
+  
+</h3>
+    
+<ol>
+  <li>Template refinement based on usage</li>
+  <li>Additional example bug fixes</li>
+  <li>Video tutorials for creating documentation</li>
+  <li>Automated testing checklist generation</li>
+</ol>
+<h2 id="documentation-standards">
+  
+  
+    <a href="#documentation-standards" class="anchor-heading" aria-labelledby="documentation-standards"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Documentation Standards
+  
+  
+</h2>
+    
+<h3 id="all-documentation-should">
+  
+  
+    <a href="#all-documentation-should" class="anchor-heading" aria-labelledby="all-documentation-should"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> All Documentation Should:
+  
+  
+</h3>
+    
+<ul>
+  <li>✅ Be clear and concise</li>
+  <li>✅ Include code examples</li>
+  <li>✅ Provide testing commands</li>
+  <li>✅ Reference related files</li>
+  <li>✅ Explain the “why” not just “what”</li>
+</ul>
+<h3 id="bug-fix-documentation-must">
+  
+  
+    <a href="#bug-fix-documentation-must" class="anchor-heading" aria-labelledby="bug-fix-documentation-must"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Bug Fix Documentation Must:
+  
+  
+</h3>
+    
+<ul>
+  <li>✅ Include complete testing commands with environment variables</li>
+  <li>✅ Show step-by-step investigation</li>
+  <li>✅ Document lessons learned</li>
+  <li>✅ Reference related commits</li>
+  <li>✅ Explain technical background</li>
+</ul>
+<h2 id="maintenance">
+  
+  
+    <a href="#maintenance" class="anchor-heading" aria-labelledby="maintenance"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Maintenance
+  
+  
+</h2>
+    
+<h3 id="regular-tasks">
+  
+  
+    <a href="#regular-tasks" class="anchor-heading" aria-labelledby="regular-tasks"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Regular Tasks
+  
+  
+</h3>
+    
+<ul>
+  <li>Review and update troubleshooting guide as issues arise</li>
+  <li>Add new bug patterns to <code class="language-plaintext highlighter-rouge">docs/bugfix/README.md</code></li>
+  <li>Update server implementation docs when features change</li>
+  <li>Keep documentation index up to date</li>
+</ul>
+<h3 id="monthly-review">
+  
+  
+    <a href="#monthly-review" class="anchor-heading" aria-labelledby="monthly-review"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Monthly Review
+  
+  
+</h3>
+    
+<ul>
+  <li>Check bug fix documentation for common patterns</li>
+  <li>Update templates based on feedback</li>
+  <li>Consolidate similar issues</li>
+  <li>Archive outdated documentation</li>
+</ul>
+<h2 id="questions-or-improvements">
+  
+  
+    <a href="#questions-or-improvements" class="anchor-heading" aria-labelledby="questions-or-improvements"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Questions or Improvements?
+  
+  
+</h2>
+    
+
+<p>If you have suggestions for improving the documentation system:</p>
+<ol>
+  <li>Open an issue describing the improvement</li>
+  <li>Submit a PR with proposed changes</li>
+  <li>Discuss in team meetings</li>
+</ol>
+
+<p><strong>Documentation is a living system - keep it updated!</strong></p>
+
+          
+
+          
+            
+          
+        </main>
+        
+
+  <hr>
+  <footer>
+    
+      <p><a href="#top" id="back-to-top">Back to top</a></p>
+    
+
+    <p class="text-small text-grey-dk-100 mb-0">Copyright &copy; 2025 dopeytree. Distributed by an <a href="https://github.com/dopeytree/TVx/blob/main/LICENSE">MIT license.</a></p>
+
+    
+  </footer>
+
+
+      </div>
+    </div>
+    
+      
+<button id="search-button" class="search-button btn-reset" aria-label="Focus on search">
+  <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-search"></use></svg>
+</button>
+
+
+<div class="search-overlay"></div>
+
+    
+  </div>
+
+  
+</body>
+</html>
+

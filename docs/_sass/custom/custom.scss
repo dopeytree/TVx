@@ -1,0 +1,466 @@
+// Custom styles for TVx - TeXt theme inspired
+@import "./color_schemes/tvx.scss";
+
+// Clean, modern header styling - TeXt theme inspired
+.site-header {
+  border-bottom: 1px solid $border-color;
+  background-color: #ffffff;
+  height: auto;
+  padding: 1rem 0;
+  
+  @media (max-width: 50rem) {
+    padding: 0.75rem 0;
+  }
+}
+
+.site-title {
+  color: $body-heading-color !important;
+  font-weight: 600;
+  font-size: 1.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+// Aux navigation (GitHub, Sponsor links)
+.aux-nav {
+  padding-top: 0.5rem;
+  padding-right: 2rem;
+  
+  @media (max-width: 50rem) {
+    padding-right: 1rem;
+  }
+}
+
+// Modern navigation
+.navigation,
+.nav-list {
+  font-size: 14px;
+}
+
+.nav-list-link {
+  &:hover,
+  &.active {
+    background-color: $sidebar-hover-background;
+  }
+  
+  &.active {
+    border-left: 3px solid $accent-color;
+    font-weight: 600;
+  }
+}
+
+// Clean buttons inspired by TeXt theme
+.btn-primary {
+  background-color: $btn-primary-color;
+  
+  &:hover,
+  &:focus {
+    background-color: $accent-hover-color;
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+  }
+}
+
+// Modern search styling - TeXt theme inspired
+.search {
+  padding-right: 2rem;
+  
+  @media (max-width: 50rem) {
+    padding-right: 1rem;
+  }
+}
+
+.search-input-wrap {
+  margin-top: 0.5rem;
+  
+  .search-input {
+    border-radius: 20px;
+    border: 1px solid $border-color;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    
+    &:focus {
+      border-color: $accent-color;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      outline: none;
+    }
+  }
+}
+
+.search-results {
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid $border-color;
+  margin-top: 0.5rem;
+}
+
+// Code blocks with modern styling
+pre {
+  border-radius: 6px;
+  border: 1px solid $border-color;
+  
+  code {
+    border-radius: 6px;
+  }
+}
+
+code {
+  background-color: $code-background-color;
+  border-radius: 3px;
+  padding: 0.2em 0.4em;
+  font-size: 90%;
+}
+
+// Headings with better hierarchy - TeXt theme spacing
+h1, h2, h3, h4, h5, h6 {
+  color: $body-heading-color;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+  border-bottom: 2px solid $border-color;
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 50rem) {
+    font-size: 1.75rem;
+  }
+}
+
+h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid $border-color;
+  padding-bottom: 0.3rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 50rem) {
+    font-size: 1.375rem;
+  }
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  
+  @media (max-width: 50rem) {
+    font-size: 1.125rem;
+  }
+}
+
+h4 {
+  font-size: 1.125rem;
+  margin-top: 1.5rem;
+}
+
+h5, h6 {
+  font-size: 1rem;
+  margin-top: 1.5rem;
+}
+
+// Tables
+table {
+  border-collapse: collapse;
+  
+  th {
+    background-color: $blue-000;
+    color: $body-heading-color;
+    font-weight: 600;
+    border-bottom: 2px solid $accent-color;
+  }
+  
+  td, th {
+    border: 1px solid $border-color;
+  }
+  
+  tr:hover {
+    background-color: $blue-000;
+  }
+}
+
+// Callouts / Admonitions
+.note,
+.warning,
+.important {
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid;
+  border-radius: 0 6px 6px 0;
+  
+  > p:first-child {
+    margin-top: 0;
+  }
+  
+  > p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.note {
+  background-color: $blue-000;
+  border-left-color: $accent-color;
+}
+
+.warning {
+  background-color: $yellow-100;
+  border-left-color: $yellow-300;
+}
+
+.important {
+  background-color: $red-100;
+  border-left-color: $red-300;
+}
+
+// Links with modern styling
+a {
+  color: $link-color;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+    color: $accent-hover-color;
+  }
+}
+
+// Sidebar improvements - TeXt theme inspired layout
+.side-bar {
+  background-color: $sidebar-color;
+  border-right: 1px solid $border-color;
+  padding: 2rem 0;
+  width: 264px;
+  
+  @media (min-width: 66.5rem) {
+    width: 280px;
+  }
+  
+  .site-title {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .nav-list {
+    padding-left: 0;
+    padding-right: 0;
+    
+    .nav-list-item {
+      margin: 0;
+      
+      .nav-list-link {
+        padding: 0.5rem 2rem;
+        display: block;
+        line-height: 1.5;
+        
+        &:hover {
+          background-color: $sidebar-hover-background;
+        }
+        
+        &.active {
+          color: $accent-color;
+          background-color: $sidebar-hover-background;
+          border-left: 3px solid $accent-color;
+          padding-left: calc(2rem - 3px);
+          font-weight: 500;
+        }
+      }
+      
+      // Nested navigation
+      .nav-list {
+        padding-left: 1rem;
+        
+        .nav-list-link {
+          padding-left: 2.5rem;
+          font-size: 0.875rem;
+          
+          &.active {
+            padding-left: calc(2.5rem - 3px);
+          }
+        }
+      }
+    }
+  }
+  
+  .nav-category {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+  }
+}
+
+// Main content spacing to accommodate sidebar
+.main {
+  margin-left: 264px;
+  
+  @media (min-width: 66.5rem) {
+    margin-left: 280px;
+  }
+  
+  @media (max-width: 50rem) {
+    margin-left: 0;
+  }
+}
+
+// Main content area - TeXt theme inspired spacing
+.main-content-wrap {
+  padding-left: 3rem;
+  padding-right: 3rem;
+  
+  @media (max-width: 50rem) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.main-content {
+  max-width: 900px;
+  padding-top: 2rem;
+  line-height: 1.7;
+  
+  // First heading spacing
+  > h1:first-child,
+  > h2:first-child,
+  > h3:first-child {
+    margin-top: 0;
+  }
+  
+  img {
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 1.5rem 0;
+    max-width: 100%;
+  }
+  
+  // Better paragraph spacing
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+}
+
+// Footer - TeXt theme style
+.site-footer {
+  color: #666666;
+  font-size: 0.875rem;
+  border-top: 1px solid $border-color;
+  padding: 2rem 3rem;
+  margin-left: 264px;
+  
+  @media (min-width: 66.5rem) {
+    margin-left: 280px;
+  }
+  
+  @media (max-width: 50rem) {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+}
+
+// Aux links (GitHub, Sponsor)
+.aux-nav {
+  .aux-nav-list-item {
+    a {
+      color: $link-color;
+      
+      &:hover {
+        color: $accent-hover-color;
+      }
+    }
+  }
+}
+
+// Breadcrumbs - TeXt theme style
+.breadcrumb-nav {
+  padding-left: 3rem;
+  padding-right: 3rem;
+  padding-top: 1rem;
+  font-size: 0.875rem;
+  
+  @media (max-width: 50rem) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .breadcrumb-nav-list-item {
+    a {
+      color: $link-color;
+    }
+    
+    &::after {
+      color: #999;
+    }
+  }
+}
+
+// Page title area
+.page-header {
+  padding-left: 3rem;
+  padding-right: 3rem;
+  
+  @media (max-width: 50rem) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+// Improve list styling - TeXt theme spacing
+ul, ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+  
+  li {
+    margin: 0.5rem 0;
+    line-height: 1.7;
+    
+    > p {
+      margin: 0.5rem 0;
+    }
+  }
+  
+  ul, ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// Definition lists
+dl {
+  dt {
+    font-weight: 600;
+    margin-top: 1rem;
+    color: $body-heading-color;
+  }
+  
+  dd {
+    margin-left: 0;
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid $border-color;
+  }
+}
+
+// Blockquotes
+blockquote {
+  border-left: 4px solid $accent-color;
+  background-color: $blue-000;
+  padding: 0.5rem 1rem;
+  margin: 1.5rem 0;
+  border-radius: 0 6px 6px 0;
+  
+  p {
+    margin: 0.5rem 0;
+  }
+}

@@ -1,0 +1,118 @@
+name: Validate Unraid Template
+
+on:
+  pull_request:
+    paths:
+      - 'tvx-unraid-template.xml'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'tvx-unraid-template.xml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-utils
+      
+      - name: Validate XML syntax
+        run: |
+          echo "🔍 Validating XML syntax..."
+          if xmllint --noout tvx-unraid-template.xml; then
+            echo "✅ XML syntax is valid"
+          else
+            echo "❌ XML syntax is invalid"
+            exit 1
+          fi
+      
+      - name: Check required elements
+        run: |
+          echo "🔍 Checking required elements..."
+          
+          REQUIRED_ELEMENTS=(
+            "Name"
+            "Repository"
+            "Overview"
+            "Icon"
+            "WebUI"
+            "Support"
+            "Project"
+          )
+          
+          MISSING=()
+          
+          for element in "${REQUIRED_ELEMENTS[@]}"; do
+            if ! grep -q "<$element>" tvx-unraid-template.xml; then
+              MISSING+=("$element")
+            fi
+          done
+          
+          if [ ${#MISSING[@]} -eq 0 ]; then
+            echo "✅ All required elements present"
+          else
+            echo "❌ Missing required elements: ${MISSING[*]}"
+            exit 1
+          fi
+      
+      - name: Check for common issues
+        run: |
+          echo "🔍 Checking for common issues..."
+          
+          ISSUES=()
+          
+          # Check for raw & characters (should be &amp;)
+          if grep -P '<[^>]*[^&]&[^amp;][^>]*>' tvx-unraid-template.xml; then
+            ISSUES+=("Found unescaped & character (should be &amp;)")
+          fi
+          
+          # Check for duplicate tags
+          TAGS=("Name" "Repository" "Support" "Project" "WebUI")
+          for tag in "${TAGS[@]}"; do
+            COUNT=$(grep -c "<$tag>" tvx-unraid-template.xml || echo 0)
+            if [ "$COUNT" -gt 1 ]; then
+              ISSUES+=("Duplicate <$tag> tag found")
+            fi
+          done
+          
+          # Check port format in WebUI
+          if grep -q "<WebUI>.*:\[PORT:[0-9]*\]" tvx-unraid-template.xml; then
+            echo "✅ WebUI port format is correct"
+          else
+            ISSUES+=("WebUI should use [PORT:xxxx] format")
+          fi
+          
+          if [ ${#ISSUES[@]} -eq 0 ]; then
+            echo "✅ No common issues found"
+          else
+            echo "⚠️ Potential issues found:"
+            printf '%s\n' "${ISSUES[@]}"
+          fi
+      
+      - name: Extract and display info
+        run: |
+          echo "## 📋 Template Information" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          NAME=$(xmllint --xpath "string(//Name)" tvx-unraid-template.xml)
+          REPO=$(xmllint --xpath "string(//Repository)" tvx-unraid-template.xml)
+          
+          echo "- **Name:** $NAME" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository:** $REPO" >> $GITHUB_STEP_SUMMARY
+          
+          if grep -q "<Date>" tvx-unraid-template.xml; then
+            DATE=$(xmllint --xpath "string(//Date)" tvx-unraid-template.xml)
+            echo "- **Last Updated:** $DATE" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Template validation passed!" >> $GITHUB_STEP_SUMMARY
