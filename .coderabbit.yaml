@@ -1,0 +1,116 @@
+# CodeRabbit Configuration
+# https://docs.coderabbit.ai/guides/configure-coderabbit
+
+language: en-US
+early_access: false
+enable_free_tier: true
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+  poem: true
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - master
+      - develop
+      - iptv
+  
+  # Review settings
+  path_filters:
+    - "!docs/_site/**"
+    - "!node_modules/**"
+    - "!dist/**"
+    - "!build/**"
+    - "!*.lock"
+    - "!*.lockb"
+    - "!package-lock.json"
+    - "!bun.lockb"
+  
+  path_instructions:
+    - path: "src/**/*.tsx"
+      instructions: |
+        - Review for React best practices and hooks usage
+        - Check for proper TypeScript types
+        - Ensure accessibility (a11y) standards
+        - Look for performance optimizations
+    
+    - path: "src/**/*.ts"
+      instructions: |
+        - Review TypeScript type safety
+        - Check for proper error handling
+        - Ensure code follows project patterns
+    
+    - path: "**/*.yml"
+      instructions: |
+        - Validate YAML syntax
+        - Check GitHub Actions best practices
+        - Ensure proper workflow security
+    
+    - path: "Dockerfile"
+      instructions: |
+        - Review for Docker best practices
+        - Check for security vulnerabilities
+        - Ensure multi-stage builds are optimized
+    
+    - path: "docs/**/*.md"
+      instructions: |
+        - Check for clarity and completeness
+        - Verify links and references
+        - Ensure consistent formatting
+
+chat:
+  auto_reply: true
+
+# Knowledge base
+knowledge_base:
+  learnings:
+    scope: auto
+  
+  # Project-specific context
+  opt_out: false
+
+# Tools configuration
+tools:
+  # AST Grep for pattern matching
+  ast-grep:
+    enabled: true
+    essential_rules: true
+    
+  # Shell check for bash/sh scripts
+  shellcheck:
+    enabled: true
+  
+  # Ruff for Python (if you add Python files)
+  ruff:
+    enabled: true
+  
+  # Markdownlint for documentation
+  markdownlint:
+    enabled: true
+  
+  # YAML lint
+  yamllint:
+    enabled: true
+  
+  # Biome for JavaScript/TypeScript
+  biome:
+    enabled: true
+  
+  # GitHub Actions validator
+  actionlint:
+    enabled: true
+
+# Notifications
+notifications:
+  slack:
+    enabled: false
+  
+  discord:
+    enabled: false

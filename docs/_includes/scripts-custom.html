@@ -1,0 +1,53 @@
+<!-- GLightbox JavaScript -->
+<script src="{{ '/assets/js/glightbox.min.js' | relative_url }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Auto-convert images to lightbox format
+    const contentSelectors = [
+      '.main-content',
+      '.post-content',
+      '.page-content',
+      'article',
+      '.content'
+    ];
+
+    let contentArea = null;
+    for (const selector of contentSelectors) {
+      contentArea = document.querySelector(selector);
+      if (contentArea) break;
+    }
+
+    if (contentArea) {
+      const images = contentArea.querySelectorAll('img');
+      images.forEach((img) => {
+        // Skip if already wrapped in a link
+        if (img.closest('a')) return;
+
+        // Create wrapper link
+        const link = document.createElement('a');
+        link.href = img.src;
+        link.setAttribute('data-glightbox', 'gallery');
+        link.setAttribute('data-title', img.alt || 'Image');
+
+        // Wrap the image
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+
+        // Add responsive styling
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+      });
+    }
+
+    // Initialize GLightbox AFTER converting images
+    // Small delay to ensure DOM is fully updated
+    setTimeout(function() {
+      const lightbox = GLightbox({
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: true,
+        selector: '[data-glightbox]'
+      });
+    }, 100);
+  });
+</script>

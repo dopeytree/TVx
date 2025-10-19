@@ -41,7 +41,7 @@ aux_links:
     - "//github.com/sponsors/dopeytree"
 
 # Footer content
-footer_content: "Copyright &copy; 2025 dopeytree. Distributed by an <a href=\"https://github.com/dopeytree/TVx/blob/main/LICENSE\">MIT license.</a>"
+footer_content: "Copyright &copy; 2025 dopeytree. Distributed under the <a href=\"https://github.com/dopeytree/TVx/blob/main/LICENSE\">PolyForm Noncommercial License</a>."
 
 # Back to top link
 back_to_top: true
@@ -51,8 +51,8 @@ back_to_top_text: "Back to top"
 plugins:
   - jekyll-remote-theme
   - jekyll-seo-tag
+  - jekyll-include-cache
 
-# Markdown settings
 markdown: kramdown
 kramdown:
   input: GFM
@@ -63,9 +63,11 @@ kramdown:
 
 # Collections and navigation
 include:
+  - _includes/head-custom.html
+  - _includes/scripts-custom.html
   - README.md
-  - DOCUMENTATION_UPDATE_SUMMARY.md
-  - BUG_FIX_SYSTEM.md
+  #- DOCUMENTATION_UPDATE_SUMMARY.md
+  #- BUG_FIX_SYSTEM.md
 
 # Exclude from processing
 exclude:
