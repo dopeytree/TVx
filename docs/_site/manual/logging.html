@@ -14,9 +14,10 @@
   <style id="jtd-nav-activation">
   
 
+    .site-nav > ul.nav-list:first-child > li > a,
     
-    .site-nav > ul.nav-list:first-child > li:not(:nth-child(1)) > a,
-    .site-nav > ul.nav-list:first-child > li > ul > li a {
+    .site-nav > ul.nav-list:first-child > li > ul > li:not(:nth-child(5)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li > ul > li a {
       background-image: none;
     }
 
@@ -25,12 +26,14 @@
       background-image: none;
     }
 
-    .site-nav > ul.nav-list:first-child > li:nth-child(1) > a {
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > ul > li:nth-child(5) > a {
       font-weight: 600;
       text-decoration: none;
-    }.site-nav > ul.nav-list:first-child > li:nth-child(1) > button svg {
+    }.site-nav > ul.nav-list:first-child > li:nth-child(4) > button svg,
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > ul > li:nth-child(5) > button svg {
       transform: rotate(-90deg);
-    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(1) > ul.nav-list {
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list,
+    .site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list > li.nav-list-item:nth-child(5) > ul.nav-list {
       display: block;
     }
   </style>
@@ -50,20 +53,20 @@
 
 
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Home | TVx</title>
+<title>Logging | TVx</title>
 <meta name="generator" content="Jekyll v3.9.5" />
-<meta property="og:title" content="Home" />
+<meta property="og:title" content="Logging" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
 <meta property="og:description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
-<link rel="canonical" href="http://localhost:4001/TVx/" />
-<meta property="og:url" content="http://localhost:4001/TVx/" />
+<link rel="canonical" href="http://localhost:4001/TVx/manual/logging.html" />
+<meta property="og:url" content="http://localhost:4001/TVx/manual/logging.html" />
 <meta property="og:site_name" content="TVx" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Home" />
+<meta property="twitter:title" content="Logging" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr","headline":"Home","name":"TVx","url":"http://localhost:4001/TVx/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr","headline":"Logging","url":"http://localhost:4001/TVx/manual/logging.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -228,90 +231,127 @@
 </div>
 
     <div class="main-content-wrap">
-      
+      <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+  <ol class="breadcrumb-nav-list">
+    <li class="breadcrumb-nav-list-item"><a href="/TVx/manual/">Manual</a></li>
+    <li class="breadcrumb-nav-list-item"><span>Logging</span></li>
+  </ol>
+</nav>
+
+
       <div id="main-content" class="main-content">
         <main>
           
-            <h1 class="fs-9" id="-tvx">
+            <h2 id="logging--monitoring">
   
   
-    <a href="#-tvx" class="anchor-heading" aria-labelledby="-tvx"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 📺 TVx
+    <a href="#logging--monitoring" class="anchor-heading" aria-labelledby="logging--monitoring"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Logging &amp; Monitoring
   
   
-</h1>
+</h2>
     
 
-<p class="fs-6 fw-300">This is the way - television you remember feeling: present, unhurried, analog.</p>
-
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 2rem 0;">
-  <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/ONHy2UY_r9U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
-  </iframe>
-</div>
-
-<p><a href="quick-start/" class="btn btn-primary fs-5 mb-4 mb-md-0 mr-2">Get Started</a>
-<a href="https://github.com/dopeytree/TVx" class="btn fs-5 mb-4 mb-md-0">View on GitHub</a></p><hr />
-
-<p>An IPTV + EPG viewer for <strong>Tunarr</strong> (Plex/Jellyfin) that brings back the ritual of watching—not scrolling, not seeking, just <em>being</em> with what’s on.</p>
-
-<p>Like the grain of 35mm film 🎞️ or the crackle before a record drops 💿, TVx trades sterile perfection for something alive. Curved glass 📟. Gentle flicker ✨. Scanlines that breathe.</p>
-<h3 id="architecture">
+<p>TVx provides comprehensive logging of all user interactions directly to your Docker container logs, making it easy to monitor usage and troubleshoot issues.</p>
+<h3 id="what-gets-logged">
   
   
-    <a href="#architecture" class="anchor-heading" aria-labelledby="architecture"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Architecture
+    <a href="#what-gets-logged" class="anchor-heading" aria-labelledby="what-gets-logged"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> What Gets Logged
   
   
 </h3>
     
 
-<p>TVx is a client-side web frontend that interfaces with your <strong>Tunarr backend</strong> alongside your <strong>Plex library</strong>. It consumes M3U playlists and XMLTV EPG data generated by Tunarr, while displaying rich metadata and artwork from your Plex media server.</p><hr />
-<h2 id="-key-features">
+<ul>
+  <li><strong>Channel Selection</strong>: When channels are selected (including channel names and source)</li>
+  <li><strong>Program Interactions</strong>: Opening/closing program popups with show details and episode info</li>
+  <li><strong>Poster Views</strong>: Opening/closing program posters</li>
+  <li><strong>Google Searches</strong>: When “More Info” links are clicked (with show name and year)</li>
+  <li><strong>Guide Navigation</strong>: Opening/closing full TV guide and channel guide</li>
+  <li><strong>Settings Changes</strong>: All settings operations and modifications</li>
+  <li><strong>File Operations</strong>: M3U/XMLTV file uploads and parsing results</li>
+  <li><strong>Video Controls</strong>: Play/pause, mute/unmute, fullscreen toggles</li>
+  <li><strong>UI Interactions</strong>: Stats panel, favorites management, keyboard shortcuts</li>
+  <li><strong>Errors</strong>: All application errors and parsing failures</li>
+</ul>
+<h3 id="viewing-logs">
   
   
-    <a href="#-key-features" class="anchor-heading" aria-labelledby="-key-features"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ✨ Key Features
+    <a href="#viewing-logs" class="anchor-heading" aria-labelledby="viewing-logs"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Viewing Logs
   
   
-</h2>
+</h3>
     
 
-<dl>
-  <dt>⚡ <strong>Instant Channel Surfing</strong></dt>
-  <dd>Hold ↑/↓ to skim through channels; land when something catches your eye</dd>
-  <dt>📟 <strong>CRT Warmth</strong></dt>
-  <dd>Authentic curvature, chromatic aberration, scanlines, and vignette effects</dd>
-  <dt>📅 <strong>Full TV Guide</strong></dt>
-  <dd>Press G for a 12-hour timeline across all channels with poster artwork</dd>
-  <dt>🎬 <strong>Theater Modes</strong></dt>
-  <dd>Click the player to cycle views (guide → normal → immersive)</dd>
-  <dt>🏷️ <strong>Smart Channel Names</strong></dt>
-  <dd>Automatically strips filler words and adds icons</dd>
-</dl><hr />
-<h2 id="️-screenshots">
+<p><strong>Docker Container Logs:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>docker logs tvx
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+
+<p><strong>Docker Compose Logs:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>docker-compose logs <span class="nt">-f</span> tvx
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+
+<p><strong>Persistent Log File:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="c"># View the persistent log file (survives container restarts)</span>
+<span class="nb">cat</span> ./config/tvx.log
+<span class="nb">tail</span> <span class="nt">-f</span> ./config/tvx.log  <span class="c"># Follow/tail logs</span>
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+
+<p><strong>Unraid Logs:</strong></p>
+
+<ul>
+  <li><strong>Container Logs</strong>: Docker tab → TVx container → Logs button</li>
+  <li><strong>Persistent Log File</strong>: Navigate to <code class="language-plaintext highlighter-rouge">/mnt/user/appdata/tvx/tvx.log</code> or use terminal:</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nb">tail</span> <span class="nt">-f</span> /mnt/user/appdata/tvx/tvx.log
+</pre></td></tr></tbody></table></div></code></pre></div></div>
+<h3 id="sample-log-output">
   
   
-    <a href="#️-screenshots" class="anchor-heading" aria-labelledby="️-screenshots"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 🖼️ Screenshots
+    <a href="#sample-log-output" class="anchor-heading" aria-labelledby="sample-log-output"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Sample Log Output
   
   
-</h2>
+</h3>
     
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 2rem 0;">
-  <img src="https://github.com/dopeytree/TVx/blob/main/public/screenshot-1.png?raw=true" alt="Main View" style="border-radius: 8px; width: 100%;" />
-  <img src="https://github.com/dopeytree/TVx/blob/main/public/screenshot-2.png?raw=true" alt="TV Guide" style="border-radius: 8px; width: 100%;" />
-  <img src="https://github.com/dopeytree/TVx/blob/main/public/screenshot-3.png?raw=true" alt="Full Screen" style="border-radius: 8px; width: 100%;" />
-</div><hr />
-<h2 id="-support-the-project">
+<pre><code class="language-log">[2025-10-15T20:18:28.467Z] INFO: Loaded 20 channels
+[2025-10-15T20:18:28.481Z] INFO: Channel changed to: Favourite TV Shows
+[2025-10-15T20:18:28.498Z] INFO: Loaded stream URL for Favourite TV Shows: http://192.168.22.2:8000/stream/channels/0136ef47-9ddc-468f-8f81-3b9bbe9e09ba?streamMode=hls
+[2025-10-15T20:18:28.529Z] INFO: Loaded EPG data for 467 programmes
+[2025-10-15T20:18:28.675Z] INFO: Loading video loaded successfully
+[2025-10-15T20:18:28.680Z] INFO: Loading video started playing
+[2025-10-15T20:18:31.008Z] INFO: Channel changed to: Gerry Anderson Shows
+[2025-10-15T20:18:31.014Z] INFO: Loaded stream URL for Gerry Anderson Shows: http://192.168.22.2:8000/stream/channels/b460e1c6-d129-4146-ba60-ffd7a7d0f2ef?streamMode=hls
+[2025-10-15T20:18:50.406Z] INFO: Channel changed to: Gerry Anderson Shows
+[2025-10-15T20:18:50.484Z] INFO: Loading video started playing
+</code></pre>
+<h3 id="benefits">
   
   
-    <a href="#-support-the-project" class="anchor-heading" aria-labelledby="-support-the-project"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 💚 Support the Project
+    <a href="#benefits" class="anchor-heading" aria-labelledby="benefits"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Benefits
   
   
-</h2>
+</h3>
     
 
-<p>If TVx brings back the warmth of television for you, consider supporting its development:</p>
+<p>This logging system helps you:</p>
 
-<p><a href="https://github.com/sponsors/dopeytree"><img src="https://img.shields.io/badge/Sponsor-dopeytree-ea4aaa?style=for-the-badge&amp;logo=githubsponsors" alt="GitHub Sponsors" /></a>
-<a href="https://www.buymeacoffee.com/dopeytree"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-dopeytree-FFDD00?style=for-the-badge&amp;logo=buy-me-a-coffee&amp;logoColor=black" alt="Buy Me A Coffee" /></a></p>
+<ul>
+  <li>Monitor viewing patterns and popular channels/programs</li>
+  <li>Debug user interaction issues</li>
+  <li>Track application usage in multi-user environments</li>
+  <li>Verify that features are working correctly</li>
+  <li>Analyze user behavior and preferences</li>
+</ul>
 
           
 

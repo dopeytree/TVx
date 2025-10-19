@@ -9,28 +9,23 @@ permalink: /
 # 📺 TVx
 {: .fs-9 }
 
-The warmth of modern nostalgia — television you remember feeling
+This is the way - television you remember feeling: present, unhurried, analog.
 {: .fs-6 .fw-300 }
-
-[Get Started](installation.md){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[View on GitHub](https://github.com/dopeytree/TVx){: .btn .fs-5 .mb-4 .mb-md-0 }
-
----
-
-## Demo Video
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 2rem 0;">
   <iframe 
     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-    src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+    src="https://www.youtube.com/embed/ONHy2UY_r9U" 
     frameborder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
     allowfullscreen>
   </iframe>
 </div>
 
-{: .note }
-> Replace `YOUR_VIDEO_ID` with your actual YouTube video ID or add a different video embed code
+
+[Get Started](quick-start/){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[View on GitHub](https://github.com/dopeytree/TVx){: .btn .fs-5 .mb-4 .mb-md-0 }
+
 
 ---
 
@@ -73,63 +68,9 @@ TVx is a client-side web frontend that interfaces with your **Tunarr backend** a
 
 ---
 
-## 🚀 Quick Start
-
-Get TVx up and running in minutes:
-
-1. **[Install TVx](installation.md)** - Docker, Unraid, or local setup
-2. **[Configure Your Setup](usage.md)** - Connect to Tunarr
-3. **[Start Watching](usage.md#keyboard-shortcuts)** - Learn the shortcuts
-
----
-
 ## 💚 Support the Project
 
 If TVx brings back the warmth of television for you, consider supporting its development:
 
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-dopeytree-ea4aaa?style=for-the-badge&logo=githubsponsors)](https://github.com/sponsors/dopeytree)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-dopeytree-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dopeytree)
-
-## Why it feels different
-
-- ⚡ **Instant channel surfing** — hold ↑/↓ to skim; land when something catches your eye
-- 📟 **CRT warmth** — curvature, chromatic aberration, scanlines, vignette
-- 📅 **Full TV guide** — press G for a 12‑hour timeline across all channels with poster artwork
-- 🎬 **Theater modes** — click the player to cycle views (guide → normal → immersive)
-- 🏷️ **Smart channel names** — strips filler words, adds icons
-
-## Documentation
-
-### Getting Started
-- [Installation](installation.md) - Setup guide for Docker, Unraid, and local development
-- [Usage](usage.md) - Keyboard shortcuts, features, and logging
-- [Troubleshooting](troubleshooting.md) - Common issues and solutions
-
-### Technical Documentation
-- [Development](development.md) - Contributing, code style, and bug fix documentation
-- [Server Implementation](server-implementation.md) - Node.js server details, logging, and architecture
-- [Bug Fixes](bugfix/README.md) - Documented bug fixes and lessons learned
-
-### Resources
-- [GitHub Repository](https://github.com/dopeytree/TVx)
-- [Bug Fix System](BUG_FIX_SYSTEM.md) - How we document significant bug fixes
-
-## Screenshots
-
-### Main View
-
-![TVx Screenshot 1](https://github.com/dopeytree/TVx/blob/main/public/screenshot-1.png?raw=true)
-
-### Full TV Guide View
-
-![TVx Screenshot 2](https://github.com/dopeytree/TVx/blob/main/public/screenshot-2.png?raw=true)
-
-### Full screen View
-
-![TVx Screenshot 3](https://github.com/dopeytree/TVx/blob/main/public/screenshot-3.png?raw=true)
-
-## Buy me a coffee
-
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/dopeytree?style=for-the-badge&logo=githubsponsors&logoColor=white&label=Sponsor&labelColor=ea4aaa&color=ea4aaa)](https://github.com/sponsors/dopeytree)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-dopeytree-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dopeytree)
-

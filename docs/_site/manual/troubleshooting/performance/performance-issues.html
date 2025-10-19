@@ -14,9 +14,11 @@
   <style id="jtd-nav-activation">
   
 
+    .site-nav > ul.nav-list:first-child > li > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li > a,
     
-    .site-nav > ul.nav-list:first-child > li:not(:nth-child(1)) > a,
-    .site-nav > ul.nav-list:first-child > li > ul > li a {
+    .site-nav > ul.nav-list:first-child > li > ul > li > ul > li:not(:nth-child(6)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li > ul > li > ul > li a {
       background-image: none;
     }
 
@@ -25,12 +27,16 @@
       background-image: none;
     }
 
-    .site-nav > ul.nav-list:first-child > li:nth-child(1) > a {
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > ul > li:nth-child(6) > ul > li:nth-child(6) > a {
       font-weight: 600;
       text-decoration: none;
-    }.site-nav > ul.nav-list:first-child > li:nth-child(1) > button svg {
+    }.site-nav > ul.nav-list:first-child > li:nth-child(4) > button svg,
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > ul > li:nth-child(6) > button svg,
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > ul > li:nth-child(6) > ul > li:nth-child(6) > button svg {
       transform: rotate(-90deg);
-    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(1) > ul.nav-list {
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list,
+    .site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list > li.nav-list-item:nth-child(6) > ul.nav-list,
+    .site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list > li.nav-list-item:nth-child(6) > ul.nav-list > li.nav-list-item:nth-child(6) > ul.nav-list {
       display: block;
     }
   </style>
@@ -50,20 +56,20 @@
 
 
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Home | TVx</title>
+<title>Performance Issues | TVx</title>
 <meta name="generator" content="Jekyll v3.9.5" />
-<meta property="og:title" content="Home" />
+<meta property="og:title" content="Performance Issues" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
 <meta property="og:description" content="The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr" />
-<link rel="canonical" href="http://localhost:4001/TVx/" />
-<meta property="og:url" content="http://localhost:4001/TVx/" />
+<link rel="canonical" href="http://localhost:4001/TVx/manual/troubleshooting/performance/performance-issues.html" />
+<meta property="og:url" content="http://localhost:4001/TVx/manual/troubleshooting/performance/performance-issues.html" />
 <meta property="og:site_name" content="TVx" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Home" />
+<meta property="twitter:title" content="Performance Issues" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr","headline":"Home","name":"TVx","url":"http://localhost:4001/TVx/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"The warmth of modern nostalgia - IPTV + EPG viewer for Tunarr","headline":"Performance Issues","url":"http://localhost:4001/TVx/manual/troubleshooting/performance/performance-issues.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -228,90 +234,86 @@
 </div>
 
     <div class="main-content-wrap">
-      
+      <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+  <ol class="breadcrumb-nav-list">
+    <li class="breadcrumb-nav-list-item"><a href="/TVx/manual/">Manual</a></li>
+    <li class="breadcrumb-nav-list-item"><a href="/TVx/manual/troubleshooting/">Troubleshooting</a></li>
+    <li class="breadcrumb-nav-list-item"><span>Performance Issues</span></li>
+  </ol>
+</nav>
+
+
       <div id="main-content" class="main-content">
         <main>
           
-            <h1 class="fs-9" id="-tvx">
+            <h1 id="performance-issues">
   
   
-    <a href="#-tvx" class="anchor-heading" aria-labelledby="-tvx"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 📺 TVx
+    <a href="#performance-issues" class="anchor-heading" aria-labelledby="performance-issues"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Performance Issues
   
   
 </h1>
     
-
-<p class="fs-6 fw-300">This is the way - television you remember feeling: present, unhurried, analog.</p>
-
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 2rem 0;">
-  <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/ONHy2UY_r9U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
-  </iframe>
-</div>
-
-<p><a href="quick-start/" class="btn btn-primary fs-5 mb-4 mb-md-0 mr-2">Get Started</a>
-<a href="https://github.com/dopeytree/TVx" class="btn fs-5 mb-4 mb-md-0">View on GitHub</a></p><hr />
-
-<p>An IPTV + EPG viewer for <strong>Tunarr</strong> (Plex/Jellyfin) that brings back the ritual of watching—not scrolling, not seeking, just <em>being</em> with what’s on.</p>
-
-<p>Like the grain of 35mm film 🎞️ or the crackle before a record drops 💿, TVx trades sterile perfection for something alive. Curved glass 📟. Gentle flicker ✨. Scanlines that breathe.</p>
-<h3 id="architecture">
+<h2 id="issue-video-stuttering-or-buffering">
   
   
-    <a href="#architecture" class="anchor-heading" aria-labelledby="architecture"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Architecture
-  
-  
-</h3>
-    
-
-<p>TVx is a client-side web frontend that interfaces with your <strong>Tunarr backend</strong> alongside your <strong>Plex library</strong>. It consumes M3U playlists and XMLTV EPG data generated by Tunarr, while displaying rich metadata and artwork from your Plex media server.</p><hr />
-<h2 id="-key-features">
-  
-  
-    <a href="#-key-features" class="anchor-heading" aria-labelledby="-key-features"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ✨ Key Features
+    <a href="#issue-video-stuttering-or-buffering" class="anchor-heading" aria-labelledby="issue-video-stuttering-or-buffering"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Video stuttering or buffering
   
   
 </h2>
     
 
-<dl>
-  <dt>⚡ <strong>Instant Channel Surfing</strong></dt>
-  <dd>Hold ↑/↓ to skim through channels; land when something catches your eye</dd>
-  <dt>📟 <strong>CRT Warmth</strong></dt>
-  <dd>Authentic curvature, chromatic aberration, scanlines, and vignette effects</dd>
-  <dt>📅 <strong>Full TV Guide</strong></dt>
-  <dd>Press G for a 12-hour timeline across all channels with poster artwork</dd>
-  <dt>🎬 <strong>Theater Modes</strong></dt>
-  <dd>Click the player to cycle views (guide → normal → immersive)</dd>
-  <dt>🏷️ <strong>Smart Channel Names</strong></dt>
-  <dd>Automatically strips filler words and adds icons</dd>
-</dl><hr />
-<h2 id="️-screenshots">
+<p><strong>Solutions:</strong></p>
+
+<ol>
+  <li><strong>Check network connection:</strong>
+    <ul>
+      <li>Ping Tunarr server</li>
+      <li>Check bandwidth usage</li>
+      <li>Verify network stability</li>
+    </ul>
+  </li>
+  <li><strong>Reduce video quality:</strong>
+    <ul>
+      <li>Open Settings (gear icon)</li>
+      <li>Lower video quality setting</li>
+      <li>Restart playback</li>
+    </ul>
+  </li>
+  <li><strong>Check Tunarr server load:</strong>
+    <ul>
+      <li>Monitor Tunarr CPU/memory usage</li>
+      <li>Check if transcoding is required</li>
+      <li>Verify disk I/O isn’t bottlenecked</li>
+    </ul>
+  </li>
+</ol>
+<h2 id="issue-slow-channel-switching">
   
   
-    <a href="#️-screenshots" class="anchor-heading" aria-labelledby="️-screenshots"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 🖼️ Screenshots
+    <a href="#issue-slow-channel-switching" class="anchor-heading" aria-labelledby="issue-slow-channel-switching"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Issue: Slow channel switching
   
   
 </h2>
     
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 2rem 0;">
-  <img src="https://github.com/dopeytree/TVx/blob/main/public/screenshot-1.png?raw=true" alt="Main View" style="border-radius: 8px; width: 100%;" />
-  <img src="https://github.com/dopeytree/TVx/blob/main/public/screenshot-2.png?raw=true" alt="TV Guide" style="border-radius: 8px; width: 100%;" />
-  <img src="https://github.com/dopeytree/TVx/blob/main/public/screenshot-3.png?raw=true" alt="Full Screen" style="border-radius: 8px; width: 100%;" />
-</div><hr />
-<h2 id="-support-the-project">
-  
-  
-    <a href="#-support-the-project" class="anchor-heading" aria-labelledby="-support-the-project"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 💚 Support the Project
-  
-  
-</h2>
-    
+<p><strong>Solutions:</strong></p>
 
-<p>If TVx brings back the warmth of television for you, consider supporting its development:</p>
-
-<p><a href="https://github.com/sponsors/dopeytree"><img src="https://img.shields.io/badge/Sponsor-dopeytree-ea4aaa?style=for-the-badge&amp;logo=githubsponsors" alt="GitHub Sponsors" /></a>
-<a href="https://www.buymeacoffee.com/dopeytree"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-dopeytree-FFDD00?style=for-the-badge&amp;logo=buy-me-a-coffee&amp;logoColor=black" alt="Buy Me A Coffee" /></a></p>
+<ol>
+  <li><strong>Check drive spin-up time:</strong>
+    <ul>
+      <li>Loading video should play during spin-up</li>
+      <li>Verify loading video is working (see above)</li>
+    </ul>
+  </li>
+  <li><strong>Optimize Tunarr:</strong>
+    <ul>
+      <li>Pre-generate channel streams</li>
+      <li>Use faster storage for media</li>
+      <li>Enable stream caching</li>
+    </ul>
+  </li>
+</ol>
 
           
 
