@@ -173,7 +173,13 @@ void main()
     float clipY = smoothstep(0.0, edgeWidth, texCoord.t) * smoothstep(1.0, 1.0 - edgeWidth, texCoord.t);
     float clip = clipX * clipY;
     
-    gl_FragColor  = vec4( finalColor * stripFac * vignette * clip, 1.0 );
+    // Add dithering to prevent banding in gradients (vignette, etc.)
+    // Using a simple pseudo-random pattern based on screen coordinates
+    float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    // Scale dither to ±0.5/255.0 (half a bit of color precision)
+    dither = (dither - 0.5) / 255.0;
+    
+    gl_FragColor  = vec4( finalColor * stripFac * vignette * clip + dither, 1.0 );
 }`;
 
 
