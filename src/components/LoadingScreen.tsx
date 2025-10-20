@@ -2,29 +2,39 @@ import { useEffect, useState } from 'react';
 import './LoadingScreen.css';
 
 interface LoadingScreenProps {
+  /**
+   * Callback invoked after the fade-out animation completes.
+   * IMPORTANT: Parent should memoize this with useCallback to ensure stable identity.
+   */
   onLoadingComplete?: () => void;
-  minLoadingTime?: number;
+  /**
+   * Controls whether the loading screen should start fading out.
+   * When true, the fade-out animation begins and onLoadingComplete is called after completion.
+   */
+  shouldFadeOut?: boolean;
 }
 
 export const LoadingScreen = ({ 
-  onLoadingComplete, 
-  minLoadingTime = 2500 
+  onLoadingComplete,
+  shouldFadeOut = false
 }: LoadingScreenProps) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      onLoadingComplete?.();
-    }, minLoadingTime);
+    if (shouldFadeOut && !isFadingOut) {
+      setIsFadingOut(true);
+      
+      // Call onLoadingComplete after the 500ms fade animation completes
+      const timer = setTimeout(() => {
+        onLoadingComplete?.();
+      }, 500);
 
-    return () => clearTimeout(timer);
-  }, [minLoadingTime, onLoadingComplete]);
-
-  if (!isLoading) return null;
+      return () => clearTimeout(timer);
+    }
+  }, [shouldFadeOut, isFadingOut, onLoadingComplete]);
 
   return (
-    <div className="loading-screen">
+    <div className={`loading-screen${isFadingOut ? ' fade-out' : ''}`}>
       <div className="static-overlay"></div>
       <div className="loading-content">
         <div className="logo-container">
