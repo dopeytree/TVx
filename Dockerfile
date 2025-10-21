@@ -3,11 +3,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Set Node options for better cross-platform compatibility
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies with increased timeout and network concurrency settings for better cross-platform builds
+RUN npm ci --prefer-offline --no-audit --maxsockets 1
 
 # Copy source code
 COPY . .
