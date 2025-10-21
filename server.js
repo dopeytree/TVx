@@ -12,7 +12,7 @@ const LOG_FILE = path.join(LOG_DIR, 'tvx.log');
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const MAX_BODY_SIZE = 1048576; // 1MB max for POST bodies
 const MAX_URL_LENGTH = 2048; // Prevent excessively long URLs
-const MAX_HEADER_SIZE = 8192; // 8KB max for headers
+
 
 // Allowed HTTP methods
 const ALLOWED_METHODS = new Set(['GET', 'HEAD', 'POST', 'OPTIONS']);
