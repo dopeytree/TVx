@@ -2,7 +2,7 @@
 <Container version="2">
   <Name>TVx</Name>
   <Repository>ghcr.io/dopeytree/tvx:latest</Repository>
-  <Registry>ghcr.io/dopeytree/tvx/Registry>
+  <Registry>ghcr.io/dopeytree/tvx/<Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>

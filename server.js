@@ -19,11 +19,10 @@ const ALLOWED_METHODS = new Set(['GET', 'HEAD', 'POST', 'OPTIONS']);
 
 // Suspicious patterns in URLs (basic path traversal attempts)
 const SUSPICIOUS_PATTERNS = [
-  /\.\.\//g,           // Directory traversal
-  /\.\.\\/g,           // Windows path traversal
-  /%2e%2e%2f/gi,       // URL encoded traversal
-  /%252e%252e%252f/gi, // Double URL encoded
-  /\/\//g,             // Double slashes (normalized later but flag as suspicious)
+  /\.\.\//i,           // Directory traversal
+  /\.\.\\/i,           // Windows path traversal
+  /%2e%2e%2f/i,        // URL encoded traversal
+  /%252e%252e%252f/i,  // Double URL encoded
 ];
 
 // Rate limiting configuration for home use
@@ -126,7 +125,7 @@ const server = http.createServer((req, res) => {
   }
   
   // Check for suspicious patterns in URL
-  const urlLower = req.url.toLowerCase();
+  const urlLower = pathname.toLowerCase();
   for (const pattern of SUSPICIOUS_PATTERNS) {
     if (pattern.test(urlLower)) {
       res.writeHead(400, { 'Content-Type': 'text/plain' });
