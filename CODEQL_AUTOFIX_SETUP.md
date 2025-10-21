@@ -108,16 +108,22 @@ gh pr merge 123 --squash
    - ✅ **Secret scanning**
 
 ### Step 3: Push the Workflow
+
 ```bash
 # Add the new workflow
 git add .github/workflows/codeql-autofix.yml
 git add CODEQL_AUTOFIX_GUIDE.md
+git add CODEQL_AUTOFIX_SETUP.md
 git commit -m "feat: Add CodeQL auto-fix workflow"
-git push origin iptv
 
-# Or create PR
+# Push to your current branch
+git push
+
+# Or create PR if you want to merge to main
 gh pr create --title "feat: Add CodeQL auto-fix workflow"
 ```
+
+**Note**: The workflow must be on your default branch (usually `main`) to be available. If you're working on a feature branch, create a PR and merge it first.
 
 ### Step 4: Test It!
 After pushing, manually trigger the workflow to test:
