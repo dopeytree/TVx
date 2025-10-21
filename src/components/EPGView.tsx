@@ -8,7 +8,7 @@ interface EPGViewProps {
   programs: Program[];
   channelName: string;
   isIdle: boolean;
-  onPosterClick: (program: Program) => void;
+  onPosterClick: (program: Program | null) => void;
   selectedPoster?: Program | null;
   panelStyle?: 'bordered' | 'shadow';
   favorites: Set<string>;
@@ -88,7 +88,7 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selected
                     // Toggle poster: if this program is already selected, close it (pass null)
                     if (selectedPoster && selectedPoster.title === currentProgram.title && 
                         selectedPoster.start.getTime() === currentProgram.start.getTime()) {
-                      onPosterClick(null as any);
+                      onPosterClick(null);
                     } else {
                       onPosterClick(currentProgram);
                     }
@@ -149,7 +149,7 @@ export const EPGView = ({ programs, channelName, isIdle, onPosterClick, selected
                       // Toggle poster: if this program is already selected, close it (pass null)
                       if (selectedPoster && selectedPoster.title === program.title && 
                           selectedPoster.start.getTime() === program.start.getTime()) {
-                        onPosterClick(null as any);
+                        onPosterClick(null);
                       } else {
                         onPosterClick(program);
                       }

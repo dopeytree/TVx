@@ -3,8 +3,8 @@ import { AppSettings } from '@/types/iptv';
 import { logger } from '@/utils/logger';
 
 const defaultSettings: AppSettings = {
-  m3uUrl: (window as any).ENV?.VITE_M3U_URL || 'http://your-tunarr-ip-address:8000/channels.m3u',
-  xmltvUrl: (window as any).ENV?.VITE_XMLTV_URL || 'http://your-tunarr-ip-address:8000/xmltv.xml',
+  m3uUrl: (window as Window & { ENV?: { VITE_M3U_URL?: string } }).ENV?.VITE_M3U_URL || 'http://your-tunarr-ip-address:8000/channels.m3u',
+  xmltvUrl: (window as Window & { ENV?: { VITE_XMLTV_URL?: string } }).ENV?.VITE_XMLTV_URL || 'http://your-tunarr-ip-address:8000/xmltv.xml',
   autoLoad: true,
   showNotifications: true,
   videoQuality: 'high',
@@ -50,13 +50,13 @@ export const useSettings = () => {
       if (stored) {
         const parsed = JSON.parse(stored) as Partial<AppSettings>;
         // Only return UI settings, filter out any URL settings that might be stored
-        const uiSettings: Partial<AppSettings> = {};
+        const uiSettings: Record<string, unknown> = {};
         uiSettingsKeys.forEach(key => {
           if (parsed[key] !== undefined) {
-            (uiSettings as any)[key] = parsed[key];
+            uiSettings[key] = parsed[key];
           }
         });
-        return uiSettings;
+        return uiSettings as Partial<AppSettings>;
       }
     } catch (error) {
       logger.error(`Error loading UI settings from localStorage: ${error}`);
@@ -68,9 +68,9 @@ export const useSettings = () => {
   // Save UI settings to localStorage
   const saveUISettings = (settings: AppSettings) => {
     try {
-      const uiSettings: Partial<AppSettings> = {};
+      const uiSettings: Record<string, unknown> = {};
       uiSettingsKeys.forEach(key => {
-        (uiSettings as any)[key] = settings[key];
+        uiSettings[key] = settings[key];
       });
       localStorage.setItem('tvx-ui-settings', JSON.stringify(uiSettings));
     } catch (error) {

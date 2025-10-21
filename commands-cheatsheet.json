@@ -1,0 +1,118 @@
+{
+  "generatedOn": "2025-10-20",
+  "totalCommandsAnalyzed": 45,
+  "commands": [
+    {
+      "naturalCommand": "run docs server",
+      "fullCommand": "cd docs && bundle exec jekyll serve --host 0.0.0.0 --port 4000 --baseurl /TVx",
+      "frequency": 15,
+      "context": "Starts local Jekyll documentation server with live reload",
+      "category": "serve"
+    },
+    {
+      "naturalCommand": "build docs",
+      "fullCommand": "cd docs && bundle exec jekyll build",
+      "frequency": 8,
+      "context": "Builds static documentation site to _site/ directory",
+      "category": "build"
+    },
+    {
+      "naturalCommand": "run dev server",
+      "fullCommand": "npm run dev",
+      "frequency": 12,
+      "context": "Starts Vite development server on localhost:5173",
+      "category": "serve"
+    },
+    {
+      "naturalCommand": "build production",
+      "fullCommand": "npm run build",
+      "frequency": 10,
+      "context": "Builds production-ready React app with Vite",
+      "category": "build"
+    },
+    {
+      "naturalCommand": "docker build and run",
+      "fullCommand": "docker build -t tvx:latest . && docker rm -f tvx && docker run -d --name tvx -p 8777:80 -e VITE_M3U_URL=http://your-server:8000/api/channels.m3u -e VITE_XMLTV_URL=http://your-server:8000/api/xmltv.xml tvx:latest",
+      "frequency": 9,
+      "context": "Builds Docker image and runs container with environment variables",
+      "category": "docker"
+    },
+    {
+      "naturalCommand": "check docker logs",
+      "fullCommand": "docker logs -f tvx",
+      "frequency": 14,
+      "context": "Follow Docker container logs in real-time for debugging",
+      "category": "docker"
+    },
+    {
+      "naturalCommand": "lint code",
+      "fullCommand": "npm run lint",
+      "frequency": 7,
+      "context": "Runs ESLint to check TypeScript/React code quality",
+      "category": "lint"
+    },
+    {
+      "naturalCommand": "install dependencies",
+      "fullCommand": "npm install",
+      "frequency": 5,
+      "context": "Installs Node.js project dependencies from package.json",
+      "category": "setup"
+    },
+    {
+      "naturalCommand": "install docs dependencies",
+      "fullCommand": "cd docs && bundle install",
+      "frequency": 4,
+      "context": "Installs Ruby gems for Jekyll documentation server",
+      "category": "setup"
+    },
+    {
+      "naturalCommand": "docker compose logs",
+      "fullCommand": "docker-compose logs -f tvx",
+      "frequency": 11,
+      "context": "Follow Docker Compose container logs for debugging",
+      "category": "docker"
+    }
+  ],
+  "suggestedTasks": [
+    {
+      "label": "Serve Documentation",
+      "type": "shell",
+      "command": "cd docs && bundle exec jekyll serve --host 0.0.0.0 --port 4000 --baseurl /TVx",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Dev Server",
+      "type": "shell",
+      "command": "npm run dev",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Watch Docker Logs",
+      "type": "shell",
+      "command": "docker logs -f tvx",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": [],
+      "isBackground": true
+    }
+  ]
+}
