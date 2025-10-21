@@ -130,7 +130,6 @@ function searchLoaded(index, docs) {
   var docs = docs;
   var searchInput = document.getElementById('search-input');
   var searchResults = document.getElementById('search-results');
-  var mainHeader = document.getElementById('main-header');
   var currentInput;
   var currentSearchIndex = 0;
 
@@ -176,7 +175,7 @@ function searchLoaded(index, docs) {
     if ((results.length == 0) && (input.length > 2)) {
       var tokens = lunr.tokenizer(input).filter(function(token, i) {
         return token.str.length < 20;
-      })
+      });
       if (tokens.length > 0) {
         results = index.query(function (query) {
           query.term(tokens, {
