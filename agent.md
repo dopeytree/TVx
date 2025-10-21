@@ -3,7 +3,7 @@
 > **Last Updated**: 2025-10-21  
 > **Project**: TVx - IPTV + EPG Viewer with CRT Nostalgia  
 > **Repository**: [dopeytree/TVx](https://github.com/dopeytree/TVx)  
-> **Branch**: `iptv`
+> **Branch**: `main`
 
 ---
 

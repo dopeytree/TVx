@@ -20,6 +20,7 @@ The TVx Node.js server (`server.js`) was initially implemented with basic functi
 **Security Risks Identified:**
 - No HTTP method validation (accepting any verb)
 - No URL length limits (vulnerable to buffer overflows)
+- No header size limits (vulnerable to header attacks)
 - No path traversal protection beyond basic checks
 - No Content-Type validation for POST endpoints
 - No file extension whitelisting
@@ -29,6 +30,8 @@ The TVx Node.js server (`server.js`) was initially implemented with basic functi
 - No batch size limits for log processing
 - Missing security headers
 - No request timeout protection
+- Race conditions in client-side logging
+- Missing OPTIONS preflight handling
 
 ---
 
@@ -82,7 +85,8 @@ While adding security, we needed to ensure no performance degradation for the ho
 
 ### Comprehensive Security Hardening Implementation
 
-#### 1. HTTP Method Validation
+#### 1. HTTP Method Validation & OPTIONS Preflight
+
 ```javascript
 const ALLOWED_METHODS = new Set(['GET', 'HEAD', 'POST', 'OPTIONS']);
 
@@ -94,9 +98,37 @@ if (!ALLOWED_METHODS.has(req.method)) {
   res.end('Method Not Allowed');
   return;
 }
+
+// Fast path for OPTIONS (preflight)
+if (req.method === 'OPTIONS') {
+  res.writeHead(204, {
+    'Allow': Array.from(ALLOWED_METHODS).join(', '),
+    'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'content-type',
+    'Access-Control-Max-Age': '600'
+  });
+  res.end();
+  return;
+}
 ```
 
-#### 2. URL Length and Pattern Validation
+#### 2. Header Size Enforcement
+
+```javascript
+const MAX_HEADER_SIZE = 8192; // 8KB max for headers
+
+// Enforce max header size (protect against oversized header attacks)
+const headerSize = Buffer.byteLength((req.rawHeaders || []).join(''), 'utf8');
+if (headerSize > MAX_HEADER_SIZE) {
+  res.writeHead(431, { 'Content-Type': 'text/plain' });
+  res.end('Request Header Fields Too Large');
+  writeLog(`[${new Date().toISOString()}] WARN: Headers too large from ${clientIp} (${headerSize} bytes)`);
+  return;
+}
+```
+
+#### 3. URL Length and Pattern Validation
+
 ```javascript
 const MAX_URL_LENGTH = 2048;
 const SUSPICIOUS_PATTERNS = [
@@ -122,12 +154,16 @@ for (const pattern of SUSPICIOUS_PATTERNS) {
 }
 ```
 
-#### 3. Content-Type Validation for POST Endpoints
+#### 4. Enhanced Content-Type Validation for POST Endpoints
+
 ```javascript
 if (req.method === 'POST' && pathname === '/log') {
-  const contentType = req.headers['content-type'];
-  if (!contentType || !contentType.includes('application/json')) {
-    res.writeHead(415);
+  // Validate Content-Type header (support sendBeacon string payloads)
+  const contentType = req.headers['content-type'] || '';
+  const isJson = contentType.includes('application/json');
+  const isBeaconText = contentType.startsWith('text/plain'); // sendBeacon default for strings
+  if (!isJson && !isBeaconText) {
+    res.writeHead(415, { 'Content-Type': 'text/plain' });
     res.end('Unsupported Media Type - Expected application/json');
     return;
   }
@@ -135,7 +171,26 @@ if (req.method === 'POST' && pathname === '/log') {
 }
 ```
 
-#### 4. File Extension Whitelisting
+#### 5. Simplified Body Accumulation
+
+```javascript
+req.on('data', chunk => {
+  bodySize += chunk.length;
+  
+  // Prevent large payload attacks
+  if (bodySize > MAX_BODY_SIZE) {
+    res.writeHead(413, { 'Content-Type': 'text/plain' });
+    res.end('Payload Too Large');
+    req.destroy();
+    return;
+  }
+  
+  body += chunk; // Simplified - no unnecessary slice math
+});
+```
+
+#### 6. File Extension Whitelisting
+
 ```javascript
 const allowedExtensions = new Set([
   '.html', '.css', '.js', '.json', '.png', '.jpg', '.jpeg', 
@@ -150,7 +205,8 @@ if (!allowedExtensions.has(ext)) {
 }
 ```
 
-#### 5. Enhanced Range Request Validation
+#### 7. Enhanced Range Request Validation with Content-Range
+
 ```javascript
 if (ext === '.mp4' && req.headers.range) {
   const range = req.headers.range;
@@ -160,7 +216,7 @@ if (ext === '.mp4' && req.headers.range) {
   
   // Validate range values
   if (isNaN(start) || isNaN(end) || start < 0 || end >= stats.size || start > end) {
-    res.writeHead(416);
+    res.writeHead(416, { 'Content-Type': 'text/plain', 'Content-Range': `bytes */${stats.size}` });
     res.end('Range Not Satisfiable');
     return;
   }
@@ -168,7 +224,20 @@ if (ext === '.mp4' && req.headers.range) {
 }
 ```
 
-#### 6. Connection and Resource Limits
+#### 8. HEAD Request Handling
+
+```javascript
+if (req.method === 'HEAD') {
+  res.writeHead(200, headers);
+  res.end();
+  return;
+}
+res.writeHead(200, headers);
+res.end(data);
+```
+
+#### 9. Connection and Resource Limits
+
 ```javascript
 const MAX_BODY_SIZE = 1048576; // 1MB max for POST bodies
 const REQUEST_TIMEOUT = 30000; // 30 seconds
@@ -183,7 +252,8 @@ req.setTimeout(REQUEST_TIMEOUT, () => {
 });
 ```
 
-#### 7. Batch Processing Limits
+#### 10. Batch Processing Limits
+
 ```javascript
 if (Array.isArray(logData.logs)) {
   const maxBatchSize = 100;
@@ -192,16 +262,51 @@ if (Array.isArray(logData.logs)) {
 }
 ```
 
-#### 8. Security Headers Enhancement
+#### 11. Modern Security Headers
+
 ```javascript
 res.setHeader('X-Content-Type-Options', 'nosniff');
 res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-res.setHeader('X-XSS-Protection', '1; mode=block');
 res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-res.setHeader('X-Powered-By', ''); // Remove fingerprinting
+res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'");
 ```
 
-#### 9. Enhanced Error Handling and Logging
+#### 12. Enhanced Cache Policies
+
+```javascript
+const cacheControl = {
+  '.html': 'no-cache',
+  '.css': 'public, max-age=31536000, immutable',
+  '.js': 'public, max-age=31536000, immutable',
+  '.png': 'public, max-age=86400',
+  '.jpg': 'public, max-age=86400',
+  '.ico': 'public, max-age=86400',
+  '.mp4': 'public, max-age=3600',
+  '.webmanifest': 'public, max-age=86400',
+  '.svg': 'public, max-age=31536000, immutable',
+  '.woff': 'public, max-age=31536000, immutable',
+  '.woff2': 'public, max-age=31536000, immutable',
+  '.ttf': 'public, max-age=31536000, immutable',
+  '.eot': 'public, max-age=31536000, immutable'
+}[ext] || 'no-cache';
+```
+
+#### 13. Memory-Efficient Cleanup
+
+```javascript
+// Clean up old entries every 5 minutes to prevent memory bloat
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, data] of rateLimitStore.entries()) {
+    if (now - data.resetTime > 300000) { // 5 minutes
+      rateLimitStore.delete(key);
+    }
+  }
+}, 300000).unref(); // Don't hold event loop open
+```
+
+#### 14. Enhanced Error Handling and Logging
+
 ```javascript
 // Security events logged with context
 writeLog(`[${new Date().toISOString()}] SECURITY: Suspicious URL pattern detected from ${clientIp}: ${req.url}`);
@@ -211,6 +316,45 @@ req.on('error', (err) => {
   writeLog(`[${new Date().toISOString()}] ERROR: Request error on /log - ${err.message}`);
 });
 ```
+
+#### 15. Client-Side Logger Simplified for Real-Time Visibility
+
+```typescript
+// Immediate logging for all levels - simplified for home debugging
+const sendLog = async (level: string, message: string) => {
+  try {
+    await fetch('/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ level, message }),
+    });
+  } catch (error) {
+    // Silent fail to avoid log loops
+  }
+};
+
+export const logger = {
+  log: (message: string) => {
+    console.log(message);
+    sendLog('info', message);
+  },
+  error: (message: string) => {
+    console.error(message);
+    sendLog('error', message);
+  },
+  warn: (message: string) => {
+    console.warn(message);
+    sendLog('warn', message);
+  },
+  info: (message: string) => {
+    console.info(message);
+    sendLog('info', message);
+  },
+};
+```
+
+**Design Decision:** After implementing batching and selective logging (errors/warnings only), we reverted to the original immediate-send approach for **all log levels** to maintain real-time visibility into application events. For home use, seeing toast notifications, channel changes, and stream URLs in real-time via `docker logs` is more valuable than optimizing for log volume reduction.
+
 
 ---
 
@@ -305,7 +449,7 @@ docker logs -f tvx | grep -E "(SECURITY|WARN|ERROR)"
 
 ### Enhanced Server Logs
 
-```
+```bash
 Server running on port 80
 Process ID: 1
 Node version: v20.19.5
@@ -322,6 +466,7 @@ Static directory: /usr/share/nginx/html
 - `/Users/ed/TVx/server.js` - Added comprehensive security hardening
 - `/Users/ed/TVx/Dockerfile` - Added non-root user for container security
 - `/Users/ed/TVx/docker-compose.yml` - Added resource limits
+- `/Users/ed/TVx/src/utils/logger.ts` - Fixed race conditions and type safety
 
 ---
 
@@ -360,6 +505,7 @@ Static directory: /usr/share/nginx/html
 ### Home Use Optimization
 
 All limits are tuned for family home use:
+
 - 100 concurrent connections (way more than needed for 2-5 devices)
 - 1MB POST limit (plenty for logging, prevents abuse)
 - 30s timeouts (generous for video streaming)
@@ -396,6 +542,7 @@ This implementation addresses common OWASP Top 10 vulnerabilities:
 ## Future Security Enhancements
 
 ### Could Add (If Needed)
+
 1. **Rate limiting per IP** - Already implemented, can be tuned
 2. **Request signing** - For high-security environments
 3. **CSP headers** - Content Security Policy for enhanced XSS protection
@@ -405,6 +552,7 @@ This implementation addresses common OWASP Top 10 vulnerabilities:
 7. **Automated security scanning** - Integration with tools like Trivy
 
 ### Not Needed for Home Use
+
 - ❌ Full authentication system (trusted network)
 - ❌ Database encryption (no sensitive data stored)
 - ❌ Advanced intrusion detection (simple home setup)
@@ -416,6 +564,7 @@ This implementation addresses common OWASP Top 10 vulnerabilities:
 ## Deployment Recommendations
 
 ### For Home Use (Current Setup)
+
 - ✅ Container with resource limits
 - ✅ Non-root user execution
 - ✅ Security headers enabled
@@ -423,6 +572,7 @@ This implementation addresses common OWASP Top 10 vulnerabilities:
 - ✅ Enhanced logging
 
 ### For Production Use (Additional)
+
 - 🔒 HTTPS/TLS termination
 - 🔒 Reverse proxy (nginx/Traefik)
 - 🔒 Network segmentation
