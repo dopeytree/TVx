@@ -12,7 +12,6 @@ const LOG_FILE = path.join(LOG_DIR, 'tvx.log');
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const MAX_BODY_SIZE = 1048576; // 1MB max for POST bodies
 const MAX_URL_LENGTH = 2048; // Prevent excessively long URLs
-const MAX_HEADER_SIZE = 8192; // 8KB max for headers
 
 // Allowed HTTP methods
 const ALLOWED_METHODS = new Set(['GET', 'HEAD', 'POST', 'OPTIONS']);
@@ -152,9 +151,10 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && pathname === '/log') {
     // Validate Content-Type header
     const contentType = req.headers['content-type'];
-    if (!contentType || !contentType.includes('application/json')) {
+    const isJsonType = contentType && (contentType.includes('application/json') || contentType.includes('text/plain'));
+    if (!contentType || !isJsonType) {
       res.writeHead(415, { 'Content-Type': 'text/plain' });
-      res.end('Unsupported Media Type - Expected application/json');
+      res.end('Unsupported Media Type - Expected application/json or text/plain');
       return;
     }
     
@@ -213,12 +213,15 @@ const server = http.createServer((req, res) => {
           const message = sanitizeForLog(logData.message || body);
           writeLog(`[${timestamp}] ${level.toUpperCase()}: ${message}`);
         }
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('OK');
       } catch (e) {
-        // Don't log full body if JSON parse fails (could be malicious)
+        // Malformed JSON in request body
         writeLog(`[${new Date().toISOString()}] ERROR: Invalid JSON in log request from ${clientIp}`);
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request - Invalid JSON');
+        return;
       }
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end('OK');
     });
     
     req.on('error', (err) => {

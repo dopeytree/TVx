@@ -2,7 +2,7 @@
 const LOG_BUFFER: Array<{ level: string; message: string; timestamp: number }> = [];
 const BUFFER_FLUSH_INTERVAL = 5000; // 5 seconds
 const MAX_BUFFER_SIZE = 50; // Max logs before forcing a flush
-let flushTimeout: NodeJS.Timeout | null = null;
+let flushTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // Only send important logs to server (errors and warnings)
 const SEND_LEVELS = new Set(['error', 'warn']);
@@ -58,10 +58,12 @@ const sendLog = (level: string, message: string) => {
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
     if (LOG_BUFFER.length > 0) {
-      navigator.sendBeacon?.('/log', JSON.stringify({ 
+      const beaconData = JSON.stringify({ 
         logs: LOG_BUFFER,
         userAgent: navigator.userAgent 
-      }));
+      });
+      const blob = new Blob([beaconData], { type: 'application/json' });
+      navigator.sendBeacon?.('/log', blob);
     }
   });
 }
