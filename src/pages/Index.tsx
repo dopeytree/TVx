@@ -386,7 +386,7 @@ const Index = () => {
         const resumeAudioAndLoadChannel = async () => {
           try {
             // Try to resume AudioContext immediately (may fail without user gesture)
-            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const audioContext = new ((window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)!)();
             if (audioContext.state === 'suspended') {
               console.log('Index: AudioContext suspended on page load, will resume on user interaction');
             } else {

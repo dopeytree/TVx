@@ -28,6 +28,7 @@ export const parseXMLTV = (content: string): EPGData => {
       ? result.tv.programme 
       : [result.tv.programme];
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     programmes.forEach((prog: any) => {
       const channelId = prog['@_channel'];
       if (!channelId) return;

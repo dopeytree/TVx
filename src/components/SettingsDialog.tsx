@@ -182,7 +182,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           </Label>
           <Select
             value={localSettings.videoQuality}
-            onValueChange={(value: any) => 
+            onValueChange={(value: "auto" | "low" | "medium" | "high") => 
               updateSetting(
                 { ...localSettings, videoQuality: value },
                 `Video quality: ${value.charAt(0).toUpperCase() + value.slice(1)}`
@@ -468,7 +468,7 @@ export const SettingsDialog = ({ open, onOpenChange, settings, onSave, onGlobalS
           </Label>
           <Select
             value={localSettings.clockStyle}
-            onValueChange={(value: any) => {
+            onValueChange={(value: "neon" | "flip" | "matrix" | "digital" | "minimal" | "retro") => {
               const styleNames: Record<string, string> = {
                 neon: 'Neon Blue',
                 flip: 'Flip Clock',
