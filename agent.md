@@ -111,6 +111,14 @@ Reference the **commands-cheatsheet.json** in the project root for frequently us
    docker-compose logs -f tvx
    ```
 
+### prefil vite urls for testing
+
+for all test docker & dev builds prefil the env variables as:
+
+VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u
+
+VITE_XMLTV_URLhttp://192.168.22.2:8000/api/xmltv.xml
+
 ### VS Code Tasks
 
 Use **Cmd+Shift+P** → "Tasks: Run Task" or **Cmd+Shift+B** for default build task.

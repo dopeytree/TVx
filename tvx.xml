@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>TVx</Name>
+  <Repository>ghcr.io/dopeytree/tvx:latest</Repository>
+  <Registry>ghcr.io/dopeytree/tvx/Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/194221-support-dopeytree-docker-templates/#findComment-1583857</Support>
+  <Project>https://github.com/dopeytree/TVx</Project>
+  <Overview>This is the way - television you remember feeling: present, unhurried, analog.&#xD;
+&#xD;
+A vintage experience IPTV + EPG viewer for Tunarr (Plex/Jellyfin) playlists &amp;amp; XMLTV guides. &#xD;
+Built for channel surfing, not catalog anxiety. Anti&#x2011;algorithm. Pro&#x2011;moment. Vibing.&#xD;
+&#xD;
+&#x2764;&#xFE0F;&#x200D;&#x1F525; FEATURES:&#xD;
+&#x26A1; Instant channel surfing with arrow keys&#xD;
+&#x1F4DF; CRT warmth effects (curvature, scanlines, vignette)&#xD;
+&#x1F4C5; Full TV guide with poster artwork&#xD;
+&#x1F3AC; Multiple theater modes&#xD;
+&#x1F3F7;&#xFE0F; Smart channel naming with icons&#xD;
+&#x2328;&#xFE0F; Full keyboard shortcuts</Overview>
+  <Category>Other: MediaApp:Video MediaApp:Other Status:Stable</Category>
+  <ExtraSearchTerms>m3u xml iptv tv guide crt vintage player plex emby jellyfin tunarr dizquetv ersatz</ExtraSearchTerms>
+  <WebUI>http://[IP]:[PORT:8777]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/dopeytree/unraid-templates/main/templates/tvx.xml</TemplateURL>
+<Icon>https://raw.githubusercontent.com/dopeytree/TVx/main/public/logo.png</Icon>
+<Screenshot>https://raw.githubusercontent.com/dopeytree/TVx/main/public/screenshot-1.png</Screenshot>    <Screenshot>https://raw.githubusercontent.com/dopeytree/TVx/main/public/screenshot-2.png</Screenshot>
+<Screenshot>https://raw.githubusercontent.com/dopeytree/TVx/main/public/screenshot-3.png</Screenshot>    <Screenshot>https://raw.githubusercontent.com/dopeytree/TVx/main/public/screenshot-4.png</Screenshot>
+<Screenshot>https://raw.githubusercontent.com/dopeytree/TVx/main/public/screenshot-5.png</Screenshot>
+  <ExtraParams>--log-driver json-file --log-opt max-size=10m --log-opt max-file=3</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled>1761060752</DateInstalled>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Works best with Tunarr &amp;amp; Plex/Jellyfin</Requires>
+  <Config Name="M3U URL" Target="VITE_M3U_URL" Default="http://your-tunarr-ip-address:8000/api/channels.m3u" Mode="" Description="M3U - Replace 'your-tunarr-ip-address' with your actual Tunarr server IP:Port or other IPTV provider" Type="Variable" Display="always" Required="true" Mask="false">http://your-tunarr-ip-address:8000/api/channels.m3u</Config>
+  <Config Name="XMLTV URL" Target="VITE_XMLTV_URL" Default="http://your-tunarr-ip-address:8000/api/xmltv.xml" Mode="" Description="EPG - Replace 'your-tunarr-ip-address' with your actual Tunarr server IP:Port or other IPTV EPG provider" Type="Variable" Display="always" Required="true" Mask="false">http://your-tunarr-ip-address:8000/api/xmltv.xml</Config>
+  <Config Name="Timezone" Target="TZ" Default="Europe/London" Mode="" Description="Container timezone for proper EPG time display. &#13;&#10;&#13;&#10;Examples: America/New_York, Europe/London, Asia/Tokyo, etc." Type="Variable" Display="always" Required="true" Mask="false">Europe/London</Config>
+  <Config Name="WebUI Port" Target="80" Default="8777" Mode="tcp" Description="Host port for accessing the TVx web interface" Type="Port" Display="advanced" Required="true" Mask="false">8777</Config>
+  <Config Name="Appdata" Target="/config" Default="/mnt/user/appdata/tvx" Mode="rw" Description="Path for persistent storage of settings, configuration files" Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/tvx</Config>
+  <TailscaleStateDir/>
+</Container>
