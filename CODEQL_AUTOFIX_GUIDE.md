@@ -32,14 +32,20 @@ The workflow runs automatically every Monday. You'll receive:
 ### Option 2: Manual Trigger
 1. Go to: **Actions** → **CodeQL Auto-Fix**
 2. Click **Run workflow**
-3. Select branch (usually `main`)
-4. Click **Run workflow** button
+3. Select branch (the branch you're currently working on)
+4. (Optional) Specify a different target branch for the PR
+5. Click **Run workflow** button
 
 ### Option 3: On-Demand via CLI
 ```bash
-# Trigger the workflow from command line
+# Trigger on current branch (PR will target current branch)
 gh workflow run codeql-autofix.yml
+
+# Or specify a target branch for the PR
+gh workflow run codeql-autofix.yml -f target_branch=main
 ```
+
+**Note**: By default, the workflow creates a PR targeting the branch it runs from. This is useful when working on feature branches with protected main branches.
 
 ## Reviewing Auto-Fix PRs
 
