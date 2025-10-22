@@ -506,35 +506,41 @@ const server = http.createServer((req, res) => {
 });
 
 // Graceful shutdown handling
-function gracefulShutdown(signal) {
+function gracefulShutdown(signal, exitCode = 0) {
   writeLog(`\n${signal} received. Starting graceful shutdown...`);
   
   server.close(() => {
     writeLog('HTTP server closed. Exiting process.');
-    process.exit(0);
+    process.exit(exitCode);
   });
   
   // Force shutdown after 10 seconds
   setTimeout(() => {
     writeLog('Forced shutdown after timeout');
-    process.exit(1);
+    process.exit(exitCode || 1);
   }, 10000);
 }
 
 // Handle shutdown signals
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM', 0));
+process.on('SIGINT', () => gracefulShutdown('SIGINT', 0));
 
-// Handle uncaught errors
+// Handle uncaught errors - log and exit immediately with non-zero code
 process.on('uncaughtException', (err) => {
-  writeLog(`[${new Date().toISOString()}] ERROR: Uncaught Exception - ${err.message}`);
-  writeLog(err.stack);
-  gracefulShutdown('uncaughtException');
+  writeLog(`[${new Date().toISOString()}] FATAL: Uncaught Exception - ${err.message}`);
+  writeLog(`[${new Date().toISOString()}] Stack: ${err.stack}`);
+  writeLog(`[${new Date().toISOString()}] Process terminating with exit code 1`);
+  process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  writeLog(`[${new Date().toISOString()}] ERROR: Unhandled Rejection at ${promise} - ${reason}`);
-  gracefulShutdown('unhandledRejection');
+  writeLog(`[${new Date().toISOString()}] FATAL: Unhandled Rejection at ${promise}`);
+  writeLog(`[${new Date().toISOString()}] Reason: ${reason}`);
+  if (reason && reason.stack) {
+    writeLog(`[${new Date().toISOString()}] Stack: ${reason.stack}`);
+  }
+  writeLog(`[${new Date().toISOString()}] Process terminating with exit code 1`);
+  process.exit(1);
 });
 
 // Set maximum connections to prevent resource exhaustion
