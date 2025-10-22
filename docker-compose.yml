@@ -17,6 +17,13 @@ services:
       - VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml
     volumes:
       - ./config:/config
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'      # Limit to 50% of one CPU core (plenty for home use)
+          memory: 256M     # 256MB RAM limit (Node.js needs ~100MB, leaves headroom)
+        reservations:
+          memory: 128M     # Guarantee at least 128MB
     logging:
       driver: "json-file"
       options:

@@ -3,7 +3,7 @@
 > **Last Updated**: 2025-10-21  
 > **Project**: TVx - IPTV + EPG Viewer with CRT Nostalgia  
 > **Repository**: [dopeytree/TVx](https://github.com/dopeytree/TVx)  
-> **Branch**: `iptv`
+> **Branch**: `main`
 
 ---
 
@@ -110,6 +110,15 @@ Reference the **commands-cheatsheet.json** in the project root for frequently us
    # or with docker-compose
    docker-compose logs -f tvx
    ```
+
+### Prefill Vite URLs for Testing
+
+For all test Docker & dev builds, prefill the env variables as:
+
+```bash
+export VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u
+export VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml
+```
 
 ### VS Code Tasks
 

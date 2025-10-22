@@ -1,3 +1,4 @@
+// Client-side logging - send all logs to server for visibility
 const sendLog = async (level: string, message: string) => {
   try {
     await fetch('/log', {
@@ -8,9 +9,7 @@ const sendLog = async (level: string, message: string) => {
       body: JSON.stringify({ level, message }),
     });
   } catch (error) {
-    // Fallback to console if fetch fails
-    console.error('Failed to send log:', error);
-    console.log(message);
+    // Fallback to console if fetch fails - silent fail to avoid log loops
   }
 };
 
