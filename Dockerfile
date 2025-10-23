@@ -24,9 +24,9 @@ FROM node:20-alpine
 # Install gettext for envsubst
 RUN apk add --no-cache gettext
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Create non-root user for security (using nobody UID/GID for better compatibility)
+RUN addgroup -g 99 -S appuser && \
+    adduser -S appuser -u 99 -G appuser
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -37,12 +37,11 @@ COPY server.js /usr/share/nginx/html/server.js
 # Copy env template
 COPY env.js.template /usr/share/nginx/html/env.js.template
 
-# Create config directory and set ownership
-RUN mkdir -p /config && \
-    chown -R nodejs:nodejs /usr/share/nginx/html /config
+# Set ownership of application files
+RUN chown -R appuser:appuser /usr/share/nginx/html
 
 # Switch to non-root user
-USER nodejs
+USER appuser
 
 # Expose port 80
 EXPOSE 80

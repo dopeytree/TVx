@@ -77,9 +77,18 @@ function checkRateLimit(identifier, limitType) {
   return { allowed: true, remaining: limit.maxRequests - limitData.count };
 }
 
-// Ensure log directory exists
-if (!fs.existsSync(LOG_DIR)) {
-  fs.mkdirSync(LOG_DIR, { recursive: true });
+// Ensure log directory exists with proper error handling
+try {
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true, mode: 0o777 });
+  }
+  // Test write access
+  fs.accessSync(LOG_DIR, fs.constants.W_OK);
+} catch (err) {
+  console.error(`Warning: Cannot write to ${LOG_DIR}: ${err.message}`);
+  console.error('Logs will only be written to console.');
+  // Set LOG_FILE to null to disable file logging
+  global.LOG_FILE_DISABLED = true;
 }
 
 // Helper function to sanitize user-controlled log input
@@ -94,10 +103,17 @@ function writeLog(message, level = 'info') {
   const logEntry = `${message}\n`;
   console.log(message);
   
+  // Skip file logging if disabled
+  if (global.LOG_FILE_DISABLED) {
+    return;
+  }
+  
   // Append to log file
   fs.appendFile(LOG_FILE, logEntry, (err) => {
     if (err) {
       console.error('Failed to write to log file:', err);
+      // Disable future file logging attempts to avoid spam
+      global.LOG_FILE_DISABLED = true;
     }
   });
 }
