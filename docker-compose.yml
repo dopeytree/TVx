@@ -15,8 +15,6 @@ services:
       - TZ=Europe/London
       - VITE_M3U_URL=http://192.168.22.2:8000/api/channels.m3u
       - VITE_XMLTV_URL=http://192.168.22.2:8000/api/xmltv.xml
-      - PUID=99
-      - PGID=99
     volumes:
       - ./config:/config
     deploy:
