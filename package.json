@@ -51,7 +51,7 @@
     "lucide-react": "^0.548.0",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^9.11.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.65.0",
     "react-resizable-panels": "^2.1.9",
