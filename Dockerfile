@@ -21,9 +21,9 @@ FROM node:20-alpine
 # Install gettext for envsubst
 RUN apk add --no-cache gettext
 
-# Create non-root user for security (using nobody UID/GID for better compatibility)
-RUN addgroup -g 99 -S appuser && \
-    adduser -S appuser -u 99 -G appuser
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -35,13 +35,11 @@ COPY server.js /usr/share/nginx/html/server.js
 COPY env.js.template /usr/share/nginx/html/env.js.template
 
 # Create config directory and set ownership
-RUN mkdir -p /config && chown -R appuser:appuser /config
-
-# Set ownership of application files
-RUN chown -R appuser:appuser /usr/share/nginx/html
+RUN mkdir -p /config && \
+    chown -R nodejs:nodejs /usr/share/nginx/html /config
 
 # Switch to non-root user
-USER appuser
+USER nodejs
 
 # Expose port 80
 EXPOSE 80
@@ -51,4 +49,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
 
 # Start server
-CMD ["sh", "-c", "mkdir -p /config && chown -R appuser:appuser /config && envsubst < /usr/share/nginx/html/env.js.template > /usr/share/nginx/html/env.js && node /usr/share/nginx/html/server.js"]
+CMD ["sh", "-c", "envsubst < /usr/share/nginx/html/env.js.template > /usr/share/nginx/html/env.js && node /usr/share/nginx/html/server.js"]
