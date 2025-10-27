@@ -34,6 +34,9 @@ COPY server.js /usr/share/nginx/html/server.js
 # Copy env template
 COPY env.js.template /usr/share/nginx/html/env.js.template
 
+# Create config directory and set ownership
+RUN mkdir -p /config && chown -R appuser:appuser /config
+
 # Set ownership of application files
 RUN chown -R appuser:appuser /usr/share/nginx/html
 
@@ -48,4 +51,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
 
 # Start server
-CMD ["sh", "-c", "envsubst < /usr/share/nginx/html/env.js.template > /usr/share/nginx/html/env.js && node /usr/share/nginx/html/server.js"]
+CMD ["sh", "-c", "mkdir -p /config && chown -R appuser:appuser /config && envsubst < /usr/share/nginx/html/env.js.template > /usr/share/nginx/html/env.js && node /usr/share/nginx/html/server.js"]
