@@ -1,22 +1,19 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM oven/bun:1-alpine AS builder
 
 WORKDIR /app
 
-# Set Node options for better cross-platform compatibility
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+# Copy package files and lockfile
+COPY package.json bun.lockb ./
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies with increased timeout and network concurrency settings for better cross-platform builds
-RUN npm ci --prefer-offline --no-audit --maxsockets 1
+# Install dependencies
+RUN bun install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN bun run build
 
 # Production stage
 FROM node:20-alpine
