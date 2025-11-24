@@ -13,14 +13,14 @@ jobs:
     
     steps:
       - name: Checkout TVx repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           path: tvx
       
       - name: Checkout unraid-templates repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: dopeytree/unraid-templates
           token: ${{ secrets.PAT_UNRAID_TEMPLATES }}
