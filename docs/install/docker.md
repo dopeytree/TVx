@@ -11,6 +11,15 @@ nav_order: 3
 
 See [Prerequisites](prerequisites.html) for system requirements.
 
+{: .warning }
+> **Your Tunarr container needs `TUNARR_CORS_ORIGINS` set to the address you open TVx at**, or Tunarr refuses TVx's requests and the channel list stays empty:
+>
+> ```
+> TUNARR_CORS_ORIGINS=http://your-tvx-ip:8777
+> ```
+>
+> See [Prerequisites](prerequisites.html#required-configuration-in-tunarr-cors) for details.
+
 ## Docker Installation
 
 ### Quick Docker Run

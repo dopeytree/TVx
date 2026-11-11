@@ -32,6 +32,11 @@ See [Prerequisites](prerequisites.html) for system requirements.
    - `VITE_XMLTV_URL` = `http://your-tunarr-ip:8000/api/xmltv.xml`
    - `TZ` = `America/New_York` (your timezone)
 
+   Then edit your **Tunarr** container and add one variable there too, or TVx will load with an empty channel list:
+   - `TUNARR_CORS_ORIGINS` = `http://YOUR-UNRAID-IP:8777`
+
+   Use *Add another Path, Port, Variable, Label or Device* with the type set to **Variable**. The value must match the address you browse to, with no trailing slash. See [Prerequisites](prerequisites.html#required-configuration-in-tunarr-cors).
+
 5. Add path mapping (optional but recommended):
    - Container Path: `/config`
    - Host Path: `/mnt/user/appdata/tvx`
